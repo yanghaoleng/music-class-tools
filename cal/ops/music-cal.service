@@ -1,0 +1,23 @@
+[Unit]
+Description=Music classroom scheduling
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/opt/music-cal/current
+EnvironmentFile=/etc/music-cal.env
+Environment=CAL_DATA=/var/lib/music-cal
+Environment=CAL_ORIGIN=https://m.mikeywa.site
+ExecStart=/opt/music-cal/venv/bin/gunicorn server:app --bind 127.0.0.1:8802 --workers 2 --threads 4 --timeout 100 --access-logfile - --error-logfile -
+Restart=always
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/music-cal
+
+[Install]
+WantedBy=multi-user.target

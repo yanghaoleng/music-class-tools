@@ -1,0 +1,27 @@
+[Unit]
+Description=NoteType music transcription and Remotion renderer
+After=network.target
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/notetype/current
+Environment=NODE_ENV=production
+Environment=PORT=8795
+Environment=DATA_DIR=/var/lib/notetype
+Environment=CHROME_PATH=/home/ubuntu/.cache/ms-playwright/chromium-1223/chrome-linux64/chrome
+Environment=NODE_OPTIONS=--max-old-space-size=512
+ExecStart=/usr/bin/node server/index.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+KillMode=control-group
+Nice=10
+CPUQuota=110%
+MemoryMax=1100M
+MemorySwapMax=1500M
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+[Unit]
+Description=Dong Dong Pu personal tin whistle library
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/opt/ddp/current
+EnvironmentFile=/etc/ddp.env
+Environment=DDP_DATA=/var/lib/ddp
+Environment=PORT=8798
+ExecStart=/opt/ddp/venv/bin/python /opt/ddp/current/server.py
+Restart=on-failure
+RestartSec=3
+StateDirectory=ddp
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/ddp
+[Install]
+WantedBy=multi-user.target

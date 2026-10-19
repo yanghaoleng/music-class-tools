@@ -1,0 +1,10 @@
+node_modules/
+dist/
+render-bundle/
+data/
+.env
+.DS_Store
+artifacts/
+cache/
+
+__pycache__/

@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-10-17T18:26:24.258785+08:00",
+  "transport": "verified TLS and Nginx via host loopback",
+  "same_lesson_moved": true,
+  "metadata_and_credits_unchanged": true,
+  "stale_move_http": 409,
+  "conflict_http": 400,
+  "conflict_message": "老师时间冲突，已包含课内休息",
+  "conflict_keeps_original_position": true,
+  "student_move_http": 403,
+  "all_live_build_assets_match": true,
+  "asset_hashes": {
+    "index.html": "c127c2f1f490337377dd1ad78b4a0260bcd8bf53c1de93cded20e8c9570dc195",
+    "ScheduleCalendar-B7hE6cHs.js": "1e22d1081b7a60a3b25cfaba019822d808599c3081e12ec3da5d8781d3aea6e7",
+    "index-9Nh3QS8A.js": "6e0cea32b2e3f5d6b3491d420a03dbb4b58fa50a5678a26467e6c582a3661001",
+    "ScheduleCalendar-BZUV_B5S.css": "c65b4c83a6172fc003c2d12a64a30502b7a3e1f87ff95dc205cf239200fcfc5e",
+    "index-CoHkZxpT.css": "4296e8ae379e9503891225c1b2753d7ed46219fe6ac5e0a280bbadaa9a34f732"
+  },
+  "scope": "independent synthetic demo workspace only",
+  "browser_verification": {
+    "target": "http://127.0.0.1:8803/cal/",
+    "month_drag": "Sunday 10:00 to Monday 10:00, saved",
+    "three_day_drag": "10:00 to 11:30, saved",
+    "week_drag": "Monday 11:30 to Tuesday 12:00, saved",
+    "conflict": "teacher conflict returned and original position restored",
+    "all_list": "includes moved lesson outside original week",
+    "responsive": "390x844 three-day and full seven-column month checked; viewport reset",
+    "console_errors_and_warnings": [],
+    "public_browser_preview": "connection timed out; no claim of public visual verification",
+    "screenshots": [
+      "design/qa/calendar-month.png",
+      "design/qa/calendar-three-days.png"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-10-16T19:06:34.440259",
+  "formal_workspace": "empty, admin login verified",
+  "ai_model": "doubao-seed-2-0-mini-260428",
+  "ai_seconds": 1.81,
+  "ai_rules": [
+    {
+      "count": 2,
+      "end_date": "2026-11-12",
+      "end_time": "18:00",
+      "excluded_dates": [],
+      "room": "",
+      "start_date": "2026-10-16",
+      "start_time": "14:00",
+      "students": [
+        "s1",
+        "s2"
+      ],
+      "teacher": "t1",
+      "weekdays": [
+        6
+      ]
+    }
+  ],
+  "ai_courses": 4,
+  "skipped": 0,
+  "apply": {
+    "count": 4,
+    "ok": true
+  },
+  "student_private_fields": "not returned",
+  "parent_fields": "present",
+  "javascript_sha256": "5caeed00e82083d13c1299ec73549643afeb4650fb671dc53d1bf9d587781567",
+  "live_assets_match": true
+}
