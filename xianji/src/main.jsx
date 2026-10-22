@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, useMemo, memo } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { createRoot } from "react-dom/client";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import {
   Waveform,
   Plus,
@@ -29,11 +30,11 @@ import {
   Keyboard,
   Metronome,
   CaretDown,
-  NotePencil,
-  Headphones,
-  ArrowsOut,
   Star,
-  House,
+  Palette,
+  Stack,
+  DotsThree,
+  Sparkle,
 } from "@phosphor-icons/react";
 import {
   COLORS,
@@ -44,18 +45,21 @@ import {
   createDoc,
   makeDemo,
   validateDoc,
-  pitches,
-  noteName,
-  pitchAt,
-  notesAt,
   compile,
   categories,
   duration,
   exportMidi,
 } from "./model.mjs";
 import { Player, renderWav } from "./audio.mjs";
+import {
+  ScoreCanvas,
+  Modal,
+  IconButton,
+  TempoInput,
+  Thumbnail,
+  pathData,
+} from "./components.jsx";
 import "./style.css";
-
 const STORAGE = "xianji.workspace.v1";
 function readWorkspace() {
   try {
@@ -75,439 +79,48 @@ function readWorkspace() {
     };
   } catch {
     return {
-      error:
-        "浏览器中的作品未能读取。你仍可创作，也可以导入之前导出的作品文件。",
+      error: "浏览器中的作品未能读取。可以导入之前导出的作品文件继续。",
     };
   }
 }
-const initial = readWorkspace();
-const player = new Player();
-const demos = [0, 1, 2].map(makeDemo);
-const pathData = (points) =>
-  points.length === 1
-    ? `M${points[0].x * 1000},${points[0].y * 560}l.1,.1`
-    : points
-        .map(
-          (p, i) =>
-            `${i ? "L" : "M"}${(p.x * 1000).toFixed(2)},${(p.y * 560).toFixed(2)}`,
-        )
-        .join(" ");
-const Marks = memo(function Marks({ doc, draft = null }) {
-  const solo = doc.tracks.some((t) => t.solo);
-  return (
-    <>
-      {[...doc.strokes, ...(draft ? [draft] : [])].map((s) => {
-        const t = doc.tracks.find((t) => t.id === s.track),
-          muted = t?.muted || (solo && !t?.solo);
-        return (
-          <g key={s.id} opacity={muted ? 0.15 : 1}>
-            <path
-              d={pathData(s.points)}
-              stroke={s.color}
-              strokeWidth={s.width}
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke"
-            />
-            <circle
-              cx={s.points[0].x * 1000}
-              cy={s.points[0].y * 560}
-              r="4"
-              fill={s.color}
-            />
-          </g>
-        );
-      })}
-    </>
-  );
-});
-function Thumbnail({ doc }) {
-  return (
-    <svg viewBox="0 0 1000 560" aria-hidden="true">
-      <Marks doc={doc} />
-    </svg>
-  );
-}
-function IconButton({ label, children, ...props }) {
-  return (
-    <button
-      type="button"
-      className="icon-button"
-      title={label}
-      aria-label={label}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-function TempoInput({ value, onChange }) {
-  const [text, setText] = useState(String(value));
-  useEffect(() => setText(String(value)), [value]);
-  return (
-    <input
-      type="number"
-      aria-label="速度 BPM"
-      min="40"
-      max="200"
-      value={text}
-      onChange={(e) => {
-        setText(e.target.value);
-        const n = Number(e.target.value);
-        if (n >= 40 && n <= 200) onChange(n);
-      }}
-      onBlur={() => {
-        const n = Math.round(
-          Math.max(40, Math.min(200, Number(text) || value)),
-        );
-        setText(String(n));
-        if (n !== value) onChange(n);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") e.currentTarget.blur();
-      }}
-    />
-  );
-}
-function Modal({ title, close, children, wide = false }) {
-  const ref = useRef();
-  const closeRef = useRef(close);
-  closeRef.current = close;
-  useEffect(() => {
-    const prev = document.activeElement;
-    ref.current.focus();
-    const key = (e) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        closeRef.current();
-      }
-      if (e.key === "Tab") {
-        const items = [
-          ...ref.current.querySelectorAll("button,input,select,a[href]"),
-        ].filter((el) => !el.disabled && el.getClientRects().length);
-        if (!items.length) return;
-        if (
-          e.shiftKey &&
-          (document.activeElement === items[0] ||
-            document.activeElement === ref.current)
-        ) {
-          e.preventDefault();
-          items.at(-1).focus();
-        } else if (!e.shiftKey && document.activeElement === items.at(-1)) {
-          e.preventDefault();
-          items[0].focus();
-        }
-      }
-    };
-    document.addEventListener("keydown", key);
-    return () => {
-      document.removeEventListener("keydown", key);
-      if (prev?.isConnected) prev.focus();
-    };
-  }, []);
-  return (
-    <div
-      className="overlay"
-      onClick={(e) => e.target === e.currentTarget && close()}
-    >
-      <section
-        className={"modal " + (wide ? "wide" : "")}
-        tabIndex="-1"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        ref={ref}
-      >
-        <header>
-          <h2>{title}</h2>
-          <IconButton label="关闭" onClick={close}>
-            <X />
-          </IconButton>
-        </header>
-        {children}
-      </section>
-    </div>
-  );
-}
-function ScoreCanvas({
-  doc,
-  track,
-  color,
-  width,
-  tool,
-  onStroke,
-  onErase,
-  playing,
-  showGrid,
-  immersive,
-  onLimit,
-}) {
-  const pointCount = useMemo(
-    () => doc.strokes.reduce((n, s) => n + s.points.length, 0),
-    [doc.strokes],
-  );
-  const svg = useRef(),
-    draftRef = useRef(),
-    lastPreview = useRef(0);
-  const [draft, setDraft] = useState(null),
-    [phase, setPhase] = useState(0);
-  useEffect(() => {
-    let frame;
-    let last = 0;
-    function draw(now) {
-      if (now - last > 25) {
-        setPhase(player.position() / duration(doc));
-        last = now;
-      }
-      frame = requestAnimationFrame(draw);
-    }
-    frame = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frame);
-  }, [doc.bpm, doc.bars, playing]);
-  const point = (e) => {
-    const r = svg.current.getBoundingClientRect();
-    return {
-      x: Math.max(0, Math.min(0.99999, (e.clientX - r.left) / r.width)),
-      y: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)),
-    };
-  };
-  function erase(p) {
-    onErase(p, svg.current.getBoundingClientRect());
-  }
-  function preview(p) {
-    if (performance.now() - lastPreview.current < 115) return;
-    lastPreview.current = performance.now();
-    player
-      .preview({
-        midi: pitchAt(p.y, doc),
-        instrument: track.instrument,
-        volume: track.volume,
-      })
-      .catch(() => {});
-  }
-  function down(e) {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    svg.current.setPointerCapture(e.pointerId);
-    const p = point(e);
-    if (tool === "erase") {
-      draftRef.current = { erase: true };
-      erase(p);
-      return;
-    }
-    if (doc.strokes.length >= 500 || pointCount >= 99999) {
-      onLimit();
-      return;
-    }
-    const s = { id: uid(), track: track.id, color, width, points: [p] };
-    draftRef.current = s;
-    setDraft(s);
-    preview(p);
-  }
-  function move(e) {
-    if (!draftRef.current) return;
-    const p = point(e);
-    if (draftRef.current.erase) {
-      erase(p);
-      return;
-    }
-    const d = draftRef.current,
-      a = d.points.at(-1);
-    if (Math.hypot(p.x - a.x, p.y - a.y) < 0.002) return;
-    if (d.points.length >= Math.min(2500, 100000 - pointCount)) return;
-    const s = { ...d, points: [...d.points, p] };
-    draftRef.current = s;
-    setDraft(s);
-    preview(p);
-  }
-  function end(e) {
-    if (!draftRef.current) return;
-    if (!draftRef.current.erase) {
-      let s = draftRef.current;
-      if (s.points.length === 1) {
-        const p = s.points[0],
-          span = 0.6 / (doc.bars * 4 * doc.division);
-        s = {
-          ...s,
-          points: [
-            { x: Math.max(0, p.x - span), y: p.y },
-            { x: Math.min(0.99999, p.x + span), y: p.y },
-          ],
-        };
-      }
-      onStroke(s);
-    }
-    draftRef.current = null;
-    setDraft(null);
-    if (svg.current.hasPointerCapture(e.pointerId))
-      svg.current.releasePointerCapture(e.pointerId);
-  }
-  const ns = pitches(doc),
-    beatCount = doc.bars * 4;
-  const active = playing
-    ? notesAt(doc, Math.floor(phase * beatCount * doc.division))
-    : [];
-  return (
-    <div className={"score-shell " + (immersive ? "immersive-score" : "")}>
-      <div className="bar-labels">
-        {Array.from({ length: doc.bars }, (_, i) => (
-          <span key={i}>
-            {String(i + 1).padStart(2, "0")}
-            <small>小节</small>
-          </span>
-        ))}
-      </div>
-      <div className="score-row">
-        <div className="pitch-labels">
-          {ns.map((n, i) => (
-            <span key={n} style={{ top: `${(i / (ns.length - 1)) * 100}%` }}>
-              {noteName(n)}
-            </span>
-          ))}
-        </div>
-        <div className={"canvas-wrap " + (tool === "erase" ? "erasing" : "")}>
-          <svg
-            ref={svg}
-            className="music-canvas"
-            role="application"
-            aria-label="音乐画布，用鼠标或手指画线，高处音高低处音低"
-            viewBox="0 0 1000 560"
-            preserveAspectRatio="none"
-            onPointerDown={down}
-            onPointerMove={move}
-            onPointerUp={end}
-            onPointerCancel={() => {
-              draftRef.current = null;
-              setDraft(null);
-            }}
-          >
-            <defs>
-              <pattern
-                id="dots"
-                width="20"
-                height="20"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="10" cy="10" r=".8" fill="#d3d8ce" />
-              </pattern>
-            </defs>
-            <rect width="1000" height="560" fill="url(#dots)" />
-            {showGrid && (
-              <g className="grid-lines">
-                {ns.map((n, i) => (
-                  <line
-                    key={n}
-                    x1="0"
-                    x2="1000"
-                    y1={(i / (ns.length - 1)) * 560}
-                    y2={(i / (ns.length - 1)) * 560}
-                  />
-                ))}
-                {Array.from({ length: beatCount + 1 }, (_, i) => (
-                  <line
-                    className={i % 4 === 0 ? "bar-line" : ""}
-                    key={i}
-                    x1={(i / beatCount) * 1000}
-                    x2={(i / beatCount) * 1000}
-                    y1="0"
-                    y2="560"
-                  />
-                ))}
-              </g>
-            )}
-            <Marks doc={doc} draft={draft} />
-            {(playing || phase > 0) && (
-              <g className="playhead" pointerEvents="none">
-                <rect
-                  x={phase * 1000 - 15}
-                  y="0"
-                  width="30"
-                  height="560"
-                  fill="#326657"
-                  opacity=".025"
-                />
-                <line
-                  x1={phase * 1000}
-                  x2={phase * 1000}
-                  y1="0"
-                  y2="560"
-                  stroke="#326657"
-                  strokeWidth="1"
-                  vectorEffect="non-scaling-stroke"
-                />
-                {active.map((n, i) => (
-                  <g key={i}>
-                    <circle
-                      cx={n.x * 1000}
-                      cy={n.y * 560}
-                      r="13"
-                      fill={n.color}
-                      opacity=".14"
-                    />
-                    <circle
-                      cx={n.x * 1000}
-                      cy={n.y * 560}
-                      r="5"
-                      fill={n.color}
-                      stroke="#fff"
-                      strokeWidth="2"
-                    />
-                  </g>
-                ))}
-              </g>
-            )}
-          </svg>
-          {!doc.strokes.length && !draft && (
-            <div className="canvas-empty">
-              <PencilSimple size={30} weight="light" />
-              <h2>第一条线，就是第一段旋律</h2>
-              <p>随手画一笔，再按播放听听看</p>
-              <span>从左到右是时间 · 从下到上是音高</span>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="canvas-bottom">
-        <span>
-          时间 <span className="axis-line" /> 从左向右流动
-        </span>
-        <span>
-          {doc.strokes.length} 条线 ·{" "}
-          {new Set(doc.strokes.map((s) => s.track)).size} 个声部
-        </span>
-      </div>
-    </div>
-  );
-}
+const initial = readWorkspace(),
+  player = new Player(),
+  demos = [0, 1, 2].map(makeDemo);
+const ICONS = [
+  { id: "a", name: "回声涂鸦", description: "一笔涂鸦，绕出声波" },
+  { id: "b", name: "交叠波", description: "让两束声音彼此干涉" },
+  { id: "c", name: "共振漩涡", description: "涂鸦在声场里慢慢展开" },
+  { id: "d", name: "声纹笔触", description: "自由的线，穿过规则的声纹" },
+];
 function App() {
-  const [doc, setDoc] = useState(initial.draft || makeDemo(0)),
+  const [doc, setDoc] = useState(initial.draft || createDoc()),
     [library, setLibrary] = useState(initial.library || []),
     [activeTrack, setActiveTrack] = useState(null),
     [color, setColor] = useState(COLORS[0]),
     [width, setWidth] = useState(4),
     [tool, setTool] = useState("draw"),
-    [playing, setPlaying] = useState(false),
+    [playing, setPlaying] = useState(true),
     [loop, setLoop] = useState(true),
     [volume, setVolume] = useState(0.65),
-    [modal, setModal] = useState(null),
+    [modal, setModalState] = useState(null),
     [toast, setToast] = useState(""),
     [query, setQuery] = useState(""),
     [filter, setFilter] = useState("全部作品"),
     [sort, setSort] = useState("recent"),
-    [view, setView] = useState("canvas"),
-    [grid, setGrid] = useState(true),
-    [immersive, setImmersive] = useState(false),
     [history, setHistory] = useState([]),
     [future, setFuture] = useState([]),
     [exporting, setExporting] = useState(false),
     [saveError, setSaveError] = useState(initial.error || ""),
-    [savedAt, setSavedAt] = useState(null),
-    [progress, setProgress] = useState(0);
+    [savedAt, setSavedAt] = useState(null);
   const importRef = useRef(),
     docRef = useRef(doc),
     erasedRef = useRef(false),
     toastTimer = useRef();
+  const dialogTrigger = useRef(null);
+  function setModal(next) {
+    if (next && !modal) dialogTrigger.current = document.activeElement;
+    setModalState(next);
+  }
   docRef.current = doc;
   const track = doc.tracks.find((t) => t.id === activeTrack) || doc.tracks[0];
   const saved = library.some((d) => d.id === doc.id),
@@ -532,27 +145,24 @@ function App() {
   function stop(reset = false) {
     player.pause(reset);
     setPlaying(false);
-    if (reset) setProgress(0);
   }
   async function togglePlay() {
     if (playing) {
       stop();
       return;
     }
-    if (!noteCount) {
-      notify("先在画布上画一条线吧");
-      return;
-    }
     try {
-      await player.play(doc, loop);
       setPlaying(true);
+      player.play(doc, loop).catch(() => {
+        setPlaying(false);
+        notify("声音暂时无法启动，请再试一次");
+      });
     } catch {
       notify("声音暂时无法启动，请再点一次播放");
     }
   }
   function undo() {
     if (!history.length) return;
-    stop();
     const prev = history.at(-1);
     setFuture((f) => [doc, ...f]);
     setHistory(history.slice(0, -1));
@@ -560,7 +170,6 @@ function App() {
   }
   function redo() {
     if (!future.length) return;
-    stop();
     setHistory((h) => [...h, doc]);
     setDoc({ ...future[0], updatedAt: Date.now() });
     setFuture(future.slice(1));
@@ -575,9 +184,11 @@ function App() {
     setActiveTrack(d.tracks[0].id);
     setHistory([]);
     setFuture([]);
-    setView("canvas");
     setModal(null);
     setColor(COLORS[0]);
+    setTool("draw");
+    setPlaying(true);
+    player.play(d, loop).catch(() => {});
   }
   function newDoc() {
     load(createDoc());
@@ -685,22 +296,14 @@ function App() {
       player.play(doc, loop).catch(() => setPlaying(false));
     } else {
       player.pause(true);
-      setProgress(0);
     }
   }, [doc.bpm, doc.bars, doc.division, doc.scale, doc.root]);
   useEffect(() => {
     player.loop = loop;
   }, [loop]);
   useEffect(() => {
-    player.onEnd = () => {
-      setPlaying(false);
-      setProgress(0);
-    };
-    const timer = setInterval(() => {
-      if (player.isPlaying) setProgress(player.position());
-    }, 100);
+    player.onEnd = () => setPlaying(false);
     return () => {
-      clearInterval(timer);
       player.onEnd = null;
     };
   }, []);
@@ -726,7 +329,6 @@ function App() {
         void togglePlay();
       } else if (e.key === "b" || e.key === "B") setTool("draw");
       else if (e.key === "e" || e.key === "E") setTool("erase");
-      else if (e.key === "Escape") setImmersive(false);
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
@@ -770,7 +372,7 @@ function App() {
         download(
           new Blob(
             [
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560"><rect width="1000" height="560" fill="#fbfcf7"/>${lines}</svg>`,
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560"><rect width="1000" height="560" fill="#fcf8ff"/>${lines}</svg>`,
             ],
             { type: "image/svg+xml" },
           ),
@@ -837,163 +439,223 @@ function App() {
         ),
     [library, query, filter, sort],
   );
-  function libraryView() {
-    setView("library");
-    setImmersive(false);
+
+  const [icon, setIcon] = useState(() => {
+    try {
+      const id = localStorage.getItem("xianji.icon.v1");
+      return ICONS.some((i) => i.id === id) ? id : "a";
+    } catch {
+      return "a";
+    }
+  });
+  useEffect(() => {
+    document.querySelector('link[rel="icon"]').href =
+      "/xianji/icons/option-" + icon + ".svg";
+    try {
+      localStorage.setItem("xianji.icon.v1", icon);
+    } catch {}
+  }, [icon]);
+  useEffect(() => {
+    player.play(docRef.current, true).catch(() => {});
+    return () => player.pause();
+  }, []);
+  function activateAudio() {
+    if (playing) player.activate().catch(() => {});
+  }
+  const dialogTitle =
+    typeof modal === "object" && modal
+      ? modal.type === "delete-track"
+        ? "删除这个声部？"
+        : "删除这件作品？"
+      : {
+          brush: "画笔与音色",
+          rhythm: "旋律规则",
+          tracks: "声部混音",
+          library: "我的作品",
+          project: "画布与文件",
+          export: "把旋律带走",
+          icons: "选一个图标",
+          demos: "从一段旋律开始",
+          help: "画出来，听见它",
+        }[modal];
+  function addTrack() {
+    if (doc.tracks.length >= 12) return;
+    const t = {
+      id: uid(),
+      instrument: INSTRUMENTS[doc.tracks.length % 5].id,
+      volume: 0.65,
+      muted: false,
+      solo: false,
+    };
+    change((d) => ({ ...d, tracks: [...d.tracks, t] }));
+    setActiveTrack(t.id);
+    setColor(COLORS[doc.tracks.length % 6]);
+  }
+  function useDemo(d) {
+    load({
+      ...structuredClone(d),
+      id: uid(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
   }
   return (
-    <div className={"app " + (immersive ? "immersive" : "")}>
-      <header className="topbar">
-        <a
-          className="brand"
-          href="/xianji/"
-          onClick={(e) => {
-            e.preventDefault();
-            setView("canvas");
-          }}
-        >
-          <span className="brand-symbol">
-            <Waveform size={24} weight="bold" />
-          </span>
-          <strong>弦迹</strong>
-          <span className="brand-caption">把旋律画出来</span>
-        </a>
-        <nav aria-label="主导航">
+    <div className="workspace" data-modal-open={!!modal}>
+      <main
+        className="workbench"
+        inert={modal ? true : undefined}
+        onPointerDownCapture={activateAudio}
+        aria-label="音乐创作空间"
+      >
+        <ScoreCanvas
+          doc={doc}
+          track={track}
+          color={color}
+          width={width}
+          tool={tool}
+          playing={playing}
+          player={player}
+          onInteract={activateAudio}
+          onStroke={(s) =>
+            change((d) => ({ ...d, strokes: [...d.strokes, s] }))
+          }
+          onErase={erase}
+          onLimit={() => notify("这张画布已满，请保存后新建一张")}
+        />
+        <div className="floating-header">
           <button
-            className={view === "canvas" ? "active" : ""}
-            onClick={() => setView("canvas")}
+            className="canvas-menu glass"
+            aria-label="画布菜单"
+            title="画布与文件"
+            onClick={() => setModal("project")}
           >
-            音乐画布
+            <img src={"/xianji/icons/option-" + icon + ".svg"} alt="" />
+            <CaretDown size={12} />
           </button>
-          <button
-            className={view === "library" ? "active" : ""}
-            onClick={libraryView}
-          >
-            我的作品<span>{library.length}</span>
-          </button>
-        </nav>
-        <div className="top-actions">
-          <IconButton label="使用指南" onClick={() => setModal("help")}>
-            <Question size={21} />
+          <div className="top-right glass">
+            <IconButton label="我的作品" onClick={() => setModal("library")}>
+              <FolderOpen />
+            </IconButton>
+            <IconButton label="保存作品" onClick={save}>
+              <FloppyDisk />
+            </IconButton>
+            <IconButton label="导出" onClick={() => setModal("export")}>
+              <DownloadSimple />
+            </IconButton>
+          </div>
+        </div>
+        <div className="floating-tools glass">
+          <IconButton label="撤销" disabled={!history.length} onClick={undo}>
+            <ArrowCounterClockwise />
           </IconButton>
-          <button className="new-button" onClick={newDoc}>
-            <Plus weight="bold" />
-            新建画布
-          </button>
+          <IconButton label="重做" disabled={!future.length} onClick={redo}>
+            <ArrowClockwise />
+          </IconButton>
         </div>
-      </header>
-      <aside className="sidebar">
-        <div className="sidebar-heading">
-          <span>工作空间</span>
-          <span className="tiny-dot" /> <small>本机</small>
-        </div>
-        <button
-          className={"side-nav " + (view === "canvas" ? "selected" : "")}
-          onClick={() => setView("canvas")}
-        >
-          <NotePencil />
-          创作画布
-          <ArrowRight size={15} />
-        </button>
-        <button
-          className={"side-nav " + (view === "library" ? "selected" : "")}
-          onClick={libraryView}
-        >
-          <FolderOpen />
-          我的作品<span>{library.length}</span>
-        </button>
-        <div className="side-section-heading">
-          <span>灵感起点</span>
-          <MusicNotes size={15} />
-        </div>
-        <div className="demo-list">
-          {demos.map((d, i) => (
-            <button
-              key={i}
-              onClick={() =>
-                load({
-                  ...structuredClone(d),
-                  id: uid(),
-                  createdAt: Date.now(),
-                  updatedAt: Date.now(),
-                })
-              }
+        <div className="dock-wrap">
+          <div className="dock glass" role="toolbar" aria-label="创作工具">
+            <IconButton
+              label="画笔 (B)"
+              aria-pressed={tool === "draw"}
+              onClick={() => setTool("draw")}
             >
-              <div className="demo-art">
-                <Thumbnail doc={d} />
-              </div>
-              <span>
-                {d.title}
-                <small>
-                  {
-                    [
-                      "舒展的线条，松弛的旋律",
-                      "两种音色，一点雨意",
-                      "让节拍带着线条走",
-                    ][i]
-                  }
-                </small>
-              </span>
-              <ArrowRight size={14} />
+              <PencilSimple weight={tool === "draw" ? "fill" : "regular"} />
+            </IconButton>
+            <IconButton
+              label="橡皮擦 (E)"
+              aria-pressed={tool === "erase"}
+              onClick={() => setTool("erase")}
+            >
+              <Eraser weight={tool === "erase" ? "fill" : "regular"} />
+            </IconButton>
+            <button
+              className="brush-button"
+              aria-label="画笔与音色"
+              title="画笔与音色"
+              onClick={() => setModal("brush")}
+            >
+              <span style={{ background: color }} />
+              <CaretDown size={11} />
             </button>
-          ))}
+            <span className="dock-divider" />
+            <button
+              className={"play-button " + (playing ? "is-playing" : "")}
+              aria-label={playing ? "暂停" : "播放"}
+              title={playing ? "暂停 (空格)" : "播放 (空格)"}
+              onClick={togglePlay}
+            >
+              {playing ? <Pause weight="fill" /> : <Play weight="fill" />}
+            </button>
+            <span className="dock-divider" />
+            <IconButton label="声部混音" onClick={() => setModal("tracks")}>
+              <Stack />
+            </IconButton>
+            <IconButton label="旋律规则" onClick={() => setModal("rhythm")}>
+              <SlidersHorizontal />
+            </IconButton>
+          </div>
+          <div className="dock-caption">
+            <span className={playing ? "playing-dot" : "paused-dot"} />
+            {playing ? "让旋律流动" : "停在这一刻"}
+            <span className="caption-divider" />
+            {doc.bpm} BPM
+            <span className="caption-divider" />
+            {SCALES[doc.scale].name}
+          </div>
         </div>
-        <div className="side-section-heading">
-          <span>最近保存</span>
-          <button
-            title="查看全部作品"
-            aria-label="查看全部作品"
-            onClick={libraryView}
-          >
-            <ArrowRight size={15} />
-          </button>
-        </div>
-        <div className="recent-list">
-          {library.length ? (
-            library
-              .slice()
-              .sort((a, b) => b.updatedAt - a.updatedAt)
-              .slice(0, 4)
-              .map((d) => (
-                <button key={d.id} onClick={() => load(d)}>
-                  <span
-                    className="recent-color"
-                    style={{ background: d.strokes[0]?.color || COLORS[0] }}
-                  />
-                  <span>{d.title}</span>
-                </button>
-              ))
+        <div className="corner-state">
+          <span>{doc.strokes.length} 条线</span>
+          <span className="state-separator" />
+          {saveError ? (
+            <button onClick={() => setModal("export")}>导出备份</button>
           ) : (
-            <p>
-              把喜欢的旋律保存下来，
-              <br />
-              下次从这里继续。
-            </p>
+            <span>{savedAt ? "已自动保存" : "正在保存"}</span>
           )}
         </div>
-        <div className="sidebar-bottom">
-          <span className="little-wave">
-            <Waveform size={25} weight="light" />
-          </span>
-          <p>
-            没有乐理门槛。
-            <br />
-            让手比脑袋先走一步。
-          </p>
-          <button onClick={() => setModal("about")}>
-            关于弦迹 <ArrowRight size={13} />
-          </button>
+      </main>
+      <input
+        ref={importRef}
+        type="file"
+        accept=".json,.xianji.json,application/json"
+        hidden
+        onChange={importFile}
+      />
+      <AnimatePresence>
+        {toast && (
+          <motion.div key={toast} className="toast" role="status">
+            <Check size={16} />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {saveError && (
+        <div className="storage-error" role="alert">
+          {saveError}
+          <button onClick={() => setModal("export")}>导出备份</button>
         </div>
-      </aside>
-      <main className={view === "library" ? "library-main" : "studio"}>
-        {view === "canvas" ? (
-          <>
-            <section className="document-header">
-              <div>
-                <div className="eyebrow">一张画布，无数种旋律</div>
-                <div className="title-row">
+      )}
+      <AnimatePresence>
+        {modal && (
+          <Modal
+            key="workbench-dialog"
+            returnFocus={dialogTrigger}
+            title={dialogTitle}
+            subtitle={
+              modal === "icons"
+                ? "四种「涂鸦 × 声波」的相遇方式。点一下，试试看。"
+                : modal === "library"
+                  ? "旋律留在本机，灵感随时继续。"
+                  : undefined
+            }
+            wide={["library", "icons", "help"].includes(modal)}
+            close={() => !exporting && setModal(null)}
+          >
+            {modal === "project" && (
+              <>
+                <div className="project-name">
+                  <label htmlFor="document-title">这幅画的名字</label>
                   <input
-                    className="document-title"
+                    id="document-title"
                     aria-label="作品名称"
                     maxLength="80"
                     value={doc.title}
@@ -1001,56 +663,70 @@ function App() {
                       change((d) => ({ ...d, title: e.target.value }), false)
                     }
                   />
-                  <PencilSimple size={17} />
+                  <span>
+                    <span className="saved-dot" />
+                    {saved ? "作品已保存" : "草稿自动保留"} · {doc.bars} 小节
+                  </span>
                 </div>
-                <div className={"save-state " + (saveError ? "has-error" : "")}>
-                  <span className="status-dot" />
-                  {saveError
-                    ? "本机保存暂不可用"
-                    : savedAt
-                      ? saved
-                        ? "更改已自动保存"
-                        : "草稿已自动保存"
-                      : "正在保存草稿"}
-                  <span className="separator">/</span>
-                  {SCALES[doc.scale].name} · {doc.bars} 小节
+                <div className="action-grid">
+                  <button onClick={newDoc}>
+                    <Plus />
+                    <span>
+                      新建画布<small>从一张空白开始</small>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      save();
+                      setModal(null);
+                    }}
+                  >
+                    <FloppyDisk />
+                    <span>
+                      保存作品<small>收进本机作品集</small>
+                    </span>
+                  </button>
+                  <button onClick={() => importRef.current.click()}>
+                    <UploadSimple />
+                    <span>
+                      导入作品<small>接着上次的灵感</small>
+                    </span>
+                  </button>
+                  <button onClick={() => setModal("export")}>
+                    <DownloadSimple />
+                    <span>
+                      导出<small>声音、图片与作品文件</small>
+                    </span>
+                  </button>
                 </div>
-              </div>
-              <div className="document-actions">
-                <button onClick={save}>
-                  <FloppyDisk />
-                  保存作品
-                </button>
-                <button onClick={() => setModal("export")}>
-                  <DownloadSimple />
-                  导出
-                  <CaretDown size={12} />
-                </button>
-              </div>
-            </section>
-            <div className="studio-body">
-              <section className="canvas-panel">
-                <div className="canvas-toolbar">
-                  <div className="tool-group">
-                    <IconButton
-                      label="画笔 (B)"
-                      aria-pressed={tool === "draw"}
-                      onClick={() => setTool("draw")}
-                    >
-                      <PencilSimple
-                        weight={tool === "draw" ? "fill" : "regular"}
-                      />
-                    </IconButton>
-                    <IconButton
-                      label="橡皮擦 (E)"
-                      aria-pressed={tool === "erase"}
-                      onClick={() => setTool("erase")}
-                    >
-                      <Eraser />
-                    </IconButton>
+                <div className="menu-links">
+                  <button onClick={() => setModal("demos")}>
+                    <Sparkle />
+                    <span>灵感示例</span>
+                    <ArrowRight />
+                  </button>
+                  <button onClick={() => setModal("icons")}>
+                    <Palette />
+                    <span>图标方案</span>
+                    <span className="new-label">4 个方向</span>
+                    <ArrowRight />
+                  </button>
+                  <button onClick={() => setModal("help")}>
+                    <Question />
+                    <span>怎么玩</span>
+                    <ArrowRight />
+                  </button>
+                </div>
+              </>
+            )}
+            {modal === "brush" && (
+              <>
+                <section className="panel-section">
+                  <div className="section-heading">
+                    <h2>这一笔的颜色</h2>
+                    <span>颜色和音色可以自由搭配</span>
                   </div>
-                  <span className="toolbar-divider" />
-                  <div className="color-tools">
+                  <div className="color-options">
                     {COLORS.map((c) => (
                       <button
                         key={c}
@@ -1063,178 +739,39 @@ function App() {
                           setTool("draw");
                         }}
                       >
-                        {color === c && <Check size={12} weight="bold" />}
+                        {color === c && <Check weight="bold" />}
                       </button>
                     ))}
                   </div>
-                  <span className="toolbar-divider optional" />
-                  <div className="tool-group history-tools">
-                    <IconButton
-                      label="撤销"
-                      disabled={!history.length}
-                      onClick={undo}
-                    >
-                      <ArrowCounterClockwise />
-                    </IconButton>
-                    <IconButton
-                      label="重做"
-                      disabled={!future.length}
-                      onClick={redo}
-                    >
-                      <ArrowClockwise />
-                    </IconButton>
+                </section>
+                <section className="panel-section">
+                  <div className="section-heading">
+                    <h2>线条粗细</h2>
+                    <span>{width} px</span>
                   </div>
-                  <div className="toolbar-end">
-                    <button
-                      className="grid-toggle"
-                      aria-pressed={grid}
-                      onClick={() => setGrid(!grid)}
-                    >
-                      网格
-                    </button>
-                    <IconButton
-                      label={immersive ? "退出专注模式" : "专注模式"}
-                      onClick={() => setImmersive(!immersive)}
-                    >
-                      <ArrowsOut size={18} />
-                    </IconButton>
-                  </div>
-                </div>
-                <ScoreCanvas
-                  doc={doc}
-                  track={track}
-                  color={color}
-                  width={width}
-                  tool={tool}
-                  onStroke={(s) =>
-                    change((d) => ({ ...d, strokes: [...d.strokes, s] }))
-                  }
-                  onErase={erase}
-                  playing={playing}
-                  showGrid={grid}
-                  immersive={immersive}
-                  onLimit={() => notify("这张画布已经画满了，请保存后新建一张")}
-                />
-                <div className="transport">
-                  <div className="transport-play">
-                    <IconButton
-                      label="从头开始"
-                      onClick={() => {
-                        stop(true);
-                      }}
-                    >
-                      <Stop size={17} weight="fill" />
-                    </IconButton>
-                    <button
-                      className={"play-button " + (playing ? "is-playing" : "")}
-                      aria-label={playing ? "暂停" : "播放"}
-                      onClick={togglePlay}
-                    >
-                      {playing ? (
-                        <Pause weight="fill" size={21} />
-                      ) : (
-                        <Play weight="fill" size={21} />
-                      )}
-                    </button>
-                    <IconButton
-                      label="循环播放"
-                      aria-pressed={loop}
-                      onClick={() => setLoop(!loop)}
-                    >
-                      <Repeat size={21} />
-                    </IconButton>
-                  </div>
-                  <div className="time-display">
-                    <strong>
-                      {String(Math.floor(progress / 60)).padStart(2, "0")}:
-                      {String(Math.floor(progress % 60)).padStart(2, "0")}
-                    </strong>
-                    <span>
-                      /{" "}
-                      {String(Math.floor(duration(doc) / 60)).padStart(2, "0")}:
-                      {String(Math.floor(duration(doc) % 60)).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <div className="tempo-control">
-                    <Metronome size={19} />
-                    <label>
-                      <TempoInput
-                        value={doc.bpm}
-                        onChange={(n) => change((d) => ({ ...d, bpm: n }))}
-                      />
-                      <span>BPM</span>
-                    </label>
-                    <div className="tempo-step">
+                  <div className="width-options">
+                    {[2, 4, 7].map((w) => (
                       <button
-                        aria-label="加快速度"
-                        disabled={doc.bpm >= 200}
-                        onClick={() =>
-                          change((d) => ({ ...d, bpm: d.bpm + 1 }))
-                        }
+                        key={w}
+                        aria-label={w + " px 画笔"}
+                        aria-pressed={width === w}
+                        onClick={() => setWidth(w)}
                       >
-                        +
+                        <span style={{ height: w }} />
                       </button>
-                      <button
-                        aria-label="减慢速度"
-                        disabled={doc.bpm <= 40}
-                        onClick={() =>
-                          change((d) => ({ ...d, bpm: d.bpm - 1 }))
-                        }
-                      >
-                        −
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                  <div className="volume-control">
-                    <SpeakerHigh size={19} />
-                    <input
-                      aria-label="总音量"
-                      type="range"
-                      min="0"
-                      max="1"
-                      step=".01"
-                      value={volume}
-                      onChange={(e) => {
-                        const v = +e.target.value;
-                        setVolume(v);
-                        player.setVolume(v);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="canvas-hint">
-                  <button
-                    className="mobile-inspiration"
-                    onClick={() => setModal("demos")}
-                  >
-                    <MusicNotes size={14} />
-                    灵感示例
-                  </button>
-                  <span>
-                    <Keyboard size={16} />
-                    <kbd>空格</kbd>播放 / 暂停
-                    <span className="hint-divider" />
-                    <kbd>B</kbd>画笔<kbd>E</kbd>橡皮
-                  </span>
-                  <span>
-                    戴上耳机，听见更多细节 <Headphones size={15} />
-                  </span>
-                </div>
-              </section>
-              <aside className="inspector">
-                <div className="inspector-title">
-                  <span>声音与画笔</span>
-                  <SlidersHorizontal size={18} />
-                </div>
-                <section>
-                  <div className="inspector-label">
-                    当前音色<span>合成音色</span>
+                </section>
+                <section className="panel-section">
+                  <div className="section-heading">
+                    <h2>这一笔的声音</h2>
+                    <span>声部 {doc.tracks.indexOf(track) + 1}</span>
                   </div>
                   <div className="instrument-choices">
                     {INSTRUMENTS.map((i, index) => (
                       <button
-                        className={track.instrument === i.id ? "chosen" : ""}
                         key={i.id}
+                        className={track.instrument === i.id ? "chosen" : ""}
                         onClick={() => {
                           updateTrack(track.id, { instrument: i.id });
                           player
@@ -1246,10 +783,7 @@ function App() {
                             .catch(() => {});
                         }}
                       >
-                        <span
-                          className="instrument-icon"
-                          style={{ color: i.color }}
-                        >
+                        <span className="instrument-icon">
                           {index === 0 ? (
                             <Keyboard />
                           ) : index === 1 ? (
@@ -1266,31 +800,61 @@ function App() {
                           {i.name}
                           <small>{i.description}</small>
                         </span>
-                        {track.instrument === i.id && <Check size={15} />}
+                        {track.instrument === i.id && <Check size={17} />}
                       </button>
                     ))}
                   </div>
                 </section>
-                <section className="brush-settings">
-                  <div className="inspector-label">
-                    线条粗细<span>{width} px</span>
+                <p className="fine-print">
+                  同一声部共享音色。想把两种声音叠在一起，可以在「声部混音」中添加声部。
+                </p>
+                <button className="primary full" onClick={() => setModal(null)}>
+                  回到画布
+                  <PencilSimple />
+                </button>
+              </>
+            )}
+            {modal === "rhythm" && (
+              <>
+                <div className="tempo-feature">
+                  <Metronome size={24} />
+                  <div>
+                    <TempoInput
+                      value={doc.bpm}
+                      onChange={(n) => change((d) => ({ ...d, bpm: n }))}
+                    />
+                    <span>BPM</span>
                   </div>
-                  <div className="width-options">
-                    {[2, 4, 7].map((w) => (
-                      <button
-                        key={w}
-                        aria-label={w + " px 画笔"}
-                        aria-pressed={width === w}
-                        onClick={() => setWidth(w)}
-                      >
-                        <span style={{ height: w }} />
-                      </button>
-                    ))}
+                  <div className="tempo-steps">
+                    <button
+                      aria-label="加快速度"
+                      disabled={doc.bpm >= 200}
+                      onClick={() => change((d) => ({ ...d, bpm: d.bpm + 1 }))}
+                    >
+                      +
+                    </button>
+                    <button
+                      aria-label="减慢速度"
+                      disabled={doc.bpm <= 40}
+                      onClick={() => change((d) => ({ ...d, bpm: d.bpm - 1 }))}
+                    >
+                      −
+                    </button>
                   </div>
-                </section>
-                <section>
-                  <div className="inspector-label">旋律规则</div>
-                  <label className="setting-row">
+                </div>
+                <input
+                  className="tempo-range"
+                  aria-label="滑动调整速度"
+                  type="range"
+                  min="40"
+                  max="200"
+                  value={doc.bpm}
+                  onChange={(e) =>
+                    change((d) => ({ ...d, bpm: +e.target.value }))
+                  }
+                />
+                <div className="settings-list">
+                  <label>
                     音阶
                     <select
                       aria-label="音阶"
@@ -1306,7 +870,7 @@ function App() {
                       ))}
                     </select>
                   </label>
-                  <label className="setting-row">
+                  <label>
                     调性
                     <select
                       aria-label="调性"
@@ -1322,15 +886,14 @@ function App() {
                       ))}
                     </select>
                   </label>
-                  <label className="setting-row">
+                  <label>
                     画布长度
                     <select
                       aria-label="画布长度"
                       value={doc.bars}
-                      onChange={(e) => {
-                        stop(true);
-                        change((d) => ({ ...d, bars: +e.target.value }));
-                      }}
+                      onChange={(e) =>
+                        change((d) => ({ ...d, bars: +e.target.value }))
+                      }
                     >
                       {[2, 4, 8].map((n) => (
                         <option key={n} value={n}>
@@ -1339,7 +902,7 @@ function App() {
                       ))}
                     </select>
                   </label>
-                  <label className="setting-row">
+                  <label>
                     发声节奏
                     <select
                       aria-label="发声节奏"
@@ -1353,32 +916,47 @@ function App() {
                       <option value="4">每四分之一拍</option>
                     </select>
                   </label>
-                </section>
-                <section className="tracks-section">
-                  <div className="inspector-label">
-                    声部
-                    <span>
-                      {doc.tracks.length} / 12{" "}
-                      <button
-                        aria-label="添加声部"
-                        disabled={doc.tracks.length >= 12}
-                        onClick={() => {
-                          const t = {
-                            id: uid(),
-                            instrument: INSTRUMENTS[doc.tracks.length % 5].id,
-                            volume: 0.65,
-                            muted: false,
-                            solo: false,
-                          };
-                          change((d) => ({ ...d, tracks: [...d.tracks, t] }));
-                          setActiveTrack(t.id);
-                          setColor(COLORS[doc.tracks.length % 6]);
-                        }}
-                      >
-                        <Plus size={15} />
-                      </button>
-                    </span>
-                  </div>
+                </div>
+                <button
+                  className="toggle-row"
+                  aria-pressed={loop}
+                  onClick={() => setLoop(!loop)}
+                >
+                  <Repeat />
+                  <span>
+                    循环播放<small>让同一幅画，一圈圈流动</small>
+                  </span>
+                  <span className={"switch " + (loop ? "on" : "")}>
+                    <i />
+                  </span>
+                </button>
+                <button
+                  className="secondary full"
+                  onClick={() => {
+                    player.pause(true);
+                    if (playing) player.play(doc, loop).catch(() => {});
+                  }}
+                >
+                  从头开始
+                  <ArrowCounterClockwise />
+                </button>
+              </>
+            )}
+            {modal === "tracks" && (
+              <>
+                <div className="section-heading">
+                  <h2>叠一层声音</h2>
+                  <button
+                    className="text-button"
+                    aria-label="添加声部"
+                    disabled={doc.tracks.length >= 12}
+                    onClick={addTrack}
+                  >
+                    <Plus />
+                    添加声部
+                  </button>
+                </div>
+                <div className="tracks-list">
                   {doc.tracks.map((t, i) => (
                     <div
                       className={
@@ -1390,8 +968,16 @@ function App() {
                         className="track-name"
                         onClick={() => setActiveTrack(t.id)}
                       >
-                        <span className="track-index">{i + 1}</span>
-                        {INSTRUMENTS.find((x) => x.id === t.instrument).name}
+                        <span className="track-index">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span>
+                          {INSTRUMENTS.find((x) => x.id === t.instrument).name}
+                          <small>
+                            {doc.strokes.filter((s) => s.track === t.id).length}{" "}
+                            条线{track.id === t.id ? " · 正在使用" : ""}
+                          </small>
+                        </span>
                       </button>
                       <div className="track-controls">
                         <IconButton
@@ -1405,13 +991,22 @@ function App() {
                         </IconButton>
                         <button
                           className="solo"
-                          title="独奏此声部"
                           aria-label={"独奏声部 " + (i + 1)}
                           aria-pressed={t.solo}
                           onClick={() => updateTrack(t.id, { solo: !t.solo })}
                         >
                           S
                         </button>
+                        {doc.tracks.length > 1 && (
+                          <IconButton
+                            label={"删除声部 " + (i + 1)}
+                            onClick={() =>
+                              setModal({ type: "delete-track", id: t.id })
+                            }
+                          >
+                            <Trash />
+                          </IconButton>
+                        )}
                       </div>
                       <input
                         aria-label={"声部 " + (i + 1) + " 音量"}
@@ -1424,401 +1019,383 @@ function App() {
                           updateTrack(t.id, { volume: +e.target.value })
                         }
                       />
-                      {doc.tracks.length > 1 && (
-                        <button
-                          className="delete-track"
-                          aria-label={"删除声部 " + (i + 1)}
-                          onClick={() =>
-                            setModal({ type: "delete-track", id: t.id })
-                          }
-                        >
-                          <Trash size={12} />
-                        </button>
-                      )}
                     </div>
                   ))}
-                  <label className="mobile-volume">
-                    <SpeakerHigh size={16} />
-                    总音量
-                    <input
-                      aria-label="总音量（触屏）"
-                      type="range"
-                      min="0"
-                      max="1"
-                      step=".01"
-                      value={volume}
-                      onChange={(e) => {
-                        setVolume(+e.target.value);
-                        player.setVolume(+e.target.value);
-                      }}
-                    />
-                  </label>
-                </section>
-              </aside>
-            </div>
-            <footer className="studio-footer">
-              <span>
-                <span className="tiny-dot" />
-                声音在浏览器里生成，灵感留在你手里。
-              </span>
-              <button onClick={() => setModal("help")}>
-                第一次画？看看怎么玩 <ArrowRight size={14} />
-              </button>
-            </footer>
-          </>
-        ) : (
-          <>
-            <section className="library-header">
-              <div className="eyebrow">每一笔，都值得留下</div>
-              <h1>
-                我的作品<span>{library.length}</span>
-              </h1>
-              <p>收藏随手画出的旋律，让灵感有迹可循。</p>
-              <div className="library-controls">
-                <label className="search">
-                  <MagnifyingGlass />
+                </div>
+                <label className="master-volume">
+                  <SpeakerHigh />
+                  <span>总音量</span>
                   <input
-                    aria-label="搜索作品"
-                    placeholder="搜索名称、音色或分类…"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    aria-label="总音量"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step=".01"
+                    value={volume}
+                    onChange={(e) => {
+                      setVolume(+e.target.value);
+                      player.setVolume(+e.target.value);
+                    }}
                   />
-                  {query && (
-                    <button aria-label="清空搜索" onClick={() => setQuery("")}>
-                      <X />
-                    </button>
-                  )}
                 </label>
-                <select
-                  aria-label="作品排序"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                >
-                  <option value="recent">最近修改</option>
-                  <option value="title">按名称</option>
-                  <option value="tempo">按速度</option>
-                </select>
-                <button
-                  className="subtle-button"
-                  onClick={() => importRef.current.click()}
-                >
-                  <UploadSimple />
-                  导入作品
-                </button>
-              </div>
-              <div className="filter-tabs">
-                {[
-                  "全部作品",
-                  "慢慢流动",
-                  "轻快律动",
-                  "活力节奏",
-                  "多声部",
-                  "单声部",
-                ].map((f) => (
+                <div className="split-actions">
                   <button
-                    key={f}
-                    className={filter === f ? "active" : ""}
-                    onClick={() => setFilter(f)}
+                    className="secondary"
+                    onClick={() => setModal("brush")}
                   >
-                    {f}
+                    修改当前声部音色
+                    <Waveform />
+                  </button>
+                  <button className="primary" onClick={() => setModal(null)}>
+                    继续画
+                    <PencilSimple />
+                  </button>
+                </div>
+              </>
+            )}
+            {modal === "library" && (
+              <>
+                <div className="library-controls">
+                  <label className="search">
+                    <MagnifyingGlass />
+                    <input
+                      aria-label="搜索作品"
+                      placeholder="搜索名称、音色或分类…"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                    {query && (
+                      <IconButton label="清空搜索" onClick={() => setQuery("")}>
+                        <X />
+                      </IconButton>
+                    )}
+                  </label>
+                  <select
+                    aria-label="作品排序"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                  >
+                    <option value="recent">最近修改</option>
+                    <option value="title">按名称</option>
+                    <option value="tempo">按速度</option>
+                  </select>
+                </div>
+                <div className="filter-tabs">
+                  {[
+                    "全部作品",
+                    "慢慢流动",
+                    "轻快律动",
+                    "活力节奏",
+                    "多声部",
+                    "单声部",
+                  ].map((f) => (
+                    <button
+                      key={f}
+                      className={filter === f ? "active" : ""}
+                      onClick={() => setFilter(f)}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+                {list.length ? (
+                  <div className="project-grid">
+                    {list.map((d) => (
+                      <article className="project-card" key={d.id}>
+                        <button
+                          className="project-cover"
+                          aria-label={"打开 " + d.title}
+                          onClick={() => load(d)}
+                        >
+                          <Thumbnail doc={d} />
+                        </button>
+                        <div className="project-info">
+                          <button
+                            className="project-title"
+                            onClick={() => load(d)}
+                          >
+                            {d.title}
+                          </button>
+                          <span className="project-date">
+                            {d.bpm} BPM ·{" "}
+                            {categories(d).slice(0, 2).join(" · ")}
+                          </span>
+                          <div className="project-actions">
+                            <IconButton
+                              label={"复制 " + d.title}
+                              onClick={() => duplicate(d)}
+                            >
+                              <Copy />
+                            </IconButton>
+                            <IconButton
+                              label={"删除 " + d.title}
+                              onClick={() =>
+                                setModal({
+                                  type: "delete-project",
+                                  id: d.id,
+                                  title: d.title,
+                                })
+                              }
+                            >
+                              <Trash />
+                            </IconButton>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="library-empty">
+                    <FolderOpen size={35} weight="light" />
+                    <h2>
+                      {library.length
+                        ? "暂时没有匹配的作品"
+                        : "让第一段旋律住进来"}
+                    </h2>
+                    <p>
+                      {library.length
+                        ? "试试换个关键词或分类。"
+                        : "随手画一笔，再把喜欢的旋律保存下来。"}
+                    </p>
+                  </div>
+                )}
+                <div className="library-footer">
+                  <button
+                    className="text-button"
+                    onClick={() => importRef.current.click()}
+                  >
+                    <UploadSimple />
+                    导入作品
+                  </button>
+                  <span>按速度、声部与音阶自动归类</span>
+                </div>
+              </>
+            )}
+            {modal === "export" && (
+              <>
+                <p className="modal-intro">
+                  {doc.title} · {doc.bars} 小节 · {doc.bpm} BPM
+                </p>
+                <div className="export-options">
+                  {[
+                    [
+                      "wav",
+                      "音频 WAV",
+                      "一轮完整旋律，可以直接播放",
+                      MusicNotes,
+                    ],
+                    ["midi", "MIDI 乐谱", "带入音乐软件，继续编曲", Keyboard],
+                    [
+                      "project",
+                      "可编辑作品文件",
+                      "保留线条、音色与设置",
+                      FolderOpen,
+                    ],
+                    ["svg", "画布图片 SVG", "把旋律的形状留下来", PencilSimple],
+                  ].map(([id, title, sub, Icon]) => (
+                    <button
+                      key={id}
+                      disabled={
+                        exporting ||
+                        (["wav", "midi"].includes(id) && !noteCount)
+                      }
+                      onClick={() => exportFile(id)}
+                    >
+                      <span className="export-icon">
+                        <Icon />
+                      </span>
+                      <span>
+                        <b>{title}</b>
+                        <small>{sub}</small>
+                      </span>
+                      <DownloadSimple size={18} />
+                    </button>
+                  ))}
+                </div>
+                {exporting && <p role="status">正在生成，请稍等…</p>}
+                <p className="fine-print">
+                  作品保存在当前浏览器中。导出作品文件，可用于备份或换设备继续创作。
+                </p>
+              </>
+            )}
+            {modal === "icons" && (
+              <>
+                <div className="icon-gallery">
+                  {ICONS.map((item, index) => (
+                    <button
+                      key={item.id}
+                      className={
+                        "icon-choice " + (icon === item.id ? "selected" : "")
+                      }
+                      aria-label={
+                        "方案 " + item.id.toUpperCase() + " " + item.name
+                      }
+                      aria-pressed={icon === item.id}
+                      onClick={() => setIcon(item.id)}
+                    >
+                      <div className="icon-preview">
+                        <img
+                          src={"/xianji/icons/option-" + item.id + ".svg"}
+                          alt={item.name}
+                        />
+                        <span className="small-icon">
+                          <img
+                            src={"/xianji/icons/option-" + item.id + ".svg"}
+                            alt=""
+                          />
+                        </span>
+                      </div>
+                      <span className="icon-choice-title">
+                        <span>
+                          <b>{item.id.toUpperCase()}</b>
+                          {item.name}
+                        </span>
+                        {icon === item.id && <Check />}
+                      </span>
+                      <small>{item.description}</small>
+                    </button>
+                  ))}
+                </div>
+                <div className="icon-footer">
+                  <span>可直接切换预览，也可以告诉我你喜欢哪一案。</span>
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      const a = document.createElement("a");
+                      a.href = "/xianji/icons/option-" + icon + ".svg";
+                      a.download = "icon-" + icon + ".svg";
+                      a.click();
+                    }}
+                  >
+                    <DownloadSimple />
+                    下载当前方案
+                  </button>
+                </div>
+              </>
+            )}
+            {modal === "demos" && (
+              <div className="demo-list">
+                {demos.map((d, i) => (
+                  <button key={i} onClick={() => useDemo(d)}>
+                    <div className="demo-art">
+                      <Thumbnail doc={d} />
+                    </div>
+                    <span>
+                      {d.title}
+                      <small>
+                        {d.bpm} BPM · {SCALES[d.scale].name}
+                      </small>
+                    </span>
+                    <ArrowRight />
                   </button>
                 ))}
               </div>
-            </section>
-            <div className="library-meta">
-              <span>{list.length} 件作品</span>
-              <span>按速度、声部与音阶自动归类</span>
-            </div>
-            {list.length ? (
-              <div className="project-grid">
-                {list.map((d) => (
-                  <article className="project-card" key={d.id}>
-                    <button className="project-cover" onClick={() => load(d)}>
-                      <Thumbnail doc={d} />
-                      <span className="open-project">
-                        <Play weight="fill" />
-                        继续创作
-                      </span>
-                    </button>
-                    <div className="project-info">
-                      <button className="project-title" onClick={() => load(d)}>
-                        {d.title}
-                      </button>
-                      <span className="project-date">
-                        {new Date(d.updatedAt).toLocaleDateString("zh-CN", {
-                          month: "long",
-                          day: "numeric",
-                        })}{" "}
-                        · {d.bpm} BPM
-                      </span>
-                      <div className="project-tags">
-                        {categories(d)
-                          .slice(0, 2)
-                          .map((c) => (
-                            <span key={c}>{c}</span>
-                          ))}
-                      </div>
-                      <div className="project-actions">
-                        <IconButton
-                          label={"复制 " + d.title}
-                          onClick={() => duplicate(d)}
-                        >
-                          <Copy size={16} />
-                        </IconButton>
-                        <IconButton
-                          label={"删除 " + d.title}
-                          onClick={() =>
-                            setModal({
-                              type: "delete-project",
-                              id: d.id,
-                              title: d.title,
-                            })
-                          }
-                        >
-                          <Trash size={16} />
-                        </IconButton>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="library-empty">
-                <FolderOpen size={42} weight="light" />
-                <h2>
-                  {library.length ? "暂时没有匹配的作品" : "让第一段旋律住进来"}
-                </h2>
-                <p>
-                  {library.length
-                    ? "换个关键词或分类再找找。"
-                    : "在画布上画几笔，点击「保存作品」就能在这里找到。"}
+            )}
+            {modal === "help" && (
+              <>
+                <div className="guide-art">
+                  <Thumbnail doc={demos[0]} />
+                </div>
+                <div className="guide-steps">
+                  <div>
+                    <span>01</span>
+                    <h2>直接画</h2>
+                    <p>
+                      从左到右是时间，越往上音越高。画下的线，会跟着节拍循环。
+                    </p>
+                  </div>
+                  <div>
+                    <span>02</span>
+                    <h2>叠一点声音</h2>
+                    <p>
+                      点开画笔选颜色和音色。添加一个声部，就能把不同的乐器叠起来。
+                    </p>
+                  </div>
+                  <div>
+                    <span>03</span>
+                    <h2>留住这一刻</h2>
+                    <p>
+                      草稿自动保留。喜欢的旋律可以收进作品集，或导出成声音与图片。
+                    </p>
+                  </div>
+                </div>
+                <p className="fine-print">
+                  空格播放 / 暂停 · B 画笔 · E 橡皮 · ⌘ / Ctrl + Z 撤销 · ⌘ /
+                  Ctrl + S 保存。羊子科技出品。
                 </p>
-                <button
-                  className="primary"
-                  onClick={() =>
-                    library.length
-                      ? (setQuery(""), setFilter("全部作品"))
-                      : setView("canvas")
-                  }
-                >
-                  {library.length ? "清除筛选" : "去画一段旋律"}
+                <button className="primary full" onClick={() => setModal(null)}>
+                  回到画布
                   <ArrowRight />
                 </button>
-              </div>
+              </>
             )}
-            <p className="storage-note">
-              作品保存在当前设备的浏览器中。导出作品文件，可以备份或带到另一台设备继续创作。
-            </p>
-          </>
+            {typeof modal === "object" && modal.type === "delete-project" && (
+              <>
+                <p className="modal-intro">
+                  「{modal.title}」会从本机作品集中移除。
+                </p>
+                <div className="modal-actions">
+                  <button
+                    className="secondary"
+                    onClick={() => setModal("library")}
+                  >
+                    取消
+                  </button>
+                  <button
+                    className="danger"
+                    onClick={() => {
+                      if (doc.id === modal.id) {
+                        stop(true);
+                        setDoc(createDoc());
+                        setHistory([]);
+                        setFuture([]);
+                      }
+                      setLibrary((l) => l.filter((d) => d.id !== modal.id));
+                      setModal("library");
+                      notify("作品已从作品集移除");
+                    }}
+                  >
+                    删除作品
+                  </button>
+                </div>
+              </>
+            )}
+            {typeof modal === "object" && modal.type === "delete-track" && (
+              <>
+                <p className="modal-intro">
+                  这个声部上的线条也会删除，可以用撤销恢复。
+                </p>
+                <div className="modal-actions">
+                  <button
+                    className="secondary"
+                    onClick={() => setModal("tracks")}
+                  >
+                    取消
+                  </button>
+                  <button
+                    className="danger"
+                    onClick={() => {
+                      change((d) => ({
+                        ...d,
+                        tracks: d.tracks.filter((t) => t.id !== modal.id),
+                        strokes: d.strokes.filter((s) => s.track !== modal.id),
+                      }));
+                      setModal("tracks");
+                    }}
+                  >
+                    删除声部
+                  </button>
+                </div>
+              </>
+            )}
+          </Modal>
         )}
-      </main>
-      <input
-        ref={importRef}
-        type="file"
-        accept=".json,.xianji.json,application/json"
-        hidden
-        onChange={importFile}
-      />
-      {toast && (
-        <div className="toast" role="status">
-          <Check size={17} />
-          {toast}
-        </div>
-      )}
-      {saveError && (
-        <div className="storage-error" role="alert">
-          {saveError}
-          <button onClick={() => setModal("export")}>导出备份</button>
-        </div>
-      )}
-      {modal === "demos" && (
-        <Modal title="从一段旋律开始" close={() => setModal(null)}>
-          <div className="mobile-demos">
-            {demos.map((d, i) => (
-              <button
-                key={i}
-                onClick={() =>
-                  load({
-                    ...structuredClone(d),
-                    id: uid(),
-                    createdAt: Date.now(),
-                    updatedAt: Date.now(),
-                  })
-                }
-              >
-                <Thumbnail doc={d} />
-                <span>
-                  {d.title}
-                  <small>
-                    {d.bpm} BPM · {SCALES[d.scale].name}
-                  </small>
-                </span>
-                <ArrowRight />
-              </button>
-            ))}
-          </div>
-        </Modal>
-      )}
-      {modal === "export" && (
-        <Modal title="把旋律带走" close={() => !exporting && setModal(null)}>
-          <p className="modal-intro">
-            {doc.title} · {doc.bars} 小节 · {doc.bpm} BPM
-          </p>
-          <div className="export-options">
-            {[
-              ["wav", "音频 WAV", "导出一轮完整旋律，可直接播放", MusicNotes],
-              ["midi", "MIDI 乐谱", "带入其他音乐软件继续编曲", Keyboard],
-              [
-                "project",
-                "弦迹作品文件",
-                "保留线条、音色与设置，随时接着画",
-                FolderOpen,
-              ],
-              ["svg", "画布图片 SVG", "把旋律的形状也留下来", PencilSimple],
-            ].map(([id, title, sub, Icon]) => (
-              <button
-                key={id}
-                disabled={
-                  exporting || (["wav", "midi"].includes(id) && !noteCount)
-                }
-                onClick={() => exportFile(id)}
-              >
-                <span className="export-icon">
-                  <Icon size={23} />
-                </span>
-                <span>
-                  <b>{title}</b>
-                  <small>{sub}</small>
-                </span>
-                <DownloadSimple size={18} />
-              </button>
-            ))}
-          </div>
-          {exporting && <p role="status">正在生成，请稍等…</p>}
-          <p className="fine-print">
-            MIDI 使用通用乐器映射，导入其他软件后音色可能不同。
-          </p>
-        </Modal>
-      )}
-      {modal === "help" && (
-        <Modal title="画出来，听见它" close={() => setModal(null)} wide>
-          <div className="guide-art">
-            <Thumbnail doc={demos[0]} />
-            <span>
-              <Play weight="fill" size={17} />
-              从左到右，让旋律流动
-            </span>
-          </div>
-          <div className="guide-steps">
-            <div>
-              <b>01</b>
-              <h3>画一条线</h3>
-              <p>
-                横向是时间，越往上音越高。线条交叠，就会一起发声；橡皮可以擦去整条线。
-              </p>
-            </div>
-            <div>
-              <b>02</b>
-              <h3>给旋律一点颜色</h3>
-              <p>
-                选一支音色画笔，也可以添加声部叠加乐器。颜色自由选，音色由每个声部决定。
-              </p>
-            </div>
-            <div>
-              <b>03</b>
-              <h3>按下播放</h3>
-              <p>
-                播放线按节拍触发线条。切换音阶、速度和发声节奏，听听同一幅画的不同表情。
-              </p>
-            </div>
-          </div>
-          <p className="guide-note">
-            触屏可以直接画。键盘按空格播放，B 切换画笔，E 切换橡皮，⌘ / Ctrl + Z
-            撤销，⌘ / Ctrl + S 保存。也可点击「灵感起点」试画。
-          </p>
-          <button className="primary" onClick={() => setModal(null)}>
-            开始画一段旋律
-            <ArrowRight />
-          </button>
-        </Modal>
-      )}
-      {modal === "about" && (
-        <Modal title="关于弦迹" close={() => setModal(null)}>
-          <div className="about-brand">
-            <Waveform size={48} weight="light" />
-            <h2>弦迹</h2>
-            <p>画下线条，留住旋律。</p>
-          </div>
-          <p className="modal-intro">
-            羊子科技出品。声音由浏览器即时合成，作品保存在当前浏览器；无需注册。保存后可改名、复制、搜索，按速度、声部和音阶自动分类。建议定期导出作品文件备份。
-          </p>
-          <div className="about-links">
-            {[
-              ["小节", "音乐班排课", "cal"],
-              ["NoteType", "把演奏视频变成同步乐谱", "notetype"],
-              ["洞洞谱", "收藏、试听与练习哨笛曲谱", "ddp"],
-            ].map(([n, s, p]) => (
-              <a key={p} href={"/" + p + "/"} target="_blank" rel="noreferrer">
-                <span>
-                  <b>{n}</b>
-                  <small>{s}</small>
-                </span>
-                <ArrowRight />
-              </a>
-            ))}
-          </div>
-        </Modal>
-      )}
-      {typeof modal === "object" && modal?.type === "delete-project" && (
-        <Modal title="删除这件作品？" close={() => setModal(null)}>
-          <p className="modal-intro">
-            「{modal.title}」会从本机作品集中移除。导出的作品文件仍然保留。
-          </p>
-          <div className="modal-actions">
-            <button onClick={() => setModal(null)}>取消</button>
-            <button
-              className="danger"
-              onClick={() => {
-                if (doc.id === modal.id) {
-                  stop(true);
-                  setDoc(createDoc());
-                  setHistory([]);
-                  setFuture([]);
-                }
-                setLibrary((l) => l.filter((d) => d.id !== modal.id));
-                setModal(null);
-                notify("作品已从作品集移除");
-              }}
-            >
-              删除作品
-            </button>
-          </div>
-        </Modal>
-      )}
-      {typeof modal === "object" && modal?.type === "delete-track" && (
-        <Modal title="删除这个声部？" close={() => setModal(null)}>
-          <p className="modal-intro">
-            这个声部上的所有线条也会删除。你可以用撤销恢复。
-          </p>
-          <div className="modal-actions">
-            <button onClick={() => setModal(null)}>取消</button>
-            <button
-              className="danger"
-              onClick={() => {
-                change((d) => ({
-                  ...d,
-                  tracks: d.tracks.filter((t) => t.id !== modal.id),
-                  strokes: d.strokes.filter((s) => s.track !== modal.id),
-                }));
-                setModal(null);
-              }}
-            >
-              删除声部
-            </button>
-          </div>
-        </Modal>
-      )}
+      </AnimatePresence>
     </div>
   );
 }
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(document.getElementById("root")).render(
+  <MotionConfig reducedMotion="user">
+    <App />
+  </MotionConfig>,
+);

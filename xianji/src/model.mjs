@@ -1,10 +1,10 @@
 export const COLORS = [
-  "#568b76",
-  "#d39755",
-  "#bd747a",
-  "#788cb3",
-  "#a087b0",
-  "#595b60",
+  "#a552da",
+  "#dc4f98",
+  "#8058c9",
+  "#ee86ad",
+  "#bd78d5",
+  "#6b466d",
 ];
 export const INSTRUMENTS = [
   {

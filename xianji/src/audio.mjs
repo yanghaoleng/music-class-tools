@@ -68,6 +68,8 @@ export function voice(ctx, out, n, time, len = 0.3) {
   oscs.at(-1).addEventListener("ended", () => g.disconnect());
   return g;
 }
+// Playback intent and the visual clock start immediately. Browsers may defer the
+// audio clock until a trusted pointer/keyboard gesture; activate() joins both clocks.
 export class Player {
   constructor() {
     this.ctx = null;
@@ -76,43 +78,77 @@ export class Player {
     this.loop = true;
     this.volume = 0.65;
     this.offset = 0;
-    this.run = 0;
+    this.virtualStart = 0;
+    this.out = null;
+    this.liveStroke = null;
+  }
+  context() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.ctx.addEventListener("statechange", () => {
+        if (this.ctx.state === "running" && this.isPlaying) this.connectAudio();
+      });
+    }
+    return this.ctx;
   }
   async unlock() {
-    if (!this.ctx)
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (this.ctx.state !== "running") await this.ctx.resume();
+    const ctx = this.context();
+    if (ctx.state !== "running") await ctx.resume();
   }
-  async play(doc, loop = true) {
-    const token = ++this.run;
-    await this.unlock();
-    if (token !== this.run) return;
+  activate() {
+    const ctx = this.context();
+    // resume() must be called again from the drawing gesture when initial autoplay
+    // was blocked. Do not gate it behind the earlier, still-pending promise.
+    if (ctx.state === "running") {
+      this.connectAudio();
+      return Promise.resolve();
+    }
+    return ctx.resume().then(() => this.connectAudio());
+  }
+  connectAudio() {
+    if (!this.isPlaying || this.out || this.ctx.state !== "running") return;
+    const offset = this.position();
+    this.out = createOutput(this.ctx, this.volume);
+    this.start = this.ctx.currentTime + 0.025 - offset;
+    this.step = Math.ceil(((offset * this.doc.bpm) / 60) * this.doc.division);
+    this.tick();
+  }
+  play(doc, loop = true) {
     this.stopTimer();
     this.doc = doc;
     this.loop = loop;
-    this.out = createOutput(this.ctx, this.volume);
     this.isPlaying = true;
-    this.start = this.ctx.currentTime + 0.06 - this.offset;
-    this.step = Math.floor(((this.offset * doc.bpm) / 60) * doc.division);
-    this.tick();
+    this.virtualStart = performance.now() / 1000;
     this.timer = setInterval(() => this.tick(), 25);
+    return this.activate();
+  }
+  elapsed() {
+    if (!this.isPlaying) return this.offset;
+    if (this.out && this.ctx?.state === "running")
+      return Math.max(0, this.ctx.currentTime - this.start);
+    return (
+      this.offset + Math.max(0, performance.now() / 1000 - this.virtualStart)
+    );
   }
   tick() {
     if (!this.isPlaying) return;
     const d = this.doc,
       total = d.bars * 4 * d.division,
       interval = 60 / d.bpm / d.division;
+    if (!this.loop && this.elapsed() >= duration(d)) {
+      this.pause(true);
+      this.onEnd?.();
+      return;
+    }
+    if (!this.out || this.ctx.state !== "running") return;
     while (this.start + this.step * interval < this.ctx.currentTime + 0.12) {
-      if (!this.loop && this.step >= total) {
-        if (this.ctx.currentTime >= this.start + duration(d)) {
-          this.pause(true);
-          this.onEnd?.();
-        }
-        return;
-      }
+      if (!this.loop && this.step >= total) return;
       const time = this.start + this.step * interval;
+      const score = this.liveStroke
+        ? { ...d, strokes: [...d.strokes, this.liveStroke] }
+        : d;
       if (time >= this.ctx.currentTime - 0.01)
-        notesAt(d, this.step % total).forEach((n) =>
+        notesAt(score, this.step % total).forEach((n) =>
           voice(
             this.ctx,
             this.out,
@@ -125,8 +161,7 @@ export class Player {
     }
   }
   position() {
-    if (!this.ctx || !this.isPlaying) return this.offset;
-    return Math.max(0, this.ctx.currentTime - this.start) % duration(this.doc);
+    return this.doc ? this.elapsed() % duration(this.doc) : 0;
   }
   stopTimer() {
     clearInterval(this.timer);
@@ -140,11 +175,10 @@ export class Player {
     }
   }
   pause(reset = false) {
-    this.run++;
-    if (this.isPlaying) this.offset = this.position();
+    const offset = this.position();
     this.isPlaying = false;
     this.stopTimer();
-    if (reset) this.offset = 0;
+    this.offset = reset ? 0 : offset;
   }
   setVolume(v) {
     this.volume = v;
