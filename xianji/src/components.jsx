@@ -323,6 +323,8 @@ export function ScoreCanvas({
       svg.current.releasePointerCapture(e.pointerId);
   }
   const score = draft ? { ...doc, strokes: [...doc.strokes, draft] } : doc;
+  const playbackId = "playback-" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const highlightWidth = (24 * 1000) / (svg.current?.clientWidth || 1000);
   const active = playing
     ? notesAt(score, Math.floor(phase * doc.bars * 4 * doc.division))
     : [];
@@ -364,18 +366,56 @@ export function ScoreCanvas({
               strokeWidth="1"
               vectorEffect="non-scaling-stroke"
             />
-            {active.map((n, i) => (
-              <g key={i}>
-                <circle
-                  cx={n.x * 1000}
-                  cy={n.y * 560}
-                  r="12"
-                  fill={n.color}
-                  opacity=".13"
+            <defs>
+              <clipPath
+                id={playbackId + "-clip"}
+                clipPathUnits="userSpaceOnUse"
+              >
+                <rect
+                  x={phase * 1000 - highlightWidth / 2}
+                  y="-15"
+                  width={highlightWidth}
+                  height="590"
                 />
-                <circle cx={n.x * 1000} cy={n.y * 560} r="3.5" fill={n.color} />
+              </clipPath>
+            </defs>
+            <defs
+              dangerouslySetInnerHTML={{
+                __html: pigmentFilterMarkup(playbackId + "-ink"),
+              }}
+            />
+            <g
+              className="playback-ink"
+              clipPath={"url(#" + playbackId + "-clip)"}
+            >
+              <g filter={"url(#" + playbackId + "-ink)"}>
+                {score.strokes
+                  .filter((s) => active.some((n) => n.stroke === s.id))
+                  .map((s) => (
+                    <path
+                      key={s.id}
+                      d={pathData(s.points)}
+                      fill="none"
+                      stroke={
+                        "#" +
+                        s.color
+                          .slice(1)
+                          .match(/.{2}/g)
+                          .map((c) =>
+                            Math.round(parseInt(c, 16) * 0.64)
+                              .toString(16)
+                              .padStart(2, "0"),
+                          )
+                          .join("")
+                      }
+                      strokeWidth={s.width}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  ))}
               </g>
-            ))}
+            </g>
           </g>
         )}
       </svg>
