@@ -35,7 +35,7 @@ import {
   Stack,
   DotsThree,
   Sparkle,
-} from "@phosphor-icons/react";
+} from "./icons.jsx";
 import {
   COLORS,
   INSTRUMENTS,
@@ -317,19 +317,41 @@ function App() {
   }, []);
   useEffect(() => {
     const key = (e) => {
-      if (modal || e.target.closest("input,select,textarea,[contenteditable]"))
+      if (
+        e.isComposing ||
+        e.repeat ||
+        e.target.closest("input,select,textarea,[contenteditable]")
+      )
         return;
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      const key = e.key.toLowerCase(),
+        modified = e.ctrlKey || e.metaKey;
+      if (!modal && modified && key === "s") {
         e.preventDefault();
         save();
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        return;
+      }
+      if (!modal && modified && key === "z") {
         e.preventDefault();
         e.shiftKey ? redo() : undo();
-      } else if (e.code === "Space") {
+        return;
+      }
+      if (modified || e.altKey) return;
+      if (key === "c" && (!modal || modal === "brush")) {
+        e.preventDefault();
+        setModal(modal === "brush" ? null : "brush");
+        return;
+      }
+      if (modal) return;
+      if (e.code === "Space") {
         e.preventDefault();
         void togglePlay();
-      } else if (e.key === "b" || e.key === "B") setTool("draw");
-      else if (e.key === "e" || e.key === "E") setTool("erase");
+      } else if (key === "b") {
+        e.preventDefault();
+        setTool("draw");
+      } else if (key === "e") {
+        e.preventDefault();
+        setTool("erase");
+      }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
@@ -557,6 +579,7 @@ function App() {
           <div className="dock glass" role="toolbar" aria-label="创作工具">
             <IconButton
               label="画笔 (B)"
+              aria-keyshortcuts="B"
               aria-pressed={tool === "draw"}
               onClick={() => setTool("draw")}
             >
@@ -564,6 +587,7 @@ function App() {
             </IconButton>
             <IconButton
               label="橡皮擦 (E)"
+              aria-keyshortcuts="E"
               aria-pressed={tool === "erase"}
               onClick={() => setTool("erase")}
             >
@@ -572,7 +596,8 @@ function App() {
             <button
               className="brush-button"
               aria-label="画笔与音色"
-              title="画笔与音色"
+              title="画笔与音色 (C)"
+              aria-keyshortcuts="C"
               onClick={() => setModal("brush")}
             >
               <span style={{ background: color }} />
@@ -582,6 +607,7 @@ function App() {
             <button
               className={"play-button " + (playing ? "is-playing" : "")}
               aria-label={playing ? "暂停" : "播放"}
+              aria-keyshortcuts="Space"
               title={playing ? "暂停 (空格)" : "播放 (空格)"}
               onClick={togglePlay}
             >
@@ -1321,8 +1347,8 @@ function App() {
                   </div>
                 </div>
                 <p className="fine-print">
-                  空格播放 / 暂停 · B 画笔 · E 橡皮 · ⌘ / Ctrl + Z 撤销 · ⌘ /
-                  Ctrl + S 保存。羊子科技出品。
+                  空格播放 / 暂停 · B 画笔 · E 橡皮 · C 颜色面板 · ⌘ / Ctrl + Z
+                  撤销 · ⌘ / Ctrl + S 保存。羊子科技出品。
                 </p>
                 <button className="primary full" onClick={() => setModal(null)}>
                   回到画布

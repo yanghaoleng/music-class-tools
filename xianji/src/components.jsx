@@ -7,7 +7,7 @@ import React, {
   memo,
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { X, PencilSimple } from "@phosphor-icons/react";
+import { X, PencilSimple } from "./icons.jsx";
 import { duration, notesAt, pitches, pitchAt, uid } from "./model.mjs";
 
 export const pathData = (points) =>

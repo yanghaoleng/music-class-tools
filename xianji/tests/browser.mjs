@@ -72,7 +72,12 @@ try {
   await page.goto(origin);
   await button("暂停").waitFor();
   assert.equal(await page.getByRole("dialog").count(), 0);
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 0);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    0,
+  );
   assert.equal(await page.locator(".grid-lines").count(), 0);
   assert.equal(
     await page.locator("body").getByText("弦迹", { exact: true }).count(),
@@ -98,7 +103,12 @@ try {
   await page.mouse.down();
   await page.mouse.move(box.width * 0.8, box.height * 0.35, { steps: 35 });
   await page.waitForTimeout(180);
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 1);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    1,
+  );
   assert.equal(
     await page.evaluate(() => window.__contexts[0].state),
     "running",
@@ -106,7 +116,12 @@ try {
   const liveAudio = await audioRms();
   assert.ok(liveAudio.rms > 0.0001);
   await page.mouse.up();
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 1);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    1,
+  );
   console.log(
     "PASS immediate visual playback, first-stroke audio unlock and live line",
     liveAudio,
@@ -129,11 +144,26 @@ try {
     [0.4, 0.65],
     [0.83, 0.79],
   ]);
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 2);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    2,
+  );
   await click("撤销");
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 1);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    1,
+  );
   await click("重做");
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 2);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    2,
+  );
   assert.equal(
     await button("暂停").count(),
     1,
@@ -147,7 +177,12 @@ try {
     [0.5, 0.3],
     [0.88, 0.17],
   ]);
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 3);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    3,
+  );
   await click("旋律规则");
   await page.getByLabel("速度 BPM", { exact: true }).fill("72");
   await page.getByLabel("音阶", { exact: true }).selectOption("minor");
@@ -161,7 +196,12 @@ try {
   await page.waitForTimeout(750);
   await page.reload();
   await button("暂停").waitFor();
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 3);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    3,
+  );
   await click("我的作品");
   await page.getByLabel("搜索作品", { exact: true }).fill("紫色");
   assert.equal(await page.locator(".project-card").count(), 1);
@@ -207,27 +247,50 @@ try {
   await click("新建画布 从一张空白开始");
   await page.getByRole("dialog").waitFor({ state: "detached" });
   assert.equal(await button("暂停").count(), 1);
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "roundtrip.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(json),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "roundtrip.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(json),
+  });
   await page.waitForTimeout(200);
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 3);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    3,
+  );
   await click("橡皮擦 (E)");
   await page.mouse.click(1440 * 0.12, 1000 * 0.76);
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 2);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    2,
+  );
   await click("撤销");
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 3);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    3,
+  );
   await click("声部混音");
   await click("删除声部 2");
   await click("删除声部");
   await close();
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 2);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    2,
+  );
   await click("撤销");
-  assert.equal(await page.locator(".music-canvas [data-material="dry-pigment"] path").count(), 3);
+  assert.equal(
+    await page
+      .locator(".music-canvas [data-material=dry-pigment] path")
+      .count(),
+    3,
+  );
   await click("画布菜单");
   await page.getByRole("button", { name: "图标方案", exact: false }).click();
   assert.equal(await page.locator(".icon-choice").count(), 4);
@@ -313,7 +376,10 @@ try {
     type: "touchEnd",
     touchPoints: [],
   });
-  assert.equal(await mp.locator(".music-canvas [data-material="dry-pigment"] path").count(), 1);
+  assert.equal(
+    await mp.locator(".music-canvas [data-material=dry-pigment] path").count(),
+    1,
+  );
   await mp.screenshot({
     path: "artifacts/immersive-mobile.png",
     fullPage: true,
