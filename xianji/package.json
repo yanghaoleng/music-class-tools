@@ -9,7 +9,11 @@
     "preview": "vite preview --host 127.0.0.1 --port 5186",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser.mjs",
-    "test:electronic": "node tests/electronic.mjs"
+    "test:electronic": "node tests/electronic.mjs",
+    "test:audio": "node tests/audio-equivalence.mjs",
+    "test:mobile": "node tests/mobile-rendering.mjs",
+    "profile:mobile": "node tests/profile-mobile.mjs",
+    "profile:webkit": "node tests/profile-webkit.mjs"
   },
   "dependencies": {
     "iconoir-react": "^7.12.1",

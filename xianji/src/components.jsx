@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -8,7 +9,9 @@ import React, {
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { X, PencilSimple } from "./icons.jsx";
-import { duration, notesAt, pitches, pitchAt, uid } from "./model.mjs";
+import { duration, pitches, pitchAt, uid } from "./model.mjs";
+
+import {InkRenderer} from "./ink-renderer.mjs";
 
 export const pathData = (points) =>
   points.length === 1
@@ -48,13 +51,25 @@ export const Marks = memo(function Marks({ doc, draft = null }) {
     </>
   );
 });
-export function Thumbnail({ doc }) {
-  return (
-    <svg viewBox="0 0 1000 560" aria-hidden="true">
-      <Marks doc={doc} />
-    </svg>
-  );
-}
+export const Thumbnail = memo(function Thumbnail({doc}) {
+  const ref = useRef(), [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) {setVisible(true);observer.disconnect();}
+    }, {rootMargin: "120px"});
+    observer.observe(ref.current);return () => observer.disconnect();
+  }, []);
+  const solo = doc.tracks.some(t => t.solo);
+  return <svg ref={ref} viewBox="0 0 1000 560" aria-hidden="true">
+    {visible && doc.strokes.map(s => {
+      const t = doc.tracks.find(t => t.id === s.track);
+      return <path key={s.id} d={pathData(s.points)} fill="none" stroke={s.color}
+        opacity={t?.muted || (solo && !t?.solo) ? .18 : 1}
+        strokeWidth={s.width} strokeLinecap="round" strokeLinejoin="round" />;
+    })}
+  </svg>;
+});
+
 export function IconButton({ label, children, ...props }) {
   return (
     <button
@@ -176,14 +191,14 @@ export function Modal({
           opacity: 0,
           y: reduce ? 0 : 22,
           scale: reduce ? 1 : 0.965,
-          filter: reduce ? "none" : "blur(5px)",
+
         }}
-        animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{
           opacity: 0,
           y: reduce ? 0 : 14,
           scale: reduce ? 1 : 0.975,
-          filter: reduce ? "none" : "blur(4px)",
+
           transition: { duration: 0.17, ease: [0.22, 1, 0.36, 1] },
         }}
         transition={{
@@ -207,237 +222,102 @@ export function Modal({
   );
 }
 
-export function ScoreCanvas({
-  doc,
-  track,
-  color,
-  width,
-  tool,
-  onStroke,
-  onErase,
-  playing,
-  onLimit,
-  player,
-  onInteract,
-}) {
-  const pointCount = useMemo(
-    () => doc.strokes.reduce((n, s) => n + s.points.length, 0),
-    [doc.strokes],
-  );
-  const svg = useRef(),
-    draftRef = useRef(),
-    lastPreview = useRef(0),
-    activePointer = useRef(null);
-  const [draft, setDraft] = useState(null),
-    [phase, setPhase] = useState(0);
+export function ScoreCanvas({doc, track, color, width, tool, onStroke, onErase,
+  playing, visualActive = true, onLimit, player, onInteract}) {
+  const base = useRef(), live = useRef(), highlight = useRef(), head = useRef();
+  const renderer = useRef(), current = useRef(), draftRef = useRef(null);
+  const gesture = useRef(null), inputFrame = useRef(0), lastPreview = useRef(0);
+  const [drawing, setDrawing] = useState(false);
+  current.current = {doc, track, color, width, tool, onStroke, onErase, onLimit, onInteract};
+  const pointCount = useMemo(() => doc.strokes.reduce((n, s) => n + s.points.length, 0), [doc.strokes]);
+  useLayoutEffect(() => {
+    const ink = new InkRenderer(base.current, live.current, highlight.current);
+    renderer.current = ink; ink.setDoc(current.current.doc);
+    const resize = () => {const r = base.current.getBoundingClientRect();ink.resize(r.width, r.height, window.devicePixelRatio || 1);if (draftRef.current && !draftRef.current.erase) ink.drawLive(draftRef.current);};
+    resize();
+    const observer = new ResizeObserver(resize); observer.observe(base.current);
+    return () => {observer.disconnect();cancelAnimationFrame(inputFrame.current);player.liveStroke = null;ink.destroy();};
+  }, [player]);
+  useLayoutEffect(() => {
+    renderer.current?.setDoc(doc);
+    if (!draftRef.current) renderer.current?.clearLive();
+  }, [doc]);
   useEffect(() => {
     let frame;
-    let last = 0;
-    function draw(now) {
-      if (now - last > 25) {
-        setPhase(player.position() / duration(doc));
-        last = now;
+    function scan() {
+      const phase = player.position() / duration(current.current.doc), ink = renderer.current;
+      if (ink) {
+        head.current.style.transform = `translate3d(${phase * ink.width}px,0,0)`;
+        ink.scan(phase, playing && visualActive);
       }
-      frame = requestAnimationFrame(draw);
+      if (playing && visualActive) frame = requestAnimationFrame(scan);
     }
-    frame = requestAnimationFrame(draw);
+    scan();
     return () => cancelAnimationFrame(frame);
-  }, [doc.bpm, doc.bars, playing, player]);
-  useEffect(
-    () => () => {
-      player.liveStroke = null;
-    },
-    [player],
-  );
-  const point = (e) => {
-    const r = svg.current.getBoundingClientRect();
-    return {
-      x: Math.max(0, Math.min(0.99999, (e.clientX - r.left) / r.width)),
-      y: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)),
-    };
+  }, [playing, visualActive, player, doc.bpm, doc.bars]);
+  const point = e => {
+    const r = gesture.current.rect;
+    return {x: Math.max(0, Math.min(.99999, (e.clientX - r.left) / r.width)),
+      y: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height))};
   };
   function preview(p) {
     if (performance.now() - lastPreview.current < 125) return;
     lastPreview.current = performance.now();
-    player
-      .preview({
-        midi: pitchAt(p.y, doc),
-        instrument: track.instrument,
-        volume: track.volume,
-      })
-      .catch(() => {});
+    player.preview({midi: pitchAt(p.y, doc), instrument: track.instrument, volume: track.volume}).catch(() => {});
+  }
+  function flushInput() {
+    inputFrame.current = 0;
+    const stroke = draftRef.current;
+    if (stroke && !stroke.erase) {renderer.current?.drawLive(stroke);preview(stroke.points.at(-1));}
   }
   function down(e) {
-    if (e.button !== 0 || activePointer.current !== null) return;
-    e.preventDefault();
-    onInteract();
-    activePointer.current = e.pointerId;
-    svg.current.setPointerCapture(e.pointerId);
+    if (e.button !== 0 || gesture.current) return;
+    e.preventDefault();onInteract();
+    if (tool !== "erase" && (doc.strokes.length >= 500 || pointCount >= 99999)) {onLimit();return;}
+    gesture.current = {id: e.pointerId, rect: base.current.getBoundingClientRect()};
+    base.current.setPointerCapture(e.pointerId);
     const p = point(e);
-    if (tool === "erase") {
-      draftRef.current = { erase: true };
-      onErase(p, svg.current.getBoundingClientRect());
-      return;
-    }
-    if (doc.strokes.length >= 500 || pointCount >= 99999) {
-      onLimit();
-      return;
-    }
-    const s = { id: uid(), track: track.id, color, width, points: [p] };
-    draftRef.current = s;
-    player.liveStroke = s;
-    setDraft(s);
-    preview(p);
+    if (tool === "erase") {draftRef.current = {erase: true};onErase(p, gesture.current.rect);return;}
+    const stroke = {id: uid(), track: track.id, color, width, points: [p]};
+    draftRef.current = stroke;player.liveStroke = stroke;setDrawing(true);
+    renderer.current?.drawLive(stroke);preview(p);
   }
   function move(e) {
-    if (!draftRef.current || e.pointerId !== activePointer.current) return;
-    if (draftRef.current.erase) {
-      onErase(point(e), svg.current.getBoundingClientRect());
-      return;
-    }
-    let d = draftRef.current;
+    if (!draftRef.current || e.pointerId !== gesture.current?.id) return;
+    if (draftRef.current.erase) {onErase(point(e), gesture.current.rect);return;}
+    const stroke = draftRef.current;
     const coalesced = e.nativeEvent.getCoalescedEvents?.();
-    const events = coalesced?.length ? coalesced : [e];
-    for (const event of events) {
-      const p = point(event),
-        a = d.points.at(-1);
-      if (Math.hypot(p.x - a.x, p.y - a.y) < 0.0015) continue;
-      if (d.points.length >= Math.min(2500, 100000 - pointCount)) break;
-      d = { ...d, points: [...d.points, p] };
+    for (const event of coalesced?.length ? coalesced : [e]) {
+      const p = point(event), a = stroke.points.at(-1);
+      if (Math.hypot(p.x - a.x, p.y - a.y) < .0015) continue;
+      if (stroke.points.length >= Math.min(2500, 100000 - pointCount)) break;
+      stroke.points.push(p);
     }
-    draftRef.current = d;
-    player.liveStroke = d;
-    setDraft(d);
-    preview(d.points.at(-1));
+    if (!inputFrame.current) inputFrame.current = requestAnimationFrame(flushInput);
   }
   function end(e) {
-    if (e.pointerId !== activePointer.current) return;
-    if (draftRef.current && !draftRef.current.erase) {
-      let s = draftRef.current;
-      if (s.points.length === 1) {
-        const p = s.points[0],
-          span = 0.6 / (doc.bars * 4 * doc.division);
-        s = {
-          ...s,
-          points: [
-            { x: Math.max(0, p.x - span), y: p.y },
-            { x: Math.min(0.99999, p.x + span), y: p.y },
-          ],
-        };
+    if (e.pointerId !== gesture.current?.id) return;
+    cancelAnimationFrame(inputFrame.current);inputFrame.current = 0;
+    let stroke = draftRef.current;
+    if (stroke && !stroke.erase) {
+      if (stroke.points.length === 1) {
+        const p = stroke.points[0], span = .6 / (doc.bars * 4 * doc.division);
+        stroke = {...stroke, points: [{x: Math.max(0, p.x - span), y: p.y}, {x: Math.min(.99999, p.x + span), y: p.y}]};
       }
-      onStroke(s);
+      onStroke(stroke);
     }
-    draftRef.current = null;
-    player.liveStroke = null;
-    activePointer.current = null;
-    setDraft(null);
-    if (svg.current.hasPointerCapture(e.pointerId))
-      svg.current.releasePointerCapture(e.pointerId);
+    draftRef.current = null;player.liveStroke = null;gesture.current = null;
+    renderer.current?.clearLive();setDrawing(false);
+    if (base.current.hasPointerCapture(e.pointerId)) base.current.releasePointerCapture(e.pointerId);
   }
-  const score = draft ? { ...doc, strokes: [...doc.strokes, draft] } : doc;
-  const playbackId = "playback-" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const highlightWidth = (24 * 1000) / (svg.current?.clientWidth || 1000);
-  const active = playing
-    ? notesAt(score, Math.floor(phase * doc.bars * 4 * doc.division))
-    : [];
-  return (
-    <section
-      className={"canvas-stage " + (tool === "erase" ? "erasing" : "")}
-      aria-label="沉浸画布"
-    >
-      <svg
-        ref={svg}
-        className="music-canvas"
-        role="application"
-        aria-label="音乐画布，用鼠标或手指画线，高处音高低处音低"
-        viewBox="0 0 1000 560"
-        preserveAspectRatio="none"
-        onPointerDown={down}
-        onPointerMove={move}
-        onPointerUp={end}
-        onPointerCancel={end}
-      >
-        <Marks doc={doc} draft={draft} />
-        {(playing || phase > 0) && (
-          <g className="playhead" pointerEvents="none">
-            <rect
-              x={phase * 1000 - 9}
-              y="0"
-              width="18"
-              height="560"
-              fill="#888888"
-              opacity=".035"
-            />
-            <line
-              x1={phase * 1000}
-              x2={phase * 1000}
-              y1="0"
-              y2="560"
-              stroke="#8b8985"
-              strokeOpacity=".38"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-            />
-            <defs>
-              <clipPath
-                id={playbackId + "-clip"}
-                clipPathUnits="userSpaceOnUse"
-              >
-                <rect
-                  x={phase * 1000 - highlightWidth / 2}
-                  y="-15"
-                  width={highlightWidth}
-                  height="590"
-                />
-              </clipPath>
-            </defs>
-            <defs
-              dangerouslySetInnerHTML={{
-                __html: pigmentFilterMarkup(playbackId + "-ink"),
-              }}
-            />
-            <g
-              className="playback-ink"
-              clipPath={"url(#" + playbackId + "-clip)"}
-            >
-              <g filter={"url(#" + playbackId + "-ink)"}>
-                {score.strokes
-                  .filter((s) => active.some((n) => n.stroke === s.id))
-                  .map((s) => (
-                    <path
-                      key={s.id}
-                      d={pathData(s.points)}
-                      fill="none"
-                      stroke={
-                        "#" +
-                        s.color
-                          .slice(1)
-                          .match(/.{2}/g)
-                          .map((c) =>
-                            Math.round(parseInt(c, 16) * 0.64)
-                              .toString(16)
-                              .padStart(2, "0"),
-                          )
-                          .join("")
-                      }
-                      strokeWidth={s.width}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  ))}
-              </g>
-            </g>
-          </g>
-        )}
-      </svg>
-      {!doc.strokes.length && !draft && (
-        <div className="canvas-empty">
-          <PencilSimple size={26} weight="light" />
-          <p>画一笔，听见它。</p>
-          <span>越高的线，越高的音。</span>
-        </div>
-      )}
-    </section>
-  );
+  return <section className={"canvas-stage " + (tool === "erase" ? "erasing" : "")} aria-label="沉浸画布">
+    <canvas ref={base} className="music-canvas" role="application"
+      data-stroke-count={doc.strokes.length + (drawing ? 1 : 0)}
+      aria-label="音乐画布，用鼠标或手指画线，高处音高低处音低"
+      onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={end} />
+    <canvas ref={live} className="live-ink" aria-hidden="true" />
+    <canvas ref={highlight} className="playback-ink" aria-hidden="true" />
+    <div ref={head} className="playhead" aria-hidden="true" hidden={!playing && player.position() === 0} />
+    {!doc.strokes.length && !drawing && <div className="canvas-empty"><PencilSimple size={26} weight="light" /><p>画一笔，听见它。</p><span>越高的线，越高的音。</span></div>}
+  </section>;
 }

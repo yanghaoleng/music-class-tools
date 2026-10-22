@@ -1,3 +1,4 @@
+const strokeCount = async page => Number(await page.locator(".music-canvas").getAttribute("data-stroke-count"));
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
@@ -73,9 +74,7 @@ try {
   await button("暂停").waitFor();
   assert.equal(await page.getByRole("dialog").count(), 0);
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     0,
   );
   assert.equal(await page.locator(".grid-lines").count(), 0);
@@ -86,9 +85,9 @@ try {
   const r = await page.locator(".music-canvas").boundingBox();
   assert.equal(r.width, 1100);
   assert.equal(r.height, 1000);
-  const x1 = await page.locator(".playhead line").getAttribute("x1");
+  const x1 = await page.locator(".playhead").getAttribute("style");
   await page.waitForTimeout(250);
-  const x2 = await page.locator(".playhead line").getAttribute("x1");
+  const x2 = await page.locator(".playhead").getAttribute("style");
   assert.notEqual(x1, x2, "visual playback starts before any gesture");
   const blocked = await page.evaluate(() => window.__contexts[0].state);
   assert.equal(
@@ -104,9 +103,7 @@ try {
   await page.mouse.move(box.width * 0.8, box.height * 0.35, { steps: 35 });
   await page.waitForTimeout(180);
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     1,
   );
   assert.equal(
@@ -117,9 +114,7 @@ try {
   assert.ok(liveAudio.rms > 0.0001);
   await page.mouse.up();
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     1,
   );
   console.log(
@@ -145,23 +140,17 @@ try {
     [0.83, 0.79],
   ]);
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     2,
   );
   await click("撤销");
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     1,
   );
   await click("重做");
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     2,
   );
   assert.equal(
@@ -178,9 +167,7 @@ try {
     [0.88, 0.17],
   ]);
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     3,
   );
   await click("旋律规则");
@@ -197,9 +184,7 @@ try {
   await page.reload();
   await button("暂停").waitFor();
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     3,
   );
   await click("我的作品");
@@ -254,24 +239,18 @@ try {
   });
   await page.waitForTimeout(200);
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     3,
   );
   await click("橡皮擦 (E)");
   await page.mouse.click(1100 * 0.12, 1000 * 0.76);
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     2,
   );
   await click("撤销");
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     3,
   );
   await click("声部混音");
@@ -279,16 +258,12 @@ try {
   await click("删除声部");
   await close();
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     2,
   );
   await click("撤销");
   assert.equal(
-    await page
-      .locator(".music-canvas [data-material=dry-pigment] path")
-      .count(),
+    await strokeCount(page),
     3,
   );
   await click("画布菜单");
@@ -377,7 +352,7 @@ try {
     touchPoints: [],
   });
   assert.equal(
-    await mp.locator(".music-canvas [data-material=dry-pigment] path").count(),
+    await strokeCount(mp),
     1,
   );
   await mp.screenshot({

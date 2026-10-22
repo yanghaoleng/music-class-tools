@@ -1,0 +1,18 @@
+[
+  {
+    "label": "before",
+    "audioState": "suspended",
+    "durationMs": 4180,
+    "frames": 33,
+    "p95": 195,
+    "over50": 22
+  },
+  {
+    "label": "after",
+    "audioState": "suspended",
+    "durationMs": 4000,
+    "frames": 241,
+    "p95": 18,
+    "over50": 0
+  }
+]

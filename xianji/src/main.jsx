@@ -45,11 +45,11 @@ import {
   createDoc,
   makeDemo,
   validateDoc,
-  compile,
   categories,
   duration,
   exportMidi,
 } from "./model.mjs";
+import {getScoreIndex} from "./score-index.mjs";
 import { Player, renderWav } from "./audio.mjs";
 import {
   ScoreCanvas,
@@ -142,7 +142,7 @@ function App() {
   docRef.current = doc;
   const track = doc.tracks.find((t) => t.id === activeTrack) || doc.tracks[0];
   const saved = library.some((d) => d.id === doc.id),
-    noteCount = useMemo(() => compile(doc).length, [doc]);
+    noteCount = useMemo(() => getScoreIndex(doc).noteCount, [doc]);
   const notify = (msg) => {
     setToast(msg);
     clearTimeout(toastTimer.current);
@@ -269,7 +269,9 @@ function App() {
     return () => window.removeEventListener("pointerup", end);
   }, []);
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let timer, idle;
+    const persist = () => {
+      if (player.liveStroke) {timer = setTimeout(schedule, 200);return;}
       try {
         const next = library.map((d) => (d.id === doc.id ? doc : d));
         localStorage.setItem(
@@ -281,8 +283,14 @@ function App() {
       } catch {
         setSaveError("浏览器存储空间不足或不可用，请导出作品文件备份。");
       }
-    }, 600);
-    return () => clearTimeout(timer);
+    };
+    const schedule = () => {
+      if (player.liveStroke) {timer = setTimeout(schedule, 200);return;}
+      if (window.requestIdleCallback) idle = requestIdleCallback(persist, {timeout: 1500});
+      else persist();
+    };
+    timer = setTimeout(schedule, 600);
+    return () => {clearTimeout(timer);if (idle) cancelIdleCallback(idle);};
   }, [doc, library]);
   useEffect(() => {
     if (!saved) return;
@@ -554,6 +562,7 @@ function App() {
           width={width}
           tool={tool}
           playing={playing}
+          visualActive={!blocking}
           player={player}
           onInteract={activateAudio}
           onStroke={(s) =>

@@ -1,3 +1,4 @@
+const strokeCount = async page => Number(await page.locator(".music-canvas").getAttribute("data-stroke-count"));
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -16,7 +17,7 @@ try {
  const box=await page.locator('.music-canvas').boundingBox();
  assert.equal(box.width,1056);
  await page.mouse.move(box.width*.12,500);await page.mouse.down();await page.mouse.move(box.width*.85,420,{steps:24});await page.mouse.up();
- assert.equal(await page.locator('[data-material=dry-pigment] path').count(),1);
+ assert.equal(await strokeCount(page),1);
  await page.keyboard.press('e'); assert.equal(await page.getByRole('button',{name:'橡皮擦 (E)',exact:true}).getAttribute('aria-pressed'),'true');
  await page.keyboard.press('b');assert.equal(await page.getByRole('button',{name:'画笔 (B)',exact:true}).getAttribute('aria-pressed'),'true');
  await page.keyboard.press('Space'); assert.equal(await page.getByRole('button',{name:'播放',exact:true}).count(),1);
@@ -39,10 +40,10 @@ try {
   for(const i of INSTRUMENTS){
    const rate=22050,ctx=new OfflineAudioContext(1,rate*4,rate),bank=new Map();
    let count=0;const create=ctx.createOscillator.bind(ctx);ctx.createOscillator=()=>{count++;return create();};
-   for(let step=0;step<16;step++)scheduleStep(ctx,ctx.destination,[{midi:60+step%3,instrument:i.id,volume:.7,stroke:'line'}],step*.1,.098,step,bank);
+   let initialCount=0;for(let step=0;step<16;step++){scheduleStep(ctx,ctx.destination,[{midi:60+step%3,instrument:i.id,volume:.7,stroke:'line'}],step*.1,.098,step,bank);if(step===0)initialCount=count;}
    const buffer=await ctx.startRendering(),data=buffer.getChannelData(0);
    const rms=(start,end)=>{const a=data.slice(start*rate,end*rate);return Math.sqrt(a.reduce((sum,x)=>sum+x*x,0)/a.length);};
-   results.push({id:i.id,count,expected:SYNTHS[i.id].partials.length+(SYNTHS[i.id].vibrato?1:0),continuous:!!i.continuous,rms:rms(.4,1.5),tail:rms(3.6,3.9),minWindow:Math.min(...Array.from({length:11},(_,n)=>rms(.4+n*.1,.42+n*.1)))});
+   results.push({id:i.id,count,expected:initialCount,continuous:!!i.continuous,rms:rms(.4,1.5),tail:rms(3.6,3.9),minWindow:Math.min(...Array.from({length:11},(_,n)=>rms(.4+n*.1,.42+n*.1)))});
   }return results;
  });
  for(const s of sounds){assert.ok(s.rms>.001,`${s.id} audible`);assert.ok(s.tail<.0002,`${s.id} releases`);if(s.continuous){assert.equal(s.count,s.expected,`${s.id} reuses oscillator phase across 16 notes`);assert.ok(s.minWindow>.001,`${s.id} has no gaps`);}}

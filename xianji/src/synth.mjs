@@ -19,11 +19,36 @@ export const SYNTHS={
 export const MAX_RELEASE=Math.max(...Object.values(SYNTHS).map(s=>s.release));
 const hz=n=>440*2**((instrumentPitch(n.midi,n.instrument)-69)/12);
 
+// Merge integer sine/triangle harmonics into one band-limited oscillator.
+// Detuned and inharmonic partials stay separate, preserving their beating/tone.
+const waveCache = new WeakMap();
+function partialsFor(ctx, spec) {
+  let cache = waveCache.get(ctx);
+  if (!cache) {cache = new Map();waveCache.set(ctx, cache);}
+  if (cache.has(spec)) return cache.get(spec);
+  const combined = spec.partials.filter(([ratio,,type]) => Number.isInteger(ratio) && (type === 'sine' || type === 'triangle'));
+  if (combined.length < 2) {const result = spec.partials.map(([ratio,level,type]) => ({ratio,level,type}));cache.set(spec, result);return result;}
+  const real = new Float32Array(129), imag = new Float32Array(129);
+  for (const [ratio,level,type] of combined) {
+    if (type === 'sine') imag[ratio] += level;
+    else for (let k = 1; k * ratio < imag.length; k += 2)
+      imag[k * ratio] += level * 8 / Math.PI ** 2 * ((k % 4 === 1 ? 1 : -1) / (k * k));
+  }
+  const wave = ctx.createPeriodicWave(real, imag, {disableNormalization: true});
+  const result = [{ratio: 1, level: 1, wave}, ...spec.partials.filter(p => !combined.includes(p)).map(([ratio,level,type]) => ({ratio,level,type}))];
+  cache.set(spec, result);return result;
+}
+
 function oscillatorGraph(ctx,out,n,time){
   const spec=SYNTHS[n.instrument]||SYNTHS.keys,gain=ctx.createGain();
   let filter=null;
   if(spec.cutoff){filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=spec.cutoff;filter.Q.value=spec.q||.45;gain.connect(filter);filter.connect(out);}else gain.connect(out);
-  const oscillators=spec.partials.map(([ratio,level,type])=>{const osc=ctx.createOscillator(),amp=ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(hz(n)*ratio,time);amp.gain.value=level;osc.connect(amp);amp.connect(gain);osc.start(time);return {osc,amp,ratio};});
+  const oscillators = partialsFor(ctx, spec).map(({ratio,level,type,wave}) => {
+    const osc = ctx.createOscillator(), amp = ctx.createGain();
+    if (wave) osc.setPeriodicWave(wave); else osc.type = type;
+    osc.frequency.setValueAtTime(hz(n) * ratio, time);amp.gain.value = level;
+    osc.connect(amp);amp.connect(gain);osc.start(time);return {osc,amp,ratio};
+  });
   let lfo=null,depth=null;
   if(spec.vibrato){lfo=ctx.createOscillator();depth=ctx.createGain();lfo.frequency.value=spec.rate;depth.gain.value=spec.vibrato;lfo.connect(depth);oscillators.forEach(({osc})=>depth.connect(osc.detune));lfo.start(time);}
   let finished=0;

@@ -1,0 +1,53 @@
+{
+  "device": "390×844, DPR3, Chrome CPU4x, 30 strokes × 400 points, 4 seconds",
+  "results": [
+    {
+      "mode": "full",
+      "frames": 200,
+      "p95": 33.30000000000018,
+      "over50": 7,
+      "mainThreadMs": 1692,
+      "scriptMs": 965,
+      "layoutMs": 4,
+      "heapMB": 15
+    },
+    {
+      "mode": "no-visual-effects",
+      "frames": 195,
+      "p95": 50,
+      "over50": 9,
+      "mainThreadMs": 2394,
+      "scriptMs": 1269,
+      "layoutMs": 10,
+      "heapMB": 19
+    },
+    {
+      "mode": "audio-only",
+      "frames": 0,
+      "mainThreadMs": 155,
+      "scriptMs": 131,
+      "layoutMs": 1,
+      "heapMB": 15
+    },
+    {
+      "mode": "visual-only",
+      "frames": 231,
+      "p95": 16.800000000000182,
+      "over50": 2,
+      "mainThreadMs": 1851,
+      "scriptMs": 1374,
+      "layoutMs": 16,
+      "heapMB": 11
+    },
+    {
+      "mode": "paused",
+      "frames": 236,
+      "p95": 16.800000000000182,
+      "over50": 0,
+      "mainThreadMs": 280,
+      "scriptMs": 29,
+      "layoutMs": 0,
+      "heapMB": 13
+    }
+  ]
+}
