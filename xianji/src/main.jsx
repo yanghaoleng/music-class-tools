@@ -683,6 +683,9 @@ function App() {
     if (player.isPlaying) {
       player.pause(true);
       player.play(doc, loop).catch(() => setPlaying(false));
+    } else {
+      player.pause(true);
+      setProgress(0);
     }
   }, [doc.bpm, doc.bars, doc.division, doc.scale, doc.root]);
   useEffect(() => {
