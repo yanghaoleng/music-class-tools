@@ -32,10 +32,12 @@ const page = await context.newPage();
 page.on("pageerror", (e) => errors.push(e.message));
 const button = (name) => page.getByRole("button", { name, exact: true });
 async function click(name) {
+  if (["我的作品", "导出"].includes(name) && !(await button(name).count())) await button("画布菜单").click();
   await button(name).click();
 }
 async function close() {
-  await click("关闭");
+  if (await page.locator(".file-menu").count()) await page.keyboard.press("Escape");
+  else await click("关闭");
   await page.locator(".dock-panel, [role=dialog]").waitFor({ state: "detached" });
 }
 async function draw(p, points) {
@@ -123,7 +125,7 @@ try {
   );
   await click("画笔与音色");
   await page.getByRole("dialog").waitFor();
-  await page.getByLabel("画笔颜色 #ed7b2f", { exact: true }).click();
+  await page.getByRole("button", { name: "空灵钟琴 清亮，像水滴落下", exact: true }).click();
   await page
     .getByRole("button", { name: "拨弦 短促，轻快的弦声", exact: true })
     .click();
@@ -176,10 +178,8 @@ try {
   await close();
   await click("画布菜单");
   await page.getByLabel("作品名称", { exact: true }).fill("紫色的回声");
-  await page
-    .getByRole("button", { name: "保存作品 收进本机作品集", exact: true })
-    .click();
-  await page.getByRole("dialog").waitFor({ state: "detached" });
+  await close();
+  await click("保存作品");
   await page.waitForTimeout(750);
   await page.reload();
   await button("暂停").waitFor();
@@ -229,7 +229,7 @@ try {
   await page.getByRole("dialog").waitFor({ state: "detached" });
   console.log("PASS WAV with real audio", bytes.length, max);
   await click("画布菜单");
-  await click("新建画布 从一张空白开始");
+  await click("新建画布");
   await page.getByRole("dialog").waitFor({ state: "detached" });
   assert.equal(await button("暂停").count(), 1);
   await page.locator("input[type=file]").setInputFiles({
@@ -267,19 +267,14 @@ try {
     3,
   );
   await click("画布菜单");
-  await page.getByRole("button", { name: "图标方案", exact: false }).click();
-  assert.equal(await page.locator(".icon-choice").count(), 4);
-  await click("方案 D 节奏签名");
+  assert.equal(await page.getByRole("button", { name: "图标方案", exact: false }).count(), 0);
+  await click("暗色");
+  assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
+  await click("浅色");
   await close();
-  assert.match(
-    await page.locator(".canvas-menu img").getAttribute("src"),
-    /study-d/,
-  );
+  assert.equal(await page.locator(".canvas-menu img").count(),0);
   await page.reload();
-  assert.match(
-    await page.locator(".canvas-menu img").getAttribute("src"),
-    /study-d/,
-  );
+  assert.equal(await page.locator(".canvas-menu img").count(),0);
   // All panel opening and closing paths have real motion and restore the canvas.
   for (const name of ["画笔与音色", "旋律规则", "声部混音", "我的作品"]) {
     await click(name);
@@ -300,11 +295,8 @@ try {
     fullPage: true,
   });
   await click("画布菜单");
-  await page.getByRole("button", { name: "图标方案", exact: false }).click();
   await page.waitForTimeout(450);
-  await page
-    .locator("[role=dialog]")
-    .screenshot({ path: "artifacts/icon-options.png" });
+  await page.locator("[role=dialog]").screenshot({ path: "artifacts/appearance-options.png" });
   await close();
   for (const w of [320, 360, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width: w, height: 900 });
@@ -362,7 +354,7 @@ try {
   await mobile.close();
   assert.deepEqual(errors, []);
   console.log(
-    "PASS immersive canvas, library, imports/exports, all glass panels, focus, icon selection, touch and responsive layout",
+    "PASS immersive canvas, library, imports/exports, all glass panels, focus, appearance selection, touch and responsive layout",
   );
 } finally {
   await browser.close();

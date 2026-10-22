@@ -3,6 +3,8 @@ import {instrumentPitch} from './model.mjs';
 // Relative partials, envelopes and resonant filters make each instrument audible
 // as a distinct sound. Continuous instruments reuse voices between adjacent steps.
 export const SYNTHS={
+  kick:{attack:.002,release:.5,percussion:true},
+  cymbal:{attack:.0015,release:.6,percussion:true},
   keys:{partials:[[1,1,'sine'],[2,.22,'sine'],[3,.07,'sine']],attack:.008,release:.22},
   bell:{partials:[[1,1,'sine'],[2.76,.22,'sine'],[5.4,.08,'sine']],attack:.006,release:.85},
   pluck:{partials:[[1,.65,'triangle'],[2,.13,'sine']],attack:.006,release:.22},
@@ -55,7 +57,41 @@ function oscillatorGraph(ctx,out,n,time){
   oscillators.forEach(({osc,amp})=>osc.addEventListener('ended',()=>{osc.disconnect();amp.disconnect();if(++finished===oscillators.length){gain.disconnect();filter?.disconnect();if(lfo){try{lfo.stop();}catch{}lfo.disconnect();depth.disconnect();}}}));
   return {spec,gain,oscillators,lfo};
 }
+// Cache percussion as short one-shot buffers: one source per hit, no per-hit
+// oscillator banks or realtime noise generation on mobile Safari.
+const percussionCache=new WeakMap();
+function percussionBuffer(ctx,id) {
+  let cache=percussionCache.get(ctx);
+  if(!cache){cache=new Map();percussionCache.set(ctx,cache);}
+  if(cache.has(id))return cache.get(id);
+  const rate=ctx.sampleRate, seconds=id==='kick'?.5:.6;
+  const buffer=ctx.createBuffer(1,Math.ceil(rate*seconds),rate), data=buffer.getChannelData(0);
+  let phase=0,seed=8741,low=0,band=0;
+  const hp=Math.exp(-2*Math.PI*2700/rate),lp=Math.exp(-2*Math.PI*8600/rate);
+  for(let n=0;n<data.length;n++){
+    const t=n/rate;seed=(Math.imul(seed,1664525)+1013904223)|0;
+    const noise=(seed>>>0)/2147483648-1;
+    if(id==='kick'){
+      phase+=2*Math.PI*(43+100*Math.exp(-t/ .027))/rate;
+      data[n]=Math.sin(phase)*(1-Math.exp(-t/.0015))*Math.exp(-t/.095)+noise*.04*Math.exp(-t/.006);
+    }else{
+      low=(1-hp)*noise+hp*low;band=(1-lp)*(noise-low)+lp*band;
+      const metal=[3180,4230,5710,7310].reduce((sum,f)=>sum+Math.sin(2*Math.PI*f*t),0)/4;
+      data[n]=(band*.7+metal*.3)*(1-Math.exp(-t/.001))*Math.exp(-t/.085);
+    }
+    // End exactly at silence to avoid an abrupt buffer boundary.
+    data[n]*=Math.min(1,(data.length-n)/128);
+  }
+  cache.set(id,buffer);return buffer;
+}
+function percussionVoice(ctx,out,n,time) {
+  const source=ctx.createBufferSource(), gain=ctx.createGain();
+  source.buffer=percussionBuffer(ctx,n.instrument);gain.gain.value=n.volume*(n.instrument==='kick'?.42:.32);
+  source.connect(gain);gain.connect(out);source.start(time);
+  source.addEventListener('ended',()=>{source.disconnect();gain.disconnect();});return gain;
+}
 export function voice(ctx,out,n,time,len=.3){
+  if(SYNTHS[n.instrument]?.percussion)return percussionVoice(ctx,out,n,time);
   if(SYNTHS[n.instrument]?.continuous)return sustainedVoice(ctx,out,n,time,len).gain;
   const {spec,gain,oscillators}=oscillatorGraph(ctx,out,n,time),peak=Math.max(.0001,n.volume*.16),end=time+Math.max(len,spec.attack+.01);
   gain.gain.setValueAtTime(.0001,time);gain.gain.exponentialRampToValueAtTime(peak,time+spec.attack);gain.gain.exponentialRampToValueAtTime(Math.max(.0001,peak*.45),end);gain.gain.exponentialRampToValueAtTime(.0001,end+spec.release);

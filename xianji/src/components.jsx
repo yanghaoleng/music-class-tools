@@ -7,7 +7,7 @@ import React, {
   useId,
   memo,
 } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, useIsPresent } from "motion/react";
 import { X, PencilSimple } from "./icons.jsx";
 import { duration, pitches, pitchAt, uid } from "./model.mjs";
 
@@ -123,6 +123,35 @@ export function DockPanel({ title, subtitle, close, children }) {
       <IconButton label="关闭" onClick={close}><X /></IconButton></header>
     <div className="modal-content">{children}</div>
   </motion.aside>;
+}
+// An anchored file menu leaves the canvas visible and has no blocking backdrop.
+export function FileMenu({children,close,returnFocus}) {
+  const ref=useRef(), closeRef=useRef(close), reduce=useReducedMotion(), present=useIsPresent(), presentRef=useRef(present);
+  closeRef.current=close;presentRef.current=present;
+  useEffect(() => {
+    const node=ref.current;
+    const pointer=event => {
+      if(!presentRef.current)return;
+      if(node.contains(event.target) || event.target.closest(".canvas-menu"))return;
+      closeRef.current();
+      if(event.target.closest(".music-canvas")){event.preventDefault();event.stopPropagation();}
+    };
+    const key=event => {
+      if(!presentRef.current)return;
+      if(event.key==="Escape"){event.preventDefault();event.stopPropagation();closeRef.current();returnFocus.current?.focus();}
+      if(event.key==="Tab" && node.contains(document.activeElement)) {
+        const items=[...node.querySelectorAll("button,input")], first=items[0], last=items.at(-1);
+        if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+        else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+      }
+    };
+    node.querySelector("button")?.focus({preventScroll:true});
+    document.addEventListener("pointerdown",pointer,true);document.addEventListener("keydown",key);
+    return () => {document.removeEventListener("pointerdown",pointer,true);document.removeEventListener("keydown",key);};
+  },[returnFocus]);
+  return <motion.div ref={ref} className="file-menu glass" role={present ? "dialog" : undefined} aria-hidden={!present || undefined} inert={!present || undefined} aria-label="画布与文件"
+    initial={{opacity:0,y:reduce?0:-6,scale:reduce?1:.98}} animate={{opacity:1,y:0,scale:1}}
+    exit={{opacity:0,y:reduce?0:-4,scale:reduce?1:.98}} transition={{duration:reduce?.1:.18,ease:[.22,1,.36,1]}}>{children}</motion.div>;
 }
 export function Modal({
   title,

@@ -162,9 +162,11 @@ test('all 12 instrument identities survive import and retain MIDI programs and t
   const roundtrip=validateDoc(JSON.parse(JSON.stringify(d)));
   assert.deepEqual(roundtrip.tracks.map(t=>t.instrument),INSTRUMENTS.map(i=>i.id));
   const midi=Array.from(exportMidi(roundtrip));
-  for(const [n,i] of INSTRUMENTS.entries()){
-    const channel=n>=9?n+1:n;
-    assert.ok(midi.some((v,k)=>v===0xc0+channel&&midi[k+1]===i.midi));
+  let melodic=0;
+  for(const i of INSTRUMENTS){
+    const index=melodic; if(!i.percussion)melodic++;
+    const channel=i.percussion?9:index>=9?index+1:index;
+    if(!i.percussion)assert.ok(midi.some((v,k)=>v===0xc0+channel&&midi[k+1]===i.midi));
     assert.ok(midi.some((v,k)=>v===0x90+channel&&midi[k+1]===instrumentPitch(pitchAt(.5,d),i.id)));
   }
   assert.equal(instrumentPitch(60,'bass'),48);

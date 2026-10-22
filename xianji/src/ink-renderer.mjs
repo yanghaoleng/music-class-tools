@@ -1,5 +1,6 @@
-// Static ink is painted only after an edit/resize. Playback copies a 24 CSS-pixel
+// Static ink is painted only after an edit/resize. Playback copies a 16 CSS-pixel
 // strip from cached audible ink. No full-screen filters or per-frame path parsing.
+export const PLAYBACK_BAND_WIDTH = 16;
 const MAX_PIXELS = 2_500_000;
 export class InkRenderer {
   constructor(base, live, highlight) {
@@ -100,8 +101,8 @@ export class InkRenderer {
     if (this.lastBand) ctx.clearRect(this.lastBand.x, 0, this.lastBand.width, this.highlight.height);
     this.lastBand = null;
     if (!enabled || !this.doc?.strokes.length) return;
-    const x = Math.max(0, Math.floor((phase * this.width - 12) * this.scale));
-    const width = Math.min(Math.ceil(24 * this.scale), this.highlight.width - x);
+    const x = Math.max(0, Math.floor((phase * this.width - PLAYBACK_BAND_WIDTH / 2) * this.scale));
+    const width = Math.min(Math.ceil(PLAYBACK_BAND_WIDTH * this.scale), this.highlight.width - x);
     if (width <= 0) return;
     ctx.drawImage(this.audible, x, 0, width, this.audible.height, x, 0, width, this.highlight.height);
     ctx.globalCompositeOperation = 'source-atop';

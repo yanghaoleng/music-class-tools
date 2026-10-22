@@ -31,13 +31,14 @@ import {
   Metronome,
   CaretDown,
   Star,
-  Palette,
   Stack,
   DotsThree,
   Sparkle,
+  History,
 } from "./icons.jsx";
 import {
   INSTRUMENTS,
+  getInstrument,
   SCALES,
   ROOTS,
   uid,
@@ -52,6 +53,7 @@ import {getScoreIndex} from "./score-index.mjs";
 import { Player, renderWav } from "./audio.mjs";
 import {
   ScoreCanvas,
+  FileMenu,
   Modal,
   DockPanel,
   IconButton,
@@ -60,6 +62,8 @@ import {
   pathData,
   pigmentFilterMarkup,
 } from "./components.jsx";
+import { beginHistory, recordHistory, nextHistory, packHistory, unpackHistory } from "./history.mjs";
+import { readAppearance, applyAppearance } from "./appearance.mjs";
 import "./style.css";
 const STORAGE = "xianji.workspace.v1";
 function readWorkspace() {
@@ -72,8 +76,13 @@ function readWorkspace() {
       createdAt: d.createdAt || Date.now(),
       updatedAt: d.updatedAt || Date.now(),
     });
+    const draft = s.draft ? clean(s.draft) : null;
+    const timeline = draft && unpackHistory(s.histories?.[draft.id], draft);
+    if (timeline) timeline.entries[timeline.cursor].doc.updatedAt = draft.updatedAt;
     return {
-      draft: s.draft ? clean(s.draft) : null,
+      draft: timeline ? timeline.entries[timeline.cursor].doc : draft,
+      timeline,
+      histories: s.histories && typeof s.histories === "object" && !Array.isArray(s.histories) ? s.histories : {},
       library: Array.isArray(s.library)
         ? s.library.slice(0, 100).map(clean)
         : [],
@@ -87,18 +96,12 @@ function readWorkspace() {
 const initial = readWorkspace(),
   player = new Player(),
   demos = [0, 1, 2].map(makeDemo);
-const ICONS = [
-  { id: "a", name: "折线冲刺", description: "一笔折线，果断向前" },
-  { id: "b", name: "双波交织", description: "两道笔触，交汇成声" },
-  { id: "c", name: "声波环", description: "一束声波，穿过共振的环" },
-  { id: "d", name: "节奏签名", description: "坚定的起伏，扫出自由的节奏" },
-];
-const iconSource = (id, size = 128) => `/xianji/icons/study-${id}-${size}.webp`;
+const firstDoc = initial.draft || createDoc();
 
 const DOCK_QUERY = "(min-width: 1280px) and (min-height: 680px)";
 function App() {
   const [wideScreen, setWideScreen] = useState(() => window.matchMedia(DOCK_QUERY).matches);
-  const [doc, setDoc] = useState(initial.draft || createDoc()),
+  const [doc, setDoc] = useState(firstDoc),
     [library, setLibrary] = useState(initial.library || []),
     [activeTrack, setActiveTrack] = useState(null),
     [brushId, setBrushId] = useState(initial.draft?.strokes.at(-1)?.instrument || initial.draft?.tracks[0]?.instrument || "keys"),
@@ -111,11 +114,11 @@ function App() {
     [query, setQuery] = useState(""),
     [filter, setFilter] = useState("全部作品"),
     [sort, setSort] = useState("recent"),
-    [history, setHistory] = useState([]),
-    [future, setFuture] = useState([]),
+    [timeline, setTimeline] = useState(() => initial.timeline || beginHistory(firstDoc)),
     [exporting, setExporting] = useState(false),
     [saveError, setSaveError] = useState(initial.error || ""),
     [savedAt, setSavedAt] = useState(null);
+  const timelineRef = useRef(timeline), historiesRef = useRef(Object.assign(Object.create(null),initial.histories || {}));
   const importRef = useRef(),
     docRef = useRef(doc),
     erasedRef = useRef(false),
@@ -126,20 +129,20 @@ function App() {
     if (next && (!modal || sidePanel)) dialogTrigger.current = document.activeElement;
     setModalState(next);
   }
-  const sidePanel = wideScreen && ["brush", "rhythm", "tracks"].includes(modal);
-  const blocking = !!modal && !sidePanel;
+  const sidePanel = wideScreen && ["brush", "rhythm", "tracks", "history"].includes(modal);
+  const blocking = !!modal && !sidePanel && modal !== "project";
   const Panel = sidePanel ? DockPanel : Modal;
   useEffect(() => {
     const media = window.matchMedia(DOCK_QUERY);
     const resize = () => {
       setWideScreen(media.matches);
-      if (!media.matches) setModalState(current => ["brush", "rhythm", "tracks"].includes(current) ? null : current);
+      if (!media.matches) setModalState(current => ["brush", "rhythm", "tracks", "history"].includes(current) ? null : current);
     };
     media.addEventListener("change", resize);
     return () => media.removeEventListener("change", resize);
   }, []);
   docRef.current = doc;
-  const brush = INSTRUMENTS.find(i => i.id === brushId) || INSTRUMENTS[0];
+  const brush = getInstrument(brushId) || INSTRUMENTS[0];
   const color = brush.color;
   const track = doc.tracks.find((t) => t.id === activeTrack) || doc.tracks[0];
   const saved = library.some((d) => d.id === doc.id),
@@ -149,17 +152,21 @@ function App() {
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(""), 3500);
   };
+  function setCurrent(next) {
+    docRef.current = next;
+    setDoc(next);
+  }
+  function applyTimeline(next) {
+    timelineRef.current = next;
+    setTimeline(next);
+  }
   function change(fn, remember = true) {
-    setDoc((prev) => {
-      if (remember) {
-        setHistory((h) => [...h.slice(-39), prev]);
-        setFuture([]);
-      }
-      return {
-        ...(typeof fn === "function" ? fn(prev) : fn),
-        updatedAt: Date.now(),
-      };
-    });
+    const prev = docRef.current;
+    const next = {...(typeof fn === "function" ? fn(prev) : fn), updatedAt: Date.now()};
+    if (["title","bpm","bars","division","scale","root","strokes"].every(key => prev[key] === next[key]) &&
+      prev.tracks.length === next.tracks.length && prev.tracks.every((t,i) => Object.keys(t).every(key => t[key] === next.tracks[i][key]))) return;
+    applyTimeline(recordHistory(timelineRef.current, next, {merge:!remember}));
+    setCurrent(next);
   }
   function selectBrush(id) {
     setBrushId(id);setTool("draw");
@@ -196,34 +203,41 @@ function App() {
       notify("声音暂时无法启动，请再点一次播放");
     }
   }
+  function restoreSnapshot(index, {redo=[]}={}) {
+    const current = timelineRef.current;
+    if (index < 0 || index >= current.entries.length || index === current.cursor) return;
+    const restored = {...current.entries[index].doc, updatedAt:Date.now()};
+    player.pause();player.cancelPreview();
+    applyTimeline({...current,cursor:index,redo});
+    setCurrent(restored);
+    setActiveTrack(restored.tracks[0].id);
+    if (playing) player.play(restored,loop).catch(() => {});
+  }
   function undo() {
-    if (!history.length) return;
-    const prev = history.at(-1);
-    setFuture((f) => [doc, ...f]);
-    setHistory(history.slice(0, -1));
-    setDoc({ ...prev, updatedAt: Date.now() });
+    const current=timelineRef.current;
+    restoreSnapshot(current.entries[current.cursor].parent,{redo:[current.cursor,...(current.redo || [])]});
   }
   function redo() {
-    if (!future.length) return;
-    setHistory((h) => [...h, doc]);
-    setDoc({ ...future[0], updatedAt: Date.now() });
-    setFuture(future.slice(1));
+    const current=timelineRef.current;
+    restoreSnapshot(nextHistory(current),{redo:current.redo?.slice(1) || []});
   }
   function load(d) {
     if (doc.strokes.length && !saved)
       setLibrary((l) =>
         [doc, ...l.filter((x) => x.id !== doc.id)].slice(0, 100),
       );
+    historiesRef.current[doc.id] = packHistory(timelineRef.current);
+    const restored = unpackHistory(historiesRef.current[d.id],d);
+    const next = restored ? restored.entries[restored.cursor].doc : d;
     stop(true);
-    setDoc(d);
-    setActiveTrack(d.tracks[0].id);
-    setHistory([]);
-    setFuture([]);
+    setCurrent(next);
+    applyTimeline(restored || beginHistory(next));
+    setActiveTrack(next.tracks[0].id);
     setModal(null);
     setBrushId(d.strokes.at(-1)?.instrument || d.tracks[0].instrument);
     setTool("draw");
     setPlaying(true);
-    player.play(d, loop).catch(() => {});
+    player.play(next, loop).catch(() => {});
   }
   function newDoc() {
     load(createDoc());
@@ -235,7 +249,8 @@ function App() {
       title: doc.title.trim() || "未命名的旋律",
       updatedAt: Date.now(),
     };
-    setDoc(d);
+    if (d.title !== doc.title) change(d,false);
+    else setCurrent(d);
     setLibrary((l) => [d, ...l.filter((x) => x.id !== d.id)].slice(0, 100));
     notify("作品已保存到本机作品集");
   }
@@ -285,6 +300,11 @@ function App() {
     window.addEventListener("pointerup", end);
     return () => window.removeEventListener("pointerup", end);
   }, []);
+  function persistedHistories() {
+    const ids = new Set([docRef.current.id,...library.map(d=>d.id)]);
+    historiesRef.current[docRef.current.id] = packHistory(timelineRef.current);
+    return Object.fromEntries(Object.entries(historiesRef.current).filter(([id])=>ids.has(id)));
+  }
   useEffect(() => {
     let timer, idle;
     const persist = () => {
@@ -293,7 +313,7 @@ function App() {
         const next = library.map((d) => (d.id === doc.id ? doc : d));
         localStorage.setItem(
           STORAGE,
-          JSON.stringify({ draft: doc, library: next }),
+          JSON.stringify({ draft: doc, library: next, histories: persistedHistories() }),
         );
         setSavedAt(Date.now());
         setSaveError("");
@@ -308,7 +328,7 @@ function App() {
     };
     timer = setTimeout(schedule, 600);
     return () => {clearTimeout(timer);if (idle) cancelIdleCallback(idle);};
-  }, [doc, library]);
+  }, [doc, library, timeline]);
   useEffect(() => {
     if (!saved) return;
     setLibrary((l) => l.map((d) => (d.id === doc.id ? doc : d)));
@@ -320,6 +340,7 @@ function App() {
           STORAGE,
           JSON.stringify({
             draft: docRef.current,
+            histories: persistedHistories(),
             library: library.map((d) =>
               d.id === docRef.current.id ? docRef.current : d,
             ),
@@ -488,7 +509,7 @@ function App() {
                 " " +
                 [...d.tracks, ...d.strokes.filter(s => s.instrument)]
                   .map(
-                    (t) => INSTRUMENTS.find((i) => i.id === t.instrument)?.name,
+                    (t) => getInstrument(t.instrument)?.name,
                   )
                   .join(" ")
               )
@@ -506,20 +527,14 @@ function App() {
     [library, query, filter, sort],
   );
 
-  const [icon, setIcon] = useState(() => {
-    try {
-      const id = localStorage.getItem("xianji.icon.v2");
-      return ICONS.some((i) => i.id === id) ? id : "d";
-    } catch {
-      return "d";
-    }
-  });
+  const [appearance, setAppearance] = useState(readAppearance);
   useEffect(() => {
-    document.querySelector('link[rel="icon"]').href = iconSource(icon);
-    try {
-      localStorage.setItem("xianji.icon.v2", icon);
-    } catch {}
-  }, [icon]);
+    const system = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => applyAppearance(appearance, system.matches);
+    update();
+    system.addEventListener("change", update);
+    return () => system.removeEventListener("change", update);
+  }, [appearance]);
   useEffect(() => {
     player.play(docRef.current, true).catch(() => {});
     return () => player.pause();
@@ -538,8 +553,8 @@ function App() {
           tracks: "声部混音",
           library: "我的作品",
           project: "画布与文件",
+          history: "历史记录",
           export: "把旋律带走",
-          icons: "选一个图标",
           demos: "从一段旋律开始",
           help: "画出来，听见它",
         }[modal];
@@ -594,30 +609,43 @@ function App() {
             className="canvas-menu glass"
             aria-label="画布菜单"
             title="画布与文件"
-            onClick={() => setModal("project")}
+            aria-expanded={modal === "project"}
+            onClick={() => setModal(modal === "project" ? null : "project")}
           >
-            <img src={iconSource(icon)} alt="" />
+            <span>{doc.title || "未命名的旋律"}</span>
             <CaretDown size={12} />
           </button>
-          <div className="top-right glass">
-            <IconButton label="我的作品" onClick={() => setModal("library")}>
-              <FolderOpen />
-            </IconButton>
-            <IconButton label="保存作品" onClick={save}>
-              <FloppyDisk />
-            </IconButton>
-            <IconButton label="导出" onClick={() => setModal("export")}>
-              <DownloadSimple />
-            </IconButton>
+          <div className="top-right glass" role="toolbar" aria-label="编辑历史与保存">
+            <IconButton label="撤销" disabled={timeline.entries[timeline.cursor].parent < 0} onClick={undo}><ArrowCounterClockwise /></IconButton>
+            <IconButton label="历史记录" aria-pressed={modal === "history"} onClick={() => setModal(modal === "history" ? null : "history")}><History /></IconButton>
+            <IconButton label="重做" disabled={nextHistory(timeline) < 0} onClick={redo}><ArrowClockwise /></IconButton>
+            <IconButton label="保存作品" onClick={save}><FloppyDisk /></IconButton>
           </div>
-        </div>
-        <div className="floating-tools glass">
-          <IconButton label="撤销" disabled={!history.length} onClick={undo}>
-            <ArrowCounterClockwise />
-          </IconButton>
-          <IconButton label="重做" disabled={!future.length} onClick={redo}>
-            <ArrowClockwise />
-          </IconButton>
+          <AnimatePresence>
+            {modal === "project" && <FileMenu close={() => setModal(null)} returnFocus={dialogTrigger}>
+              <label className="file-name-label" htmlFor="document-title">作品名称</label>
+              <input id="document-title" aria-label="作品名称" maxLength="80" value={doc.title}
+                onChange={e => change(d => ({...d,title:e.target.value}),false)} />
+              <div className="file-menu-items">
+                <button onClick={newDoc}>新建画布</button>
+                <button onClick={() => setModal("library")}>我的作品</button>
+                <button onClick={() => importRef.current.click()}>导入作品</button>
+                <button onClick={() => setModal("export")}>导出</button>
+              </div>
+              <section className="appearance-settings" aria-labelledby="appearance-title">
+                <h2 id="appearance-title">外观</h2>
+                <div className="appearance-options" role="group" aria-label="外观模式">
+                  {[["system", "跟随系统"], ["light", "浅色"], ["dark", "暗色"]].map(([value,label]) => (
+                    <button key={value} aria-pressed={appearance === value} onClick={() => setAppearance(value)}>{label}</button>
+                  ))}
+                </div>
+              </section>
+              <div className="file-menu-items secondary-items">
+                <button onClick={() => setModal("demos")}>灵感示例</button>
+                <button onClick={() => setModal("help")}>怎么玩</button>
+              </div>
+            </FileMenu>}
+          </AnimatePresence>
         </div>
         <div className="dock-wrap">
           <div className="dock glass" role="toolbar" aria-label="创作工具">
@@ -645,7 +673,7 @@ function App() {
               aria-keyshortcuts="C"
               onClick={() => setModal("brush")}
             >
-              <span style={{ background: color }} />
+              <img className="toolbar-instrument" src={"/xianji/instruments/" + brush.id + ".svg"} alt="" />
               <CaretDown size={11} />
             </button>
             <span className="dock-divider" />
@@ -707,118 +735,38 @@ function App() {
         </div>
       )}
       <AnimatePresence>
-        {modal && (
+        {modal && modal !== "project" && (
           <Panel
             key={sidePanel ? "workbench-panel" : "workbench-dialog"}
             returnFocus={dialogTrigger}
             title={dialogTitle}
             subtitle={
-              modal === "icons"
-                ? "四种「涂鸦 × 声波」的相遇方式。点一下，试试看。"
-                : modal === "library"
+              modal === "library"
                   ? "旋律留在本机，灵感随时继续。"
                   : undefined
             }
-            wide={["library", "icons", "help"].includes(modal)}
+            wide={["library", "help"].includes(modal)}
             dismissible={!exporting}
             close={() => !exporting && setModal(null)}
           >
-            {modal === "project" && (
-              <>
-                <div className="project-name">
-                  <label htmlFor="document-title">这幅画的名字</label>
-                  <input
-                    id="document-title"
-                    aria-label="作品名称"
-                    maxLength="80"
-                    value={doc.title}
-                    onChange={(e) =>
-                      change((d) => ({ ...d, title: e.target.value }), false)
-                    }
-                  />
-                  <span>
-                    <span className="saved-dot" />
-                    {saved ? "作品已保存" : "草稿自动保留"} · {doc.bars} 小节
-                  </span>
-                </div>
-                <div className="action-grid">
-                  <button onClick={newDoc}>
-                    <Plus />
-                    <span>
-                      新建画布<small>从一张空白开始</small>
-                    </span>
+            {modal === "history" && (
+              <div className="history-list" aria-label="操作快照">
+                <p className="history-note">点一下，回到这一刻。之前的版本都会保留。</p>
+                {timeline.entries.map((entry,index) => (
+                  <button key={entry.id} className="history-snapshot" aria-current={index === timeline.cursor ? "step" : undefined}
+                    aria-label={"快照 " + (index + 1) + " " + entry.label} onClick={() => restoreSnapshot(index)}>
+                    <span className="history-thumbnail"><Thumbnail doc={entry.doc} /></span>
+                    <span className="history-description"><b>{entry.label}</b><small>{entry.doc.strokes.length} 条线 · {new Date(entry.at).toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</small></span>
+                    <span className="history-step">{index === timeline.cursor ? "当前" : String(index + 1).padStart(2,"0")}</span>
                   </button>
-                  <button
-                    onClick={() => {
-                      save();
-                      setModal(null);
-                    }}
-                  >
-                    <FloppyDisk />
-                    <span>
-                      保存作品<small>收进本机作品集</small>
-                    </span>
-                  </button>
-                  <button onClick={() => importRef.current.click()}>
-                    <UploadSimple />
-                    <span>
-                      导入作品<small>接着上次的灵感</small>
-                    </span>
-                  </button>
-                  <button onClick={() => setModal("export")}>
-                    <DownloadSimple />
-                    <span>
-                      导出<small>声音、图片与作品文件</small>
-                    </span>
-                  </button>
-                </div>
-                <div className="menu-links">
-                  <button onClick={() => setModal("demos")}>
-                    <Sparkle />
-                    <span>灵感示例</span>
-                    <ArrowRight />
-                  </button>
-                  <button onClick={() => setModal("icons")}>
-                    <Palette />
-                    <span>图标方案</span>
-                    <span className="new-label">4 个方向</span>
-                    <ArrowRight />
-                  </button>
-                  <button onClick={() => setModal("help")}>
-                    <Question />
-                    <span>怎么玩</span>
-                    <ArrowRight />
-                  </button>
-                </div>
-              </>
+                ))}
+              </div>
             )}
             {modal === "brush" && (
               <>
                 <section className="panel-section">
                   <div className="section-heading">
-                    <h2>这一笔的颜色</h2>
-                    <span>一种颜色，一种声音</span>
-                  </div>
-                  <div className="color-options">
-                    {INSTRUMENTS.map((i) => (
-                      <button
-                        key={i.id}
-                        className="color-swatch"
-                        style={{ "--swatch": i.color }}
-                        aria-label={"画笔颜色 " + i.color}
-                        title={i.name}
-                        aria-description={i.name}
-                        aria-pressed={brush.id === i.id}
-                        onClick={() => selectBrush(i.id)}
-                      >
-                        {brush.id === i.id && <Check weight="bold" />}
-                      </button>
-                    ))}
-                  </div>
-                </section>
-                <section className="panel-section">
-                  <div className="section-heading">
-                    <h2>这一笔的声音</h2>
+                    <h2>选一种声音，画出节奏</h2>
                     <span>声部 {doc.tracks.indexOf(track) + 1}</span>
                   </div>
                   <div className="instrument-grid">
@@ -835,7 +783,7 @@ function App() {
                         <img className="instrument-drawing" src={"/xianji/instruments/" + i.id + ".svg"} alt="" />
                         <span>
                           {i.name}
-                          <small>{i.continuous ? "连音" : "触键"}</small>
+                          <small>{i.percussion ? "打击" : i.continuous ? "连音" : "触键"}</small>
                         </span>
                         {brush.id === i.id && <Check size={17} />}
                       </button>
@@ -843,7 +791,7 @@ function App() {
                   </div>
                 </section>
                 <p className="fine-print">
-                  点颜色或乐器即可切换画笔。每条线保留落笔时的音色；声部可单独调音量、静音和独奏。
+                  点选乐器即可换画笔。每种声音有自己的笔触颜色，鼓和镲片按节拍敲响；声部可单独调音量、静音和独奏。
                 </p>
                 <button className="primary full" onClick={() => setModal(null)}>
                   回到画布
@@ -1009,7 +957,7 @@ function App() {
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <span>
-                          {new Set(doc.strokes.filter(s => s.track === t.id).map(s => s.instrument || t.instrument)).size > 1 ? "彩虹声部 " + (i + 1) : INSTRUMENTS.find(x => x.id === (doc.strokes.find(s => s.track === t.id)?.instrument || t.instrument)).name}
+                          {new Set(doc.strokes.filter(s => s.track === t.id).map(s => s.instrument || t.instrument)).size > 1 ? "彩虹声部 " + (i + 1) : getInstrument(doc.strokes.find(s => s.track === t.id)?.instrument || t.instrument).name}
                           <small>
                             {doc.strokes.filter((s) => s.track === t.id).length}{" "}
                             条线{track.id === t.id ? " · 正在使用" : ""}
@@ -1255,61 +1203,6 @@ function App() {
                 </p>
               </>
             )}
-            {modal === "icons" && (
-              <>
-                <div className="icon-gallery">
-                  {ICONS.map((item, index) => (
-                    <button
-                      key={item.id}
-                      className={
-                        "icon-choice " + (icon === item.id ? "selected" : "")
-                      }
-                      aria-label={
-                        "方案 " + item.id.toUpperCase() + " " + item.name
-                      }
-                      aria-pressed={icon === item.id}
-                      onClick={() => setIcon(item.id)}
-                    >
-                      <div className="icon-preview">
-                        <img
-                          src={iconSource(item.id, 256)}
-                          alt={item.name}
-                        />
-                        <span className="small-icon">
-                          <img
-                            src={iconSource(item.id)}
-                            alt=""
-                          />
-                        </span>
-                      </div>
-                      <span className="icon-choice-title">
-                        <span>
-                          <b>{item.id.toUpperCase()}</b>
-                          {item.name}
-                        </span>
-                        {icon === item.id && <Check />}
-                      </span>
-                      <small>{item.description}</small>
-                    </button>
-                  ))}
-                </div>
-                <div className="icon-footer">
-                  <span>可直接切换预览，也可以告诉我你喜欢哪一案。</span>
-                  <button
-                    className="text-button"
-                    onClick={() => {
-                      const a = document.createElement("a");
-                      a.href = iconSource(icon, 256);
-                      a.download = "icon-" + icon + ".webp";
-                      a.click();
-                    }}
-                  >
-                    <DownloadSimple />
-                    下载当前方案
-                  </button>
-                </div>
-              </>
-            )}
             {modal === "demos" && (
               <div className="demo-list">
                 {demos.map((d, i) => (
@@ -1345,7 +1238,7 @@ function App() {
                     <span>02</span>
                     <h2>叠一点声音</h2>
                     <p>
-                      换一种颜色，就是另一种乐器。多画几笔，就能让不同的声音叠起来。
+                      点选一种乐器，再画几笔，就能叠起不同的声音；底鼓和镲片用来画节奏。
                     </p>
                   </div>
                   <div>
@@ -1357,7 +1250,7 @@ function App() {
                   </div>
                 </div>
                 <p className="fine-print">
-                  空格播放 / 暂停 · B 画笔 · E 橡皮 · C 颜色面板 · ⌘ / Ctrl + Z
+                  空格播放 / 暂停 · B 画笔 · E 橡皮 · C 音色面板 · ⌘ / Ctrl + Z
                   撤销 · ⌘ / Ctrl + S 保存。羊子科技出品。
                 </p>
                 <button className="primary full" onClick={() => setModal(null)}>
@@ -1383,9 +1276,9 @@ function App() {
                     onClick={() => {
                       if (doc.id === modal.id) {
                         stop(true);
-                        setDoc(createDoc());
-                        setHistory([]);
-                        setFuture([]);
+                        const empty = createDoc();
+                        setCurrent(empty);
+                        applyTimeline(beginHistory(empty));
                       }
                       setLibrary((l) => l.filter((d) => d.id !== modal.id));
                       setModal("library");

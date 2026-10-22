@@ -1,6 +1,7 @@
 import React from "react";
 import {
   SineWave as WaveformGlyph,
+  ClockRotateRight as HistoryGlyph,
   Plus as PlusGlyph,
   Search as MagnifyingGlassGlyph,
   MusicDoubleNote as MusicNotesGlyph,
@@ -91,3 +92,5 @@ export const Palette = icon(PaletteGlyph);
 export const Stack = icon(StackGlyph);
 export const DotsThree = icon(DotsThreeGlyph);
 export const Sparkle = icon(SparkleGlyph);
+
+export const History = icon(HistoryGlyph);

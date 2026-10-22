@@ -13,7 +13,7 @@ try {
  assert.equal(await page.locator('.workbench').getAttribute('inert'),null);
  assert.equal(await page.locator('.instrument-grid button').count(),12);
  assert.equal(await page.locator('.instrument-grid img').evaluateAll(imgs=>imgs.every(i=>i.complete&&i.naturalWidth>0)),true);
- await page.getByRole('button',{name:'柔和模拟 温暖的模拟波形，平滑连音',exact:true}).click();
+ await page.getByRole('button',{name:'低沉底鼓 厚实低频，短促有力',exact:true}).click();
  const box=await page.locator('.music-canvas').boundingBox();
  assert.equal(box.width,1056);
  await page.mouse.move(box.width*.12,500);await page.mouse.down();await page.mouse.move(box.width*.85,420,{steps:24});await page.mouse.up();
@@ -47,6 +47,6 @@ try {
   }return results;
  });
  for(const s of sounds){assert.ok(s.rms>.001,`${s.id} audible`);assert.ok(s.tail<.0002,`${s.id} releases`);if(s.continuous){assert.equal(s.count,s.expected,`${s.id} reuses oscillator phase across 16 notes`);assert.ok(s.minWindow>.001,`${s.id} has no gaps`);}}
- console.log('PASS 12 instruments audible; 8 legato voices retain phase, have no gaps and release fully');
+ console.log('PASS 12 instruments audible; 6 legato voices retain phase, have no gaps and release fully');
  assert.deepEqual(errors,[]);console.log('PASS wide nonblocking inspector, canvas drawing, keyboard, resize and mobile dialog');
 }finally{await browser.close();}

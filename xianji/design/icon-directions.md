@@ -4,9 +4,9 @@
 
 | 方案 | 名称 | 思路 | 文件 |
 | --- | --- | --- | --- |
-| A | 回声涂鸦 | 不规则的粗线像声波，细线像延后的回声绕行 | `public/icons/option-a.svg` |
-| B | 交叠波 | 四束细波以不同振幅和相位交叠 | `public/icons/option-b.svg` |
-| C | 共振漩涡 | 波动的螺旋涂鸦与横向声波相交 | `public/icons/option-c.svg` |
-| D | 声纹笔触 | 规则的垂直声纹与自由的回环笔触交叉 | `public/icons/option-d.svg` |
+| A | 回声涂鸦 | 不规则的粗线像声波，细线像延后的回声绕行 | `design/legacy-icon-directions/option-a.svg` |
+| B | 交叠波 | 四束细波以不同振幅和相位交叠 | `design/legacy-icon-directions/option-b.svg` |
+| C | 共振漩涡 | 波动的螺旋涂鸦与横向声波相交 | `design/legacy-icon-directions/option-c.svg` |
+| D | 声纹笔触 | 规则的垂直声纹与自由的回环笔触交叉 | `design/legacy-icon-directions/option-d.svg` |
 
-应用内「左上角菜单 → 图标方案」展示原尺寸与小图标对照。默认 A 只是预览起点；用户切换后本机持久保存，同时更新 favicon。下载按钮提供当前矢量原稿。
+本轮为历史设计探索，不再发布到网页。正式图标固定为用户选择的 D「节奏签名」，方案原稿仅保留在设计目录。

@@ -8,15 +8,22 @@ export const INSTRUMENTS = [
  {id:'pluck',name:'拨弦',description:'短促，轻快的弦声',color:COLORS[2],midi:24,transpose:0},
  {id:'pad',name:'空气合成器',description:'柔软铺开，连续延音',color:COLORS[3],midi:89,transpose:0,continuous:true},
  {id:'bass',name:'温暖贝斯',description:'低一个八度，托住旋律',color:COLORS[4],midi:33,transpose:-12},
- {id:'analog',name:'柔和模拟',description:'温暖的模拟波形，平滑连音',color:COLORS[5],midi:81,transpose:0,continuous:true},
+ {id:'kick',name:'低沉底鼓',description:'厚实低频，短促有力',color:COLORS[5],midi:0,percussion:36,transpose:0},
  {id:'strings',name:'丝绒弦垫',description:'绵长的弦乐合成，缓缓流动',color:COLORS[6],midi:50,transpose:0,continuous:true},
- {id:'glass',name:'玻璃合成',description:'清透的电子泛音，柔亮延音',color:COLORS[7],midi:98,transpose:0,continuous:true},
+ {id:'cymbal',name:'金属镲片',description:'轻亮的金属敲击，细碎余响',color:COLORS[7],midi:0,percussion:51,transpose:0},
  {id:'choir',name:'空气人声',description:'轻柔的人声感合成，像一口气',color:COLORS[8],midi:54,transpose:0,continuous:true},
  {id:'lead',name:'圆润主音',description:'饱满的电子主旋律，带滑音',color:COLORS[9],midi:80,transpose:0,continuous:true},
  {id:'air',name:'呼吸风笛',description:'有呼吸感的电子管乐',color:COLORS[10],midi:73,transpose:0,continuous:true},
  {id:'sub',name:'深潜低音',description:'深沉、连贯的低频合成',color:COLORS[11],midi:38,transpose:-24,continuous:true},
 ];
-export function instrumentPitch(midi,id){return midi+(INSTRUMENTS.find(i=>i.id===id)?.transpose||0);}
+// Archived sounds remain playable in existing drawings, outside the 12 brushes.
+const LEGACY_INSTRUMENTS=[
+ {id:'analog',name:'柔和模拟',color:COLORS[5],midi:81,transpose:0,continuous:true},
+ {id:'glass',name:'玻璃合成',color:COLORS[7],midi:98,transpose:0,continuous:true},
+];
+const instrumentMap=new Map([...INSTRUMENTS,...LEGACY_INSTRUMENTS].map(i=>[i.id,i]));
+export const getInstrument = id => instrumentMap.get(id);
+export function instrumentPitch(midi,id){const i=getInstrument(id);return i?.percussion ?? midi+(i?.transpose||0);}
 export const SCALES = {
   pentatonic: { name: "五声音阶", steps: [0, 2, 4, 7, 9] },
   major: { name: "大调音阶", steps: [0, 2, 4, 5, 7, 9, 11] },
@@ -84,7 +91,7 @@ export function notesAt(doc, step) {
       const ys = intersections(s.points, x);
       const seen = new Set();
       return ys.flatMap((y) => {
-        const midi = pitchAt(y, doc);
+        const midi = getInstrument(s.instrument || t.instrument).percussion ?? pitchAt(y, doc);
         if (seen.has(midi)) return [];
         seen.add(midi);
         return [
@@ -158,7 +165,7 @@ export function makeDemo(index = 0) {
   const line = (track, color, fn, start = 0.025, end = 0.975) => ({
     id: uid(),
     track: d.tracks[track].id,
-    color: INSTRUMENTS.find(i => i.id === d.tracks[track].instrument).color,
+    color: getInstrument(d.tracks[track].instrument).color,
     instrument: d.tracks[track].instrument,
     width: 3,
     points: Array.from({ length: 160 }, (_, i) => {
@@ -224,7 +231,7 @@ export function validateDoc(raw) {
     if (
       typeof t.id !== "string" ||
       ids.has(t.id) ||
-      !INSTRUMENTS.some((i) => i.id === t.instrument) ||
+      !getInstrument(t.instrument) ||
       !Number.isFinite(t.volume) ||
       t.volume < 0 ||
       t.volume > 1
@@ -243,7 +250,7 @@ export function validateDoc(raw) {
   const strokes = raw.strokes.map((s) => {
     if (
       !ids.has(s.track) ||
-      (s.instrument !== undefined && !INSTRUMENTS.some(i => i.id === s.instrument)) ||
+      (s.instrument !== undefined && !getInstrument(s.instrument)) ||
       !/^#[0-9a-f]{6}$/i.test(s.color) ||
       !Number.isFinite(s.width) ||
       s.width < 1 ||
@@ -293,8 +300,13 @@ export function exportMidi(doc) {
   const events = [];
   const notes = compile(doc);
   const used = [...new Set([...doc.tracks.map(t => t.instrument), ...notes.map(n => n.instrument)])];
-  const channels = new Map(used.map((id, index) => [id, index >= 9 ? index + 1 : index]));
-  for (const id of used) events.push({tick: 0, bytes: [0xc0 + channels.get(id), INSTRUMENTS.find(i => i.id === id).midi]});
+  const melodic = used.filter(id=>!getInstrument(id).percussion);
+  const channels = new Map(melodic.map((id,index)=>[id,index>=9?index+1:index]));
+  for (const id of used) {
+    const i=getInstrument(id);
+    if(i.percussion)channels.set(id,9);
+    else events.push({tick:0,bytes:[0xc0+channels.get(id),i.midi]});
+  }
   const tempo = Math.round(60000000 / doc.bpm);
   events.push({
     tick: 0,

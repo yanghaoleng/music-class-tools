@@ -1,4 +1,4 @@
-import {pitchAt} from './model.mjs';
+import {pitchAt,getInstrument} from './model.mjs';
 
 // Immutable document/stroke identities are the invalidation boundary. Live input
 // is sampled separately, so an in-progress mutable stroke never enters this cache.
@@ -62,10 +62,11 @@ export function getScoreIndex(doc) {
   for (const stroke of doc.strokes) {
     const track = tracks.get(stroke.track);
     if (!track || track.muted || (solo && !track.solo)) continue;
+    const instrument=stroke.instrument || track.instrument, percussion=getInstrument(instrument)?.percussion;
     sampleStroke(stroke, doc).forEach((samples, step) => {
-      for (const sample of samples) {
+      for (const sample of percussion ? samples.slice(0,1) : samples) {
         if (steps[step].length === 32) break;
-        steps[step].push({...sample, instrument: stroke.instrument || track.instrument, volume: track.volume,
+        steps[step].push({...sample, midi:percussion ?? sample.midi, instrument, volume: track.volume,
           color: stroke.color, x: (step + .5) / count, stroke: stroke.id});
       }
     });

@@ -14,7 +14,11 @@
     "test:mobile": "node tests/mobile-rendering.mjs",
     "test:rainbow": "node tests/rainbow-gestures.mjs",
     "profile:mobile": "node tests/profile-mobile.mjs",
-    "profile:webkit": "node tests/profile-webkit.mjs"
+    "profile:webkit": "node tests/profile-webkit.mjs",
+    "test:appearance": "node tests/appearance.mjs",
+    "test:history": "node tests/history-browser.mjs",
+    "test:percussion": "node tests/percussion.mjs",
+    "test:release": "node tests/release.mjs"
   },
   "dependencies": {
     "iconoir-react": "^7.12.1",
