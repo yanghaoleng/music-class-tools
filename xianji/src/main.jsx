@@ -108,6 +108,7 @@ function App() {
     [brushId, setBrushId] = useState(initial.draft?.strokes.at(-1)?.instrument || initial.draft?.tracks[0]?.instrument || "keys"),
     [tool, setTool] = useState("draw"),
     [playing, setPlaying] = useState(true),
+    [audioState, setAudioState] = useState("preparing"),
     [loop, setLoop] = useState(true),
     [volume, setVolume] = useState(0.65),
     [modal, setModalState] = useState(null),
@@ -539,8 +540,20 @@ function App() {
     return () => system.removeEventListener("change", update);
   }, [appearance]);
   useEffect(() => {
+    player.onAudioStateChange = setAudioState;
     player.play(docRef.current, true).catch(() => {});
-    return () => player.pause();
+    player.reportState(true);
+    const activate = event => {
+      if (!event.isTrusted || !player.isPlaying) return;
+      if (event.target?.closest?.(".play-button") || event.code === "Space") return;
+      player.activate().catch(() => player.reportState(true));
+    };
+    const events=["pointerdown","pointerup","touchend","click","keydown"];
+    events.forEach(type=>document.addEventListener(type,activate,{capture:true,passive:true}));
+    return () => {
+      events.forEach(type=>document.removeEventListener(type,activate,true));
+      player.onAudioStateChange=null;player.pause();
+    };
   }, []);
   function activateAudio() {
     if (playing) player.activate().catch(() => {});
@@ -587,7 +600,6 @@ function App() {
       <main
         className="workbench"
         inert={blocking ? true : undefined}
-        onPointerDownCapture={activateAudio}
         aria-label="音乐创作空间"
       >
         <ScoreCanvas
@@ -699,7 +711,9 @@ function App() {
           </div>
           <div className="dock-caption">
             <span className={playing ? "playing-dot" : "paused-dot"} />
-            {playing ? "让旋律流动" : "停在这一刻"}
+            {playing && audioState !== "ready"
+              ? <button className="audio-unlock" aria-label="启用声音" onClick={activateAudio}>{audioState === "preparing" ? "声音准备中…" : "轻触画布，即可出声"}</button>
+              : playing ? "让旋律流动" : "停在这一刻"}
             <span className="caption-divider" />
             {doc.bpm} BPM
             <span className="caption-divider" />

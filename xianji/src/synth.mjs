@@ -122,3 +122,12 @@ export function scheduleStep(ctx,out,notes,time,len,step,bank){
   }
   for(const [key,value]of bank)if(value.step<step-1)bank.delete(key);
 }
+
+// Prepare reusable resources before the first gesture needs a sound. No samples
+// are downloaded and no oscillators start during this warm-up.
+export function prepareVoices(ctx) {
+  for (const [id,spec] of Object.entries(SYNTHS)) {
+    if (spec.percussion) percussionBuffer(ctx,id);
+    else partialsFor(ctx,spec);
+  }
+}

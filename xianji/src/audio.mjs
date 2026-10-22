@@ -1,6 +1,7 @@
 import { notesAt, duration } from "./model.mjs";
 import {getScoreIndex} from "./score-index.mjs";
-import {voice,sustainedVoice,SYNTHS,scheduleStep,MAX_RELEASE} from "./synth.mjs";
+import {voice,sustainedVoice,SYNTHS,scheduleStep,MAX_RELEASE,prepareVoices} from "./synth.mjs";
+import {PlaybackSession} from "./audio-session.mjs";
 export {voice} from "./synth.mjs";
 export function createOutput(ctx, volume = 0.65) {
   const gain = ctx.createGain();
@@ -27,41 +28,68 @@ export class Player {
     this.out = null;
     this.liveStroke = null;
     this.voices = new Map();
+    this.session = new PlaybackSession();
+    this.session.onchange = () => {this.connectAudio();this.reportState();};
+    this.prepared = false;
+    this.hasStartedAudio = false;
+    this.lastAudioState = null;
+    this.previewRelease = null;
+  }
+  get audioState() {
+    if (!this.prepared || this.session.state === "preparing") return "preparing";
+    return this.ctx?.state === "running" && this.session.state === "ready" ? "ready" : "waiting";
+  }
+  reportState(force=false) {
+    const state=this.audioState;
+    if (force || state!==this.lastAudioState) {this.lastAudioState=state;this.onAudioStateChange?.(state);}
   }
   context() {
     if (!this.ctx) {
+      this.session.prepare();
       this.ctx = new (window.AudioContext || window.webkitAudioContext)({latencyHint: "interactive"});
       this.ctx.addEventListener("statechange", () => {
         if (this.ctx.state === "running" && this.isPlaying) this.connectAudio();
+        this.reportState();
       });
+      const began=performance.now();
+      prepareVoices(this.ctx);this.prepared=true;
+      this.preparationMs=performance.now()-began;
+      this.reportState();
     }
     return this.ctx;
   }
-  async unlock() {
-    const ctx = this.context();
-    if (ctx.state !== "running") await ctx.resume();
-  }
+  unlock() {return this.activate();}
   activate() {
     const ctx = this.context();
-    // resume() must be called again from the drawing gesture when initial autoplay
-    // was blocked. Do not gate it behind the earlier, still-pending promise.
-    if (ctx.state === "running") {
-      this.connectAudio();
-      return Promise.resolve();
-    }
-    return ctx.resume().then(() => this.connectAudio());
+    // Both calls must remain inside the trusted event, without awaiting a stale
+    // autoplay resume promise from page load. Safari may accept touchend/click
+    // even when pointerdown was rejected.
+    const media = this.session.activate();
+    const resume = ctx.state === "running" ? Promise.resolve() : ctx.resume();
+    this.reportState();
+    return Promise.all([media,resume]).then(() => {this.connectAudio();this.reportState();});
   }
   connectAudio() {
-    if (!this.isPlaying || this.out || this.ctx.state !== "running") return;
-    const offset = this.position();
+    if (!this.isPlaying || !this.doc || this.out || this.ctx?.state !== "running" || this.session.state !== "ready") return;
+    const interval=60/this.doc.bpm/this.doc.division;
+    let offset = this.position(), step=Math.ceil(offset/interval-1e-8);
+    if (!this.hasStartedAudio) {
+      const first=getScoreIndex(this.doc).steps.findIndex(notes=>notes.length);
+      if (first>=0) {step=first;offset=first*interval;}
+    }
+    this.hasStartedAudio=true;this.offset=offset;
     this.out = createOutput(this.ctx, this.volume);
     this.start = this.ctx.currentTime + 0.025 - offset;
-    this.step = Math.ceil(((offset * this.doc.bpm) / 60) * this.doc.division);
+    this.step = step;
     this.tick();
   }
   play(doc, loop = true) {
     this.stopTimer();
+    clearTimeout(this.previewRelease);
+    if (this.doc?.id !== doc.id) {this.offset=0;this.hasStartedAudio=false;}
     this.doc = doc;
+    getScoreIndex(doc);
+    this.context();
     this.loop = loop;
     this.isPlaying = true;
     this.virtualStart = performance.now() / 1000;
@@ -120,7 +148,9 @@ export class Player {
     const offset = this.position();
     this.isPlaying = false;
     this.stopTimer();
+    this.session.pause();
     this.offset = reset ? 0 : offset;
+    this.reportState();
   }
   setVolume(v) {
     this.volume = v;
@@ -152,6 +182,8 @@ export class Player {
       else this.previewVoice = {instrument: n.instrument, handle: sustainedVoice(this.ctx, this.previewOut, n, time, .16)};
       this.previewVoice.until = time + Math.max(.16, SYNTHS[n.instrument].attack + .012) + SYNTHS[n.instrument].release;
     } else voice(this.ctx, this.previewOut, n, time, .12);
+    clearTimeout(this.previewRelease);
+    this.previewRelease=setTimeout(()=>{if(!this.isPlaying)this.session.pause();},(MAX_RELEASE+.4)*1000);
   }
 }
 export async function renderWav(doc) {

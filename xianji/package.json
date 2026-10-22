@@ -19,7 +19,8 @@
     "test:history": "node tests/history-browser.mjs",
     "test:percussion": "node tests/percussion.mjs",
     "test:release": "node tests/release.mjs",
-    "test:drawing": "node tests/drawing.mjs"
+    "test:drawing": "node tests/drawing.mjs",
+    "test:startup": "node tests/audio-startup.mjs"
   },
   "dependencies": {
     "iconoir-react": "^7.12.1",
