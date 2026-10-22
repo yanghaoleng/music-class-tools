@@ -12,6 +12,7 @@
     "test:electronic": "node tests/electronic.mjs",
     "test:audio": "node tests/audio-equivalence.mjs",
     "test:mobile": "node tests/mobile-rendering.mjs",
+    "test:rainbow": "node tests/rainbow-gestures.mjs",
     "profile:mobile": "node tests/profile-mobile.mjs",
     "profile:webkit": "node tests/profile-webkit.mjs"
   },

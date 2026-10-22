@@ -11,6 +11,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { X, PencilSimple } from "./icons.jsx";
 import { duration, pitches, pitchAt, uid } from "./model.mjs";
 
+import {usePullToDismiss} from "./use-pull-to-dismiss.mjs";
 import {InkRenderer} from "./ink-renderer.mjs";
 
 export const pathData = (points) =>
@@ -130,11 +131,14 @@ export function Modal({
   children,
   wide = false,
   returnFocus,
+  dismissible = true,
 }) {
   const ref = useRef(),
     closeRef = useRef(close),
     reduce = useReducedMotion();
   closeRef.current = close;
+  usePullToDismiss(ref, closeRef, dismissible, reduce);
+  useEffect(() => {const content = ref.current?.querySelector(".modal-content");if (content) content.scrollTop = 0;}, [title]);
   useEffect(() => {
     const previous = returnFocus?.current || document.activeElement;
     ref.current.focus();
@@ -208,6 +212,7 @@ export function Modal({
         }}
       >
         <header className="modal-header">
+          <span className="modal-grab-handle" aria-hidden="true" />
           <div>
             <h1>{title}</h1>
             {subtitle && <p>{subtitle}</p>}
@@ -222,13 +227,13 @@ export function Modal({
   );
 }
 
-export function ScoreCanvas({doc, track, color, width, tool, onStroke, onErase,
+export function ScoreCanvas({doc, track, instrument, color, width, tool, onStroke, onErase,
   playing, visualActive = true, onLimit, player, onInteract}) {
   const base = useRef(), live = useRef(), highlight = useRef(), head = useRef();
   const renderer = useRef(), current = useRef(), draftRef = useRef(null);
   const gesture = useRef(null), inputFrame = useRef(0), lastPreview = useRef(0);
   const [drawing, setDrawing] = useState(false);
-  current.current = {doc, track, color, width, tool, onStroke, onErase, onLimit, onInteract};
+  current.current = {doc, track, instrument, color, width, tool, onStroke, onErase, onLimit, onInteract};
   const pointCount = useMemo(() => doc.strokes.reduce((n, s) => n + s.points.length, 0), [doc.strokes]);
   useLayoutEffect(() => {
     const ink = new InkRenderer(base.current, live.current, highlight.current);
@@ -263,7 +268,7 @@ export function ScoreCanvas({doc, track, color, width, tool, onStroke, onErase,
   function preview(p) {
     if (performance.now() - lastPreview.current < 125) return;
     lastPreview.current = performance.now();
-    player.preview({midi: pitchAt(p.y, doc), instrument: track.instrument, volume: track.volume}).catch(() => {});
+    player.preview({midi: pitchAt(p.y, doc), instrument, volume: track.volume}).catch(() => {});
   }
   function flushInput() {
     inputFrame.current = 0;
@@ -278,7 +283,7 @@ export function ScoreCanvas({doc, track, color, width, tool, onStroke, onErase,
     base.current.setPointerCapture(e.pointerId);
     const p = point(e);
     if (tool === "erase") {draftRef.current = {erase: true};onErase(p, gesture.current.rect);return;}
-    const stroke = {id: uid(), track: track.id, color, width, points: [p]};
+    const stroke = {id: uid(), track: track.id, instrument, color, width, points: [p]};
     draftRef.current = stroke;player.liveStroke = stroke;setDrawing(true);
     renderer.current?.drawLive(stroke);preview(p);
   }

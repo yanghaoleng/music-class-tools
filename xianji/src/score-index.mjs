@@ -65,7 +65,7 @@ export function getScoreIndex(doc) {
     sampleStroke(stroke, doc).forEach((samples, step) => {
       for (const sample of samples) {
         if (steps[step].length === 32) break;
-        steps[step].push({...sample, instrument: track.instrument, volume: track.volume,
+        steps[step].push({...sample, instrument: stroke.instrument || track.instrument, volume: track.volume,
           color: stroke.color, x: (step + .5) / count, stroke: stroke.id});
       }
     });

@@ -37,7 +37,6 @@ import {
   Sparkle,
 } from "./icons.jsx";
 import {
-  COLORS,
   INSTRUMENTS,
   SCALES,
   ROOTS,
@@ -102,8 +101,7 @@ function App() {
   const [doc, setDoc] = useState(initial.draft || createDoc()),
     [library, setLibrary] = useState(initial.library || []),
     [activeTrack, setActiveTrack] = useState(null),
-    [color, setColor] = useState(COLORS[0]),
-    [width, setWidth] = useState(7),
+    [brushId, setBrushId] = useState(initial.draft?.strokes.at(-1)?.instrument || initial.draft?.tracks[0]?.instrument || "keys"),
     [tool, setTool] = useState("draw"),
     [playing, setPlaying] = useState(true),
     [loop, setLoop] = useState(true),
@@ -121,7 +119,8 @@ function App() {
   const importRef = useRef(),
     docRef = useRef(doc),
     erasedRef = useRef(false),
-    toastTimer = useRef();
+    toastTimer = useRef(),
+    eraserTap = useRef(null);
   const dialogTrigger = useRef(null);
   function setModal(next) {
     if (next && (!modal || sidePanel)) dialogTrigger.current = document.activeElement;
@@ -140,6 +139,8 @@ function App() {
     return () => media.removeEventListener("change", resize);
   }, []);
   docRef.current = doc;
+  const brush = INSTRUMENTS.find(i => i.id === brushId) || INSTRUMENTS[0];
+  const color = brush.color;
   const track = doc.tracks.find((t) => t.id === activeTrack) || doc.tracks[0];
   const saved = library.some((d) => d.id === doc.id),
     noteCount = useMemo(() => getScoreIndex(doc).noteCount, [doc]);
@@ -159,6 +160,22 @@ function App() {
         updatedAt: Date.now(),
       };
     });
+  }
+  function selectBrush(id) {
+    setBrushId(id);setTool("draw");
+    player.preview({midi: 60, instrument: id, volume: track.volume}).catch(() => {});
+  }
+  function useEraser() {
+    setTool("erase");
+    const previous = eraserTap.current, now = performance.now();
+    eraserTap.current = {at: now, doc: doc.id, count: doc.strokes.length};
+    if (!previous || now - previous.at > 350 || previous.doc !== doc.id || previous.count !== doc.strokes.length) return;
+    eraserTap.current = null;
+    if (!doc.strokes.length) return;
+    const cleared = {...doc, strokes: []};
+    player.pause();player.cancelPreview();change(cleared);
+    if (playing) player.play(cleared, loop).catch(() => {});
+    notify("画布已清空，可撤销");
   }
   function stop(reset = false) {
     player.pause(reset);
@@ -203,7 +220,7 @@ function App() {
     setHistory([]);
     setFuture([]);
     setModal(null);
-    setColor(COLORS[0]);
+    setBrushId(d.strokes.at(-1)?.instrument || d.tracks[0].instrument);
     setTool("draw");
     setPlaying(true);
     player.play(d, loop).catch(() => {});
@@ -469,7 +486,7 @@ function App() {
                 " " +
                 categories(d).join(" ") +
                 " " +
-                d.tracks
+                [...d.tracks, ...d.strokes.filter(s => s.instrument)]
                   .map(
                     (t) => INSTRUMENTS.find((i) => i.id === t.instrument)?.name,
                   )
@@ -537,7 +554,7 @@ function App() {
     };
     change((d) => ({ ...d, tracks: [...d.tracks, t] }));
     setActiveTrack(t.id);
-    setColor(COLORS[doc.tracks.length % 6]);
+    setBrushId(t.instrument);
   }
   function useDemo(d) {
     load({
@@ -558,13 +575,14 @@ function App() {
         <ScoreCanvas
           doc={doc}
           track={track}
+          instrument={brush.id}
           color={color}
-          width={width}
+          width={3}
           tool={tool}
           playing={playing}
           visualActive={!blocking}
           player={player}
-          onInteract={activateAudio}
+          onInteract={() => {eraserTap.current = null;activateAudio();}}
           onStroke={(s) =>
             change((d) => ({ ...d, strokes: [...d.strokes, s] }))
           }
@@ -615,7 +633,8 @@ function App() {
               label="橡皮擦 (E)"
               aria-keyshortcuts="E"
               aria-pressed={tool === "erase"}
-              onClick={() => setTool("erase")}
+              onClick={useEraser}
+              title="橡皮擦 (E) · 双击清空画布"
             >
               <Eraser weight={tool === "erase" ? "fill" : "regular"} />
             </IconButton>
@@ -701,6 +720,7 @@ function App() {
                   : undefined
             }
             wide={["library", "icons", "help"].includes(modal)}
+            dismissible={!exporting}
             close={() => !exporting && setModal(null)}
           >
             {modal === "project" && (
@@ -777,40 +797,21 @@ function App() {
                 <section className="panel-section">
                   <div className="section-heading">
                     <h2>这一笔的颜色</h2>
-                    <span>颜色和音色可以自由搭配</span>
+                    <span>一种颜色，一种声音</span>
                   </div>
                   <div className="color-options">
-                    {COLORS.map((c) => (
+                    {INSTRUMENTS.map((i) => (
                       <button
-                        key={c}
+                        key={i.id}
                         className="color-swatch"
-                        style={{ "--swatch": c }}
-                        aria-label={"画笔颜色 " + c}
-                        aria-pressed={color === c}
-                        onClick={() => {
-                          setColor(c);
-                          setTool("draw");
-                        }}
+                        style={{ "--swatch": i.color }}
+                        aria-label={"画笔颜色 " + i.color}
+                        title={i.name}
+                        aria-description={i.name}
+                        aria-pressed={brush.id === i.id}
+                        onClick={() => selectBrush(i.id)}
                       >
-                        {color === c && <Check weight="bold" />}
-                      </button>
-                    ))}
-                  </div>
-                </section>
-                <section className="panel-section">
-                  <div className="section-heading">
-                    <h2>线条粗细</h2>
-                    <span>{width} px</span>
-                  </div>
-                  <div className="width-options">
-                    {[3, 7, 12].map((w) => (
-                      <button
-                        key={w}
-                        aria-label={w + " px 画笔"}
-                        aria-pressed={width === w}
-                        onClick={() => setWidth(w)}
-                      >
-                        <span style={{ height: w }} />
+                        {brush.id === i.id && <Check weight="bold" />}
                       </button>
                     ))}
                   </div>
@@ -824,33 +825,25 @@ function App() {
                     {INSTRUMENTS.map((i) => (
                       <button
                         key={i.id}
-                        className={track.instrument === i.id ? "chosen" : ""}
-                        aria-pressed={track.instrument === i.id}
+                        className={brush.id === i.id ? "chosen" : ""}
+                        aria-pressed={brush.id === i.id}
                         title={i.description}
                         aria-label={i.name + " " + i.description}
-                        onClick={() => {
-                          updateTrack(track.id, { instrument: i.id });
-                          player
-                            .preview({
-                              midi: 60,
-                              instrument: i.id,
-                              volume: track.volume,
-                            })
-                            .catch(() => {});
-                        }}
+                        onClick={() => selectBrush(i.id)}
                       >
+                        <span className="instrument-color" style={{background: i.color}} aria-hidden="true" />
                         <img className="instrument-drawing" src={"/xianji/instruments/" + i.id + ".svg"} alt="" />
                         <span>
                           {i.name}
                           <small>{i.continuous ? "连音" : "触键"}</small>
                         </span>
-                        {track.instrument === i.id && <Check size={17} />}
+                        {brush.id === i.id && <Check size={17} />}
                       </button>
                     ))}
                   </div>
                 </section>
                 <p className="fine-print">
-                  同一声部共享音色。想把两种声音叠在一起，可以在「声部混音」中添加声部。
+                  点颜色或乐器即可切换画笔。每条线保留落笔时的音色；声部可单独调音量、静音和独奏。
                 </p>
                 <button className="primary full" onClick={() => setModal(null)}>
                   回到画布
@@ -1010,13 +1003,13 @@ function App() {
                     >
                       <button
                         className="track-name"
-                        onClick={() => setActiveTrack(t.id)}
+                        onClick={() => {setActiveTrack(t.id);setBrushId(doc.strokes.filter(s => s.track === t.id).at(-1)?.instrument || t.instrument);}}
                       >
                         <span className="track-index">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <span>
-                          {INSTRUMENTS.find((x) => x.id === t.instrument).name}
+                          {new Set(doc.strokes.filter(s => s.track === t.id).map(s => s.instrument || t.instrument)).size > 1 ? "彩虹声部 " + (i + 1) : INSTRUMENTS.find(x => x.id === (doc.strokes.find(s => s.track === t.id)?.instrument || t.instrument)).name}
                           <small>
                             {doc.strokes.filter((s) => s.track === t.id).length}{" "}
                             条线{track.id === t.id ? " · 正在使用" : ""}
@@ -1087,7 +1080,7 @@ function App() {
                     className="secondary"
                     onClick={() => setModal("brush")}
                   >
-                    修改当前声部音色
+                    选择彩虹画笔
                     <Waveform />
                   </button>
                   <button className="primary" onClick={() => setModal(null)}>
@@ -1352,7 +1345,7 @@ function App() {
                     <span>02</span>
                     <h2>叠一点声音</h2>
                     <p>
-                      点开画笔选颜色和音色。添加一个声部，就能把不同的乐器叠起来。
+                      换一种颜色，就是另一种乐器。多画几笔，就能让不同的声音叠起来。
                     </p>
                   </div>
                   <div>

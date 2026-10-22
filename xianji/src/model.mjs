@@ -1,10 +1,6 @@
 export const COLORS = [
-  "#a552da",
-  "#dc4f98",
-  "#8058c9",
-  "#ee86ad",
-  "#bd78d5",
-  "#6b466d",
+  "#e34b4b", "#ed7b2f", "#c69214", "#72a83b", "#2a9d63", "#169f9b",
+  "#278fbf", "#426bd4", "#7055c7", "#a64bbb", "#cf4e9a", "#d9587c",
 ];
 export const INSTRUMENTS = [
  {id:'keys',name:'柔和电钢',description:'圆润、带一点颗粒感',color:COLORS[0],midi:4,transpose:0},
@@ -12,13 +8,13 @@ export const INSTRUMENTS = [
  {id:'pluck',name:'拨弦',description:'短促，轻快的弦声',color:COLORS[2],midi:24,transpose:0},
  {id:'pad',name:'空气合成器',description:'柔软铺开，连续延音',color:COLORS[3],midi:89,transpose:0,continuous:true},
  {id:'bass',name:'温暖贝斯',description:'低一个八度，托住旋律',color:COLORS[4],midi:33,transpose:-12},
- {id:'analog',name:'柔和模拟',description:'温暖的模拟波形，平滑连音',color:COLORS[0],midi:81,transpose:0,continuous:true},
- {id:'strings',name:'丝绒弦垫',description:'绵长的弦乐合成，缓缓流动',color:COLORS[1],midi:50,transpose:0,continuous:true},
- {id:'glass',name:'玻璃合成',description:'清透的电子泛音，柔亮延音',color:COLORS[2],midi:98,transpose:0,continuous:true},
- {id:'choir',name:'空气人声',description:'轻柔的人声感合成，像一口气',color:COLORS[3],midi:54,transpose:0,continuous:true},
- {id:'lead',name:'圆润主音',description:'饱满的电子主旋律，带滑音',color:COLORS[4],midi:80,transpose:0,continuous:true},
- {id:'air',name:'呼吸风笛',description:'有呼吸感的电子管乐',color:COLORS[0],midi:73,transpose:0,continuous:true},
- {id:'sub',name:'深潜低音',description:'深沉、连贯的低频合成',color:COLORS[1],midi:38,transpose:-24,continuous:true},
+ {id:'analog',name:'柔和模拟',description:'温暖的模拟波形，平滑连音',color:COLORS[5],midi:81,transpose:0,continuous:true},
+ {id:'strings',name:'丝绒弦垫',description:'绵长的弦乐合成，缓缓流动',color:COLORS[6],midi:50,transpose:0,continuous:true},
+ {id:'glass',name:'玻璃合成',description:'清透的电子泛音，柔亮延音',color:COLORS[7],midi:98,transpose:0,continuous:true},
+ {id:'choir',name:'空气人声',description:'轻柔的人声感合成，像一口气',color:COLORS[8],midi:54,transpose:0,continuous:true},
+ {id:'lead',name:'圆润主音',description:'饱满的电子主旋律，带滑音',color:COLORS[9],midi:80,transpose:0,continuous:true},
+ {id:'air',name:'呼吸风笛',description:'有呼吸感的电子管乐',color:COLORS[10],midi:73,transpose:0,continuous:true},
+ {id:'sub',name:'深潜低音',description:'深沉、连贯的低频合成',color:COLORS[11],midi:38,transpose:-24,continuous:true},
 ];
 export function instrumentPitch(midi,id){return midi+(INSTRUMENTS.find(i=>i.id===id)?.transpose||0);}
 export const SCALES = {
@@ -94,7 +90,7 @@ export function notesAt(doc, step) {
         return [
           {
             midi,
-            instrument: t.instrument,
+            instrument: s.instrument || t.instrument,
             volume: t.volume,
             color: s.color,
             x,
@@ -133,7 +129,7 @@ export function createDoc(title = "未命名的旋律") {
     bars: 4,
     root: 0,
     scale: "pentatonic",
-    division: 2,
+    division: 4,
     tracks: [
       {
         id: uid(),
@@ -162,8 +158,9 @@ export function makeDemo(index = 0) {
   const line = (track, color, fn, start = 0.025, end = 0.975) => ({
     id: uid(),
     track: d.tracks[track].id,
-    color,
-    width: 7,
+    color: INSTRUMENTS.find(i => i.id === d.tracks[track].instrument).color,
+    instrument: d.tracks[track].instrument,
+    width: 3,
     points: Array.from({ length: 160 }, (_, i) => {
       const x = start + ((end - start) * i) / 159;
       return { x, y: fn(x) };
@@ -246,6 +243,7 @@ export function validateDoc(raw) {
   const strokes = raw.strokes.map((s) => {
     if (
       !ids.has(s.track) ||
+      (s.instrument !== undefined && !INSTRUMENTS.some(i => i.id === s.instrument)) ||
       !/^#[0-9a-f]{6}$/i.test(s.color) ||
       !Number.isFinite(s.width) ||
       s.width < 1 ||
@@ -258,6 +256,7 @@ export function validateDoc(raw) {
     return {
       id: uid(),
       track: s.track,
+      ...(s.instrument ? {instrument: s.instrument} : {}),
       color: s.color,
       width: s.width,
       points: s.points.map((p) => {
@@ -292,22 +291,17 @@ export function exportMidi(doc) {
     return a;
   };
   const events = [];
-  const programs = Object.fromEntries(INSTRUMENTS.map(i=>[i.id,i.midi]));
-  doc.tracks.forEach((t, i) =>
-    events.push({
-      tick: 0,
-      bytes: [0xc0 + (i >= 9 ? i + 1 : i), programs[t.instrument]],
-    }),
-  );
+  const notes = compile(doc);
+  const used = [...new Set([...doc.tracks.map(t => t.instrument), ...notes.map(n => n.instrument)])];
+  const channels = new Map(used.map((id, index) => [id, index >= 9 ? index + 1 : index]));
+  for (const id of used) events.push({tick: 0, bytes: [0xc0 + channels.get(id), INSTRUMENTS.find(i => i.id === id).midi]});
   const tempo = Math.round(60000000 / doc.bpm);
   events.push({
     tick: 0,
     bytes: [255, 81, 3, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255],
   });
-  compile(doc).forEach((n) => {
-    const track = doc.strokes.find((s) => s.id === n.stroke).track,
-      index = doc.tracks.findIndex((t) => t.id === track),
-      ch = index >= 9 ? index + 1 : index,
+  notes.forEach((n) => {
+    const ch = channels.get(n.instrument),
       m = instrumentPitch(n.midi,n.instrument),
       tick = Math.round(((n.time * doc.bpm) / 60) * 480);
     events.push(

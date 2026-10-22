@@ -2142,3 +2142,15 @@ div.playhead { position:absolute; inset:0 auto 0 0; width:1px; background:#8b898
   .glass-modal { background-color:#faf9f5; }
   .icon-preview > img { filter:none; }
 }
+
+/* Twelve paired rainbow brushes, arranged in two clear rows. */
+.color-options { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px 10px; justify-items:center; }
+.color-swatch { width:34px; height:34px; flex-shrink:0; }
+.instrument-grid .instrument-color { position:absolute; left:10px; top:10px; width:9px; height:9px; border-radius:50%; }
+.glass-modal { display:flex; flex-direction:column; overflow:hidden; }
+.glass-modal > .modal-header { flex-shrink:0; user-select:none; touch-action:none; }
+.glass-modal > .modal-content { min-height:0; overflow-y:auto; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; }
+.modal-grab-handle { position:absolute; top:9px; left:50%; transform:translateX(-50%); width:36px; height:4px; border-radius:4px; background:#99999960; pointer-events:none; }
+.glass-modal[data-dragging] { will-change:translate; user-select:none; }
+
+.glass-modal > .modal-content, .glass-modal .project-grid { overscroll-behavior-y:none; }

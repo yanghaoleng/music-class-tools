@@ -123,7 +123,7 @@ try {
   );
   await click("画笔与音色");
   await page.getByRole("dialog").waitFor();
-  await page.getByLabel("画笔颜色 #dc4f98", { exact: true }).click();
+  await page.getByLabel("画笔颜色 #ed7b2f", { exact: true }).click();
   await page
     .getByRole("button", { name: "拨弦 短促，轻快的弦声", exact: true })
     .click();

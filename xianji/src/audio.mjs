@@ -132,6 +132,14 @@ export class Player {
         0.02,
       );
   }
+  cancelPreview() {
+    if (this.previewOut) {
+      const old = this.previewOut;
+      old.gain.setTargetAtTime(.0001, this.ctx.currentTime, .012);
+      setTimeout(() => old.dispose(), 1500);
+    }
+    this.previewOut = null;this.previewVoice = null;
+  }
   async preview(n) {
     await this.unlock();
     if (!this.previewOut)
