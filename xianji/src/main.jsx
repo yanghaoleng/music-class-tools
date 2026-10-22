@@ -62,7 +62,7 @@ import {
   pathData,
   pigmentFilterMarkup,
 } from "./components.jsx";
-import { beginHistory, recordHistory, nextHistory, packHistory, unpackHistory } from "./history.mjs";
+import { beginHistory, recordHistory, nextHistory, packHistory, unpackHistory, historyTitle } from "./history.mjs";
 import { readAppearance, applyAppearance } from "./appearance.mjs";
 import "./style.css";
 const STORAGE = "xianji.workspace.v1";
@@ -752,14 +752,16 @@ function App() {
             {modal === "history" && (
               <div className="history-list" aria-label="操作快照">
                 <p className="history-note">点一下，回到这一刻。之前的版本都会保留。</p>
-                {timeline.entries.map((entry,index) => (
-                  <button key={entry.id} className="history-snapshot" aria-current={index === timeline.cursor ? "step" : undefined}
-                    aria-label={"快照 " + (index + 1) + " " + entry.label} onClick={() => restoreSnapshot(index)}>
+                {timeline.entries.map((entry,index) => {
+                  const title = historyTitle(entry, timeline.entries[entry.parent]);
+                  return <button key={entry.id} className="history-snapshot" data-snapshot={index + 1} aria-current={index === timeline.cursor ? "step" : undefined}
+                    aria-label={"快照 " + (index + 1) + " " + title} onClick={() => restoreSnapshot(index)}>
                     <span className="history-thumbnail"><Thumbnail doc={entry.doc} /></span>
-                    <span className="history-description"><b>{entry.label}</b><small>{entry.doc.strokes.length} 条线 · {new Date(entry.at).toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</small></span>
+                    <span className="history-description"><b>{title}</b><small>{entry.label} · {entry.doc.strokes.length} 条线 · {new Date(entry.at).toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</small></span>
                     <span className="history-step">{index === timeline.cursor ? "当前" : String(index + 1).padStart(2,"0")}</span>
-                  </button>
-                ))}
+                  </button>;
+                }).reverse()}
+
               </div>
             )}
             {modal === "brush" && (

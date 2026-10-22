@@ -34,8 +34,9 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
   await page.mouse.move(60,450);await page.mouse.down();await page.mouse.move(320,500,{steps:20});await page.mouse.up();
   assert.equal(await page.locator('.music-canvas').getAttribute('data-stroke-count'),'2');
   await button('历史记录').click();await page.getByRole('dialog').waitFor();assert.equal(await page.locator('.history-snapshot').count(),2);
-  await page.locator('.history-snapshot').first().click();assert.equal(await page.locator('.music-canvas').getAttribute('data-stroke-count'),'1');
-  await page.locator('.history-snapshot').last().click();await button('关闭').click();await page.getByRole('dialog').waitFor({state:'detached'});
+  assert.equal(await page.locator('.history-description b').first().innerText(),'金属镲片 · 声部 1');
+  await page.locator('.history-snapshot').last().click();assert.equal(await page.locator('.music-canvas').getAttribute('data-stroke-count'),'1');
+  await page.locator('.history-snapshot').first().click();await button('关闭').click();await page.getByRole('dialog').waitFor({state:'detached'});
   await button('保存作品').click();await button('画布菜单').click();await button('导出').click();
   const event=page.waitForEvent('download');await page.getByRole('button',{name:'可编辑作品文件',exact:false}).click();
   const download=await event,exported=JSON.parse(await fs.readFile(await download.path(),'utf8'));assert.deepEqual(exported.strokes.map(s=>s.instrument),['glass','cymbal']);
