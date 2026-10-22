@@ -152,3 +152,21 @@ test("MIDI has a valid header, tempo event, matching notes and preserved loop du
   assert.ok(bytes.includes(144));
   assert.ok(bytes.includes(128));
 });
+
+test('all 12 instrument identities survive import and retain MIDI programs and transposition', async () => {
+  const {INSTRUMENTS,instrumentPitch}=await import('../src/model.mjs');
+  assert.equal(INSTRUMENTS.length,12);
+  const d=createDoc();
+  d.tracks=INSTRUMENTS.map((i,n)=>({id:'track-'+n,instrument:i.id,volume:.7,muted:false,solo:false}));
+  d.strokes=d.tracks.map((t,n)=>({id:'line-'+n,track:t.id,color:'#a552da',width:7,points:[{x:0,y:.5},{x:1,y:.5}]}));
+  const roundtrip=validateDoc(JSON.parse(JSON.stringify(d)));
+  assert.deepEqual(roundtrip.tracks.map(t=>t.instrument),INSTRUMENTS.map(i=>i.id));
+  const midi=Array.from(exportMidi(roundtrip));
+  for(const [n,i] of INSTRUMENTS.entries()){
+    const channel=n>=9?n+1:n;
+    assert.ok(midi.some((v,k)=>v===0xc0+channel&&midi[k+1]===i.midi));
+    assert.ok(midi.some((v,k)=>v===0x90+channel&&midi[k+1]===instrumentPitch(pitchAt(.5,d),i.id)));
+  }
+  assert.equal(instrumentPitch(60,'bass'),48);
+  assert.equal(instrumentPitch(60,'sub'),36);
+});

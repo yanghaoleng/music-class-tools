@@ -54,6 +54,7 @@ import { Player, renderWav } from "./audio.mjs";
 import {
   ScoreCanvas,
   Modal,
+  DockPanel,
   IconButton,
   TempoInput,
   Thumbnail,
@@ -93,7 +94,9 @@ const ICONS = [
   { id: "c", name: "共振漩涡", description: "涂鸦在声场里慢慢展开" },
   { id: "d", name: "声纹笔触", description: "自由的线，穿过规则的声纹" },
 ];
+const DOCK_QUERY = "(min-width: 1280px) and (min-height: 680px)";
 function App() {
+  const [wideScreen, setWideScreen] = useState(() => window.matchMedia(DOCK_QUERY).matches);
   const [doc, setDoc] = useState(initial.draft || createDoc()),
     [library, setLibrary] = useState(initial.library || []),
     [activeTrack, setActiveTrack] = useState(null),
@@ -119,9 +122,21 @@ function App() {
     toastTimer = useRef();
   const dialogTrigger = useRef(null);
   function setModal(next) {
-    if (next && !modal) dialogTrigger.current = document.activeElement;
+    if (next && (!modal || sidePanel)) dialogTrigger.current = document.activeElement;
     setModalState(next);
   }
+  const sidePanel = wideScreen && ["brush", "rhythm", "tracks"].includes(modal);
+  const blocking = !!modal && !sidePanel;
+  const Panel = sidePanel ? DockPanel : Modal;
+  useEffect(() => {
+    const media = window.matchMedia(DOCK_QUERY);
+    const resize = () => {
+      setWideScreen(media.matches);
+      if (!media.matches) setModalState(current => ["brush", "rhythm", "tracks"].includes(current) ? null : current);
+    };
+    media.addEventListener("change", resize);
+    return () => media.removeEventListener("change", resize);
+  }, []);
   docRef.current = doc;
   const track = doc.tracks.find((t) => t.id === activeTrack) || doc.tracks[0];
   const saved = library.some((d) => d.id === doc.id),
@@ -325,23 +340,24 @@ function App() {
         return;
       const key = e.key.toLowerCase(),
         modified = e.ctrlKey || e.metaKey;
-      if (!modal && modified && key === "s") {
+      if (!blocking && modified && key === "s") {
         e.preventDefault();
         save();
         return;
       }
-      if (!modal && modified && key === "z") {
+      if (!blocking && modified && key === "z") {
         e.preventDefault();
         e.shiftKey ? redo() : undo();
         return;
       }
       if (modified || e.altKey) return;
-      if (key === "c" && (!modal || modal === "brush")) {
+      if (key === "c" && (!blocking || modal === "brush")) {
         e.preventDefault();
         setModal(modal === "brush" ? null : "brush");
         return;
       }
-      if (modal) return;
+      if (sidePanel && key === "escape") { setModal(null); return; }
+      if (blocking) return;
       if (e.code === "Space") {
         e.preventDefault();
         void togglePlay();
@@ -505,7 +521,7 @@ function App() {
     if (doc.tracks.length >= 12) return;
     const t = {
       id: uid(),
-      instrument: INSTRUMENTS[doc.tracks.length % 5].id,
+      instrument: INSTRUMENTS[doc.tracks.length % INSTRUMENTS.length].id,
       volume: 0.65,
       muted: false,
       solo: false,
@@ -523,10 +539,10 @@ function App() {
     });
   }
   return (
-    <div className="workspace" data-modal-open={!!modal}>
+    <div className={"workspace" + (sidePanel ? " has-panel" : "")} data-modal-open={blocking}>
       <main
         className="workbench"
-        inert={modal ? true : undefined}
+        inert={blocking ? true : undefined}
         onPointerDownCapture={activateAudio}
         aria-label="音乐创作空间"
       >
@@ -663,8 +679,8 @@ function App() {
       )}
       <AnimatePresence>
         {modal && (
-          <Modal
-            key="workbench-dialog"
+          <Panel
+            key={sidePanel ? "workbench-panel" : "workbench-dialog"}
             returnFocus={dialogTrigger}
             title={dialogTitle}
             subtitle={
@@ -794,11 +810,14 @@ function App() {
                     <h2>这一笔的声音</h2>
                     <span>声部 {doc.tracks.indexOf(track) + 1}</span>
                   </div>
-                  <div className="instrument-choices">
-                    {INSTRUMENTS.map((i, index) => (
+                  <div className="instrument-grid">
+                    {INSTRUMENTS.map((i) => (
                       <button
                         key={i.id}
                         className={track.instrument === i.id ? "chosen" : ""}
+                        aria-pressed={track.instrument === i.id}
+                        title={i.description}
+                        aria-label={i.name + " " + i.description}
                         onClick={() => {
                           updateTrack(track.id, { instrument: i.id });
                           player
@@ -810,22 +829,10 @@ function App() {
                             .catch(() => {});
                         }}
                       >
-                        <span className="instrument-icon">
-                          {index === 0 ? (
-                            <Keyboard />
-                          ) : index === 1 ? (
-                            <Star />
-                          ) : index === 2 ? (
-                            <MusicNotes />
-                          ) : index === 3 ? (
-                            <Waveform />
-                          ) : (
-                            <SpeakerHigh />
-                          )}
-                        </span>
+                        <img className="instrument-drawing" src={"/xianji/instruments/" + i.id + ".svg"} alt="" />
                         <span>
                           {i.name}
-                          <small>{i.description}</small>
+                          <small>{i.continuous ? "连音" : "触键"}</small>
                         </span>
                         {track.instrument === i.id && <Check size={17} />}
                       </button>
@@ -1415,7 +1422,7 @@ function App() {
                 </div>
               </>
             )}
-          </Modal>
+          </Panel>
         )}
       </AnimatePresence>
     </div>

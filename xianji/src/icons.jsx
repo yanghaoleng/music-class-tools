@@ -39,7 +39,7 @@ import {
   StarSolid as StarFilled,
 } from "iconoir-react";
 
-// A single 3px stroke keeps the rounded Iconoir family consistently bold.
+// A single 2.25px stroke keeps the rounded Iconoir family consistently bold.
 function icon(Glyph, Filled) {
   return function AppIcon({ size = "1em", weight, ...props }) {
     const Component = weight === "fill" && Filled ? Filled : Glyph;
@@ -47,7 +47,7 @@ function icon(Glyph, Filled) {
       <Component
         width={size}
         height={size}
-        strokeWidth={3}
+        strokeWidth={2.25}
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"

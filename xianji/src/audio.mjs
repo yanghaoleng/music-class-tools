@@ -1,4 +1,6 @@
-import { notesAt, compile, duration } from "./model.mjs";
+import { notesAt, duration } from "./model.mjs";
+import {voice,scheduleStep,MAX_RELEASE} from "./synth.mjs";
+export {voice} from "./synth.mjs";
 export function createOutput(ctx, volume = 0.65) {
   const gain = ctx.createGain();
   gain.gain.value = volume;
@@ -8,65 +10,6 @@ export function createOutput(ctx, volume = 0.65) {
   gain.connect(compressor);
   compressor.connect(ctx.destination);
   return gain;
-}
-export function voice(ctx, out, n, time, len = 0.3) {
-  const freq =
-    440 * 2 ** ((n.midi - 69 - (n.instrument === "bass" ? 12 : 0)) / 12);
-  const profiles = {
-    keys: [
-      [1, 1, "sine"],
-      [2, 0.22, "sine"],
-      [3, 0.07, "sine"],
-    ],
-    bell: [
-      [1, 1, "sine"],
-      [2.76, 0.22, "sine"],
-      [5.4, 0.08, "sine"],
-    ],
-    pluck: [
-      [1, 0.65, "triangle"],
-      [2, 0.13, "sine"],
-    ],
-    pad: [
-      [1, 0.5, "sine"],
-      [1.004, 0.3, "triangle"],
-    ],
-    bass: [
-      [1, 0.85, "sine"],
-      [2, 0.16, "triangle"],
-    ],
-  };
-  const attack = n.instrument === "pad" ? 0.09 : 0.008,
-    tail =
-      n.instrument === "bell" ? 0.85 : n.instrument === "pad" ? 0.65 : 0.22;
-  const g = ctx.createGain();
-  g.connect(out);
-  const peak = Math.max(0.0001, n.volume * 0.16);
-  g.gain.setValueAtTime(0.0001, time);
-  g.gain.exponentialRampToValueAtTime(peak, time + attack);
-  g.gain.exponentialRampToValueAtTime(
-    Math.max(0.0001, peak * 0.45),
-    time + Math.max(attack + 0.01, len),
-  );
-  g.gain.exponentialRampToValueAtTime(0.0001, time + len + tail);
-  const oscs = profiles[n.instrument].map(([ratio, vol, type]) => {
-    const o = ctx.createOscillator(),
-      v = ctx.createGain();
-    o.type = type;
-    o.frequency.value = freq * ratio;
-    v.gain.value = vol;
-    o.connect(v);
-    v.connect(g);
-    o.onended = () => {
-      o.disconnect();
-      v.disconnect();
-    };
-    o.start(time);
-    o.stop(time + len + tail + 0.02);
-    return o;
-  });
-  oscs.at(-1).addEventListener("ended", () => g.disconnect());
-  return g;
 }
 // Playback intent and the visual clock start immediately. Browsers may defer the
 // audio clock until a trusted pointer/keyboard gesture; activate() joins both clocks.
@@ -81,6 +24,7 @@ export class Player {
     this.virtualStart = 0;
     this.out = null;
     this.liveStroke = null;
+    this.voices = new Map();
   }
   context() {
     if (!this.ctx) {
@@ -147,16 +91,7 @@ export class Player {
       const score = this.liveStroke
         ? { ...d, strokes: [...d.strokes, this.liveStroke] }
         : d;
-      if (time >= this.ctx.currentTime - 0.01)
-        notesAt(score, this.step % total).forEach((n) =>
-          voice(
-            this.ctx,
-            this.out,
-            n,
-            Math.max(time, this.ctx.currentTime),
-            interval * 0.82,
-          ),
-        );
+      if(time>=this.ctx.currentTime-.01)scheduleStep(this.ctx,this.out,notesAt(score,this.step%total),Math.max(time,this.ctx.currentTime),interval*.98,this.step,this.voices);
       this.step++;
     }
   }
@@ -166,6 +101,7 @@ export class Player {
   stopTimer() {
     clearInterval(this.timer);
     this.timer = null;
+    this.voices.clear();
     if (this.out) {
       this.out.gain.cancelScheduledValues(this.ctx.currentTime);
       this.out.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.012);
@@ -201,11 +137,12 @@ export async function renderWav(doc) {
   const rate = 44100,
     ctx = new OfflineAudioContext(
       2,
-      Math.ceil((duration(doc) + 1.5) * rate),
+      Math.ceil((duration(doc) + MAX_RELEASE + .2) * rate),
       rate,
     ),
     out = createOutput(ctx, 0.75);
-  compile(doc).forEach((n) => voice(ctx, out, n, n.time, n.length));
+  const bank=new Map(),interval=60/doc.bpm/doc.division;
+  for(let step=0;step<doc.bars*4*doc.division;step++)scheduleStep(ctx,out,notesAt(doc,step),step*interval,interval*.98,step,bank);
   const buffer = await ctx.startRendering();
   const bytes = new ArrayBuffer(44 + buffer.length * 4),
     v = new DataView(bytes);

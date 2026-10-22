@@ -1,0 +1,63 @@
+import {instrumentPitch} from './model.mjs';
+
+// Relative partials, envelopes and resonant filters make each instrument audible
+// as a distinct sound. Continuous instruments reuse voices between adjacent steps.
+export const SYNTHS={
+  keys:{partials:[[1,1,'sine'],[2,.22,'sine'],[3,.07,'sine']],attack:.008,release:.22},
+  bell:{partials:[[1,1,'sine'],[2.76,.22,'sine'],[5.4,.08,'sine']],attack:.006,release:.85},
+  pluck:{partials:[[1,.65,'triangle'],[2,.13,'sine']],attack:.006,release:.22},
+  bass:{partials:[[1,.85,'sine'],[2,.16,'triangle']],attack:.012,release:.26},
+  pad:{partials:[[1,.5,'sine'],[1.004,.3,'triangle'],[.997,.2,'sine']],attack:.14,release:.95,glide:.06,continuous:true,cutoff:1800},
+  analog:{partials:[[.998,.33,'sawtooth'],[1.002,.33,'sawtooth'],[1,.34,'sine']],attack:.065,release:.5,glide:.045,continuous:true,cutoff:1300,q:.7},
+  strings:{partials:[[.996,.25,'sawtooth'],[1.004,.25,'sawtooth'],[2,.16,'triangle']],attack:.22,release:1.35,glide:.075,continuous:true,cutoff:2100,vibrato:.9,rate:4.1},
+  glass:{partials:[[1,.65,'sine'],[2,.2,'sine'],[3,.1,'sine'],[4.01,.05,'sine']],attack:.06,release:1.1,glide:.025,continuous:true,cutoff:6500},
+  choir:{partials:[[1,.5,'sine'],[2,.2,'triangle'],[3,.1,'sine'],[4,.04,'sine']],attack:.18,release:1.2,glide:.08,continuous:true,cutoff:2200,vibrato:1.7,rate:4.7},
+  lead:{partials:[[1,.6,'triangle'],[1.003,.22,'sawtooth'],[2,.1,'sine']],attack:.025,release:.32,glide:.055,continuous:true,cutoff:2600,q:1.3},
+  air:{partials:[[1,.7,'sine'],[2,.13,'sine'],[3,.04,'triangle']],attack:.09,release:.65,glide:.045,continuous:true,cutoff:3400,vibrato:2.2,rate:5.2},
+  sub:{partials:[[1,.75,'sine'],[2,.2,'sine'],[3,.05,'triangle']],attack:.055,release:.55,glide:.07,continuous:true,cutoff:500},
+};
+export const MAX_RELEASE=Math.max(...Object.values(SYNTHS).map(s=>s.release));
+const hz=n=>440*2**((instrumentPitch(n.midi,n.instrument)-69)/12);
+
+function oscillatorGraph(ctx,out,n,time){
+  const spec=SYNTHS[n.instrument]||SYNTHS.keys,gain=ctx.createGain();
+  let filter=null;
+  if(spec.cutoff){filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=spec.cutoff;filter.Q.value=spec.q||.45;gain.connect(filter);filter.connect(out);}else gain.connect(out);
+  const oscillators=spec.partials.map(([ratio,level,type])=>{const osc=ctx.createOscillator(),amp=ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(hz(n)*ratio,time);amp.gain.value=level;osc.connect(amp);amp.connect(gain);osc.start(time);return {osc,amp,ratio};});
+  let lfo=null,depth=null;
+  if(spec.vibrato){lfo=ctx.createOscillator();depth=ctx.createGain();lfo.frequency.value=spec.rate;depth.gain.value=spec.vibrato;lfo.connect(depth);oscillators.forEach(({osc})=>depth.connect(osc.detune));lfo.start(time);}
+  let finished=0;
+  oscillators.forEach(({osc,amp})=>osc.addEventListener('ended',()=>{osc.disconnect();amp.disconnect();if(++finished===oscillators.length){gain.disconnect();filter?.disconnect();if(lfo){try{lfo.stop();}catch{}lfo.disconnect();depth.disconnect();}}}));
+  return {spec,gain,oscillators,lfo};
+}
+export function voice(ctx,out,n,time,len=.3){
+  if(SYNTHS[n.instrument]?.continuous)return sustainedVoice(ctx,out,n,time,len).gain;
+  const {spec,gain,oscillators}=oscillatorGraph(ctx,out,n,time),peak=Math.max(.0001,n.volume*.16),end=time+Math.max(len,spec.attack+.01);
+  gain.gain.setValueAtTime(.0001,time);gain.gain.exponentialRampToValueAtTime(peak,time+spec.attack);gain.gain.exponentialRampToValueAtTime(Math.max(.0001,peak*.45),end);gain.gain.exponentialRampToValueAtTime(.0001,end+spec.release);
+  oscillators.forEach(({osc})=>osc.stop(end+spec.release+.02));return gain;
+}
+export function sustainedVoice(ctx,out,n,time,len){
+  const {spec,gain,oscillators,lfo}=oscillatorGraph(ctx,out,n,time);
+  let held=Math.max(.0001,n.volume*.13);
+  gain.gain.setValueAtTime(.0001,time);gain.gain.exponentialRampToValueAtTime(held,time+spec.attack);
+  function release(at,length){const end=at+Math.max(length,spec.attack+.012);gain.gain.setValueAtTime(held,end);gain.gain.exponentialRampToValueAtTime(.0001,end+spec.release);oscillators.forEach(({osc})=>osc.stop(end+spec.release+.025));if(lfo)lfo.stop(end+spec.release+.025);}
+  release(time,len);
+  return {gain,extend(next,at,length){
+    // Keep the current envelope and oscillator phase; move pitch without a new attack.
+    if(gain.gain.cancelAndHoldAtTime)gain.gain.cancelAndHoldAtTime(at);else{gain.gain.cancelScheduledValues(at);gain.gain.setValueAtTime(held,at);}
+    held=Math.max(.0001,next.volume*.13);gain.gain.setTargetAtTime(held,at,.025);
+    oscillators.forEach(({osc,ratio})=>{osc.frequency.cancelScheduledValues(at);osc.frequency.setTargetAtTime(hz(next)*ratio,at,spec.glide);});
+    release(at,length);
+  }};
+}
+export function scheduleStep(ctx,out,notes,time,len,step,bank){
+  const order=new Map();
+  for(const n of notes){
+    const branch=order.get(n.stroke)||0;order.set(n.stroke,branch+1);
+    if(!SYNTHS[n.instrument]?.continuous){voice(ctx,out,n,time,len);continue;}
+    const key=n.stroke+':'+branch+':'+n.instrument,previous=bank.get(key);
+    if(previous&&previous.step===step-1){previous.handle.extend(n,time,len);previous.step=step;}
+    else bank.set(key,{step,handle:sustainedVoice(ctx,out,n,time,len)});
+  }
+  for(const [key,value]of bank)if(value.step<step-1)bank.delete(key);
+}

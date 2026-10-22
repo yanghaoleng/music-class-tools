@@ -8,7 +8,7 @@ const browser = await chromium.launch({
   args: ["--autoplay-policy=document-user-activation-required"],
 });
 const context = await browser.newContext({
-    viewport: { width: 1440, height: 1000 },
+    viewport: { width: 1100, height: 1000 },
   }),
   errors = [];
 await context.addInitScript(() => {
@@ -35,7 +35,7 @@ async function click(name) {
 }
 async function close() {
   await click("关闭");
-  await page.getByRole("dialog").waitFor({ state: "detached" });
+  await page.locator(".dock-panel, [role=dialog]").waitFor({ state: "detached" });
 }
 async function draw(p, points) {
   const r = await p.locator(".music-canvas").boundingBox();
@@ -84,7 +84,7 @@ try {
     0,
   );
   const r = await page.locator(".music-canvas").boundingBox();
-  assert.equal(r.width, 1440);
+  assert.equal(r.width, 1100);
   assert.equal(r.height, 1000);
   const x1 = await page.locator(".playhead line").getAttribute("x1");
   await page.waitForTimeout(250);
@@ -260,7 +260,7 @@ try {
     3,
   );
   await click("橡皮擦 (E)");
-  await page.mouse.click(1440 * 0.12, 1000 * 0.76);
+  await page.mouse.click(1100 * 0.12, 1000 * 0.76);
   assert.equal(
     await page
       .locator(".music-canvas [data-material=dry-pigment] path")

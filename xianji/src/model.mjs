@@ -7,37 +7,20 @@ export const COLORS = [
   "#6b466d",
 ];
 export const INSTRUMENTS = [
-  {
-    id: "keys",
-    name: "柔和电钢",
-    description: "圆润、带一点颗粒感",
-    color: COLORS[0],
-  },
-  {
-    id: "bell",
-    name: "空灵钟琴",
-    description: "清亮，像水滴落下",
-    color: COLORS[1],
-  },
-  {
-    id: "pluck",
-    name: "拨弦",
-    description: "短促，轻快的弦声",
-    color: COLORS[2],
-  },
-  {
-    id: "pad",
-    name: "空气合成器",
-    description: "缓慢铺开的柔软声音",
-    color: COLORS[3],
-  },
-  {
-    id: "bass",
-    name: "温暖贝斯",
-    description: "低一个八度，稳稳托住旋律",
-    color: COLORS[4],
-  },
+ {id:'keys',name:'柔和电钢',description:'圆润、带一点颗粒感',color:COLORS[0],midi:4,transpose:0},
+ {id:'bell',name:'空灵钟琴',description:'清亮，像水滴落下',color:COLORS[1],midi:10,transpose:0},
+ {id:'pluck',name:'拨弦',description:'短促，轻快的弦声',color:COLORS[2],midi:24,transpose:0},
+ {id:'pad',name:'空气合成器',description:'柔软铺开，连续延音',color:COLORS[3],midi:89,transpose:0,continuous:true},
+ {id:'bass',name:'温暖贝斯',description:'低一个八度，托住旋律',color:COLORS[4],midi:33,transpose:-12},
+ {id:'analog',name:'柔和模拟',description:'温暖的模拟波形，平滑连音',color:COLORS[0],midi:81,transpose:0,continuous:true},
+ {id:'strings',name:'丝绒弦垫',description:'绵长的弦乐合成，缓缓流动',color:COLORS[1],midi:50,transpose:0,continuous:true},
+ {id:'glass',name:'玻璃合成',description:'清透的电子泛音，柔亮延音',color:COLORS[2],midi:98,transpose:0,continuous:true},
+ {id:'choir',name:'空气人声',description:'轻柔的人声感合成，像一口气',color:COLORS[3],midi:54,transpose:0,continuous:true},
+ {id:'lead',name:'圆润主音',description:'饱满的电子主旋律，带滑音',color:COLORS[4],midi:80,transpose:0,continuous:true},
+ {id:'air',name:'呼吸风笛',description:'有呼吸感的电子管乐',color:COLORS[0],midi:73,transpose:0,continuous:true},
+ {id:'sub',name:'深潜低音',description:'深沉、连贯的低频合成',color:COLORS[1],midi:38,transpose:-24,continuous:true},
 ];
+export function instrumentPitch(midi,id){return midi+(INSTRUMENTS.find(i=>i.id===id)?.transpose||0);}
 export const SCALES = {
   pentatonic: { name: "五声音阶", steps: [0, 2, 4, 7, 9] },
   major: { name: "大调音阶", steps: [0, 2, 4, 5, 7, 9, 11] },
@@ -309,7 +292,7 @@ export function exportMidi(doc) {
     return a;
   };
   const events = [];
-  const programs = { keys: 4, bell: 10, pluck: 24, pad: 89, bass: 33 };
+  const programs = Object.fromEntries(INSTRUMENTS.map(i=>[i.id,i.midi]));
   doc.tracks.forEach((t, i) =>
     events.push({
       tick: 0,
@@ -325,7 +308,7 @@ export function exportMidi(doc) {
     const track = doc.strokes.find((s) => s.id === n.stroke).track,
       index = doc.tracks.findIndex((t) => t.id === track),
       ch = index >= 9 ? index + 1 : index,
-      m = n.midi - (n.instrument === "bass" ? 12 : 0),
+      m = instrumentPitch(n.midi,n.instrument),
       tick = Math.round(((n.time * doc.bpm) / 60) * 480);
     events.push(
       { tick, bytes: [144 + ch, m, Math.max(1, Math.round(n.volume * 90))] },

@@ -96,6 +96,18 @@ export function TempoInput({ value, onChange }) {
     />
   );
 }
+// A modeless inspector: the canvas and keyboard stay available beside it.
+export function DockPanel({ title, subtitle, close, children }) {
+  const reduce = useReducedMotion();
+  return <motion.aside className="dock-panel" aria-label={title}
+    initial={{ opacity: 0, x: reduce ? 0 : 20 }} animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: reduce ? 0 : 16 }}
+    transition={{ duration: reduce ? .1 : .24, ease: [.22, 1, .36, 1] }}>
+    <header className="modal-header"><div><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}</div>
+      <IconButton label="关闭" onClick={close}><X /></IconButton></header>
+    <div className="modal-content">{children}</div>
+  </motion.aside>;
+}
 export function Modal({
   title,
   subtitle,
