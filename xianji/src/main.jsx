@@ -38,6 +38,7 @@ import {
 } from "./icons.jsx";
 import {
   INSTRUMENTS,
+  BRUSH_INSTRUMENTS,
   getInstrument,
   SCALES,
   ROOTS,
@@ -453,7 +454,9 @@ function App() {
         const lines = doc.strokes
           .map(
             (s) =>
-              `<path d="${pathData(s.points)}" fill="none" stroke="${s.color}" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`,
+              s.points.length === 1
+                ? `<circle cx="${s.points[0].x*1000}" cy="${s.points[0].y*560}" r="${s.width/2}" fill="${s.color}"/>`
+                : `<path d="${pathData(s.points)}" fill="none" stroke="${s.color}" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`,
           )
           .join("");
         download(
@@ -704,7 +707,7 @@ function App() {
           </div>
         </div>
         <div className="corner-state">
-          <span>{doc.strokes.length} 条线</span>
+          <span>{doc.strokes.length} 笔</span>
           <span className="state-separator" />
           {saveError ? (
             <button onClick={() => setModal("export")}>导出备份</button>
@@ -757,7 +760,7 @@ function App() {
                   return <button key={entry.id} className="history-snapshot" data-snapshot={index + 1} aria-current={index === timeline.cursor ? "step" : undefined}
                     aria-label={"快照 " + (index + 1) + " " + title} onClick={() => restoreSnapshot(index)}>
                     <span className="history-thumbnail"><Thumbnail doc={entry.doc} /></span>
-                    <span className="history-description"><b>{title}</b><small>{entry.label} · {entry.doc.strokes.length} 条线 · {new Date(entry.at).toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</small></span>
+                    <span className="history-description"><b>{title}</b><small>{entry.label} · {entry.doc.strokes.length} 笔 · {new Date(entry.at).toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</small></span>
                     <span className="history-step">{index === timeline.cursor ? "当前" : String(index + 1).padStart(2,"0")}</span>
                   </button>;
                 }).reverse()}
@@ -772,7 +775,7 @@ function App() {
                     <span>声部 {doc.tracks.indexOf(track) + 1}</span>
                   </div>
                   <div className="instrument-grid">
-                    {INSTRUMENTS.map((i) => (
+                    {BRUSH_INSTRUMENTS.map((i) => (
                       <button
                         key={i.id}
                         className={brush.id === i.id ? "chosen" : ""}
@@ -962,7 +965,7 @@ function App() {
                           {new Set(doc.strokes.filter(s => s.track === t.id).map(s => s.instrument || t.instrument)).size > 1 ? "彩虹声部 " + (i + 1) : getInstrument(doc.strokes.find(s => s.track === t.id)?.instrument || t.instrument).name}
                           <small>
                             {doc.strokes.filter((s) => s.track === t.id).length}{" "}
-                            条线{track.id === t.id ? " · 正在使用" : ""}
+                            笔{track.id === t.id ? " · 正在使用" : ""}
                           </small>
                         </span>
                       </button>
@@ -1233,7 +1236,7 @@ function App() {
                     <span>01</span>
                     <h2>直接画</h2>
                     <p>
-                      从左到右是时间，越往上音越高。画下的线，会跟着节拍循环。
+                      轻点留下圆点，拖动画出线条。从左到右是时间，越往上音越高。
                     </p>
                   </div>
                   <div>

@@ -3,7 +3,8 @@ export const beginHistory = doc => ({entries:[{id:uid(),parent:-1,label:doc.stro
 export function editLabel(before, after) {
   if (before.title !== after.title) return '重命名作品';
   if (before.tracks.length !== after.tracks.length) return after.tracks.length > before.tracks.length ? '添加声部' : '删除声部';
-  if (before.strokes.length !== after.strokes.length) return after.strokes.length > before.strokes.length ? '画下一笔' : after.strokes.length ? '擦除笔触' : '清空画布';
+  if (after.strokes.length > before.strokes.length) return after.strokes.at(-1)?.points.length === 1 ? '点下一个音' : '画下一笔';
+  if (after.strokes.length < before.strokes.length) return after.strokes.length ? '擦除笔触' : '清空画布';
   if (before.bpm !== after.bpm) return '调整速度';
   if (before.scale !== after.scale) return '更换音阶';
   if (before.root !== after.root) return '更换调性';

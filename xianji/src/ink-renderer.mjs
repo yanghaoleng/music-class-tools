@@ -45,13 +45,17 @@ export class InkRenderer {
     let path = this.paths.get(stroke);
     if (path) return path;
     path = new Path2D();
-    stroke.points.forEach((p, i) => i ? path.lineTo(p.x * this.width, p.y * this.height) : path.moveTo(p.x * this.width, p.y * this.height));
+    if (stroke.points.length === 1) {
+      const p = stroke.points[0];path.arc(p.x * this.width, p.y * this.height, stroke.width / 2, 0, Math.PI * 2);
+    } else stroke.points.forEach((p, i) => i ? path.lineTo(p.x * this.width, p.y * this.height) : path.moveTo(p.x * this.width, p.y * this.height));
     this.paths.set(stroke, path); return path;
   }
   paint(ctx, stroke, opacity = 1, path = this.path(stroke)) {
     ctx.globalAlpha = opacity; ctx.strokeStyle = this.pattern(stroke.color, ctx);
     ctx.lineWidth = stroke.width; ctx.lineCap = ctx.lineJoin = 'round';
-    ctx.stroke(path); ctx.globalAlpha = 1;
+    if (stroke.points.length === 1) {ctx.fillStyle = ctx.strokeStyle;ctx.fill(path);}
+    else ctx.stroke(path);
+    ctx.globalAlpha = 1;
   }
   setDoc(doc) {
     const previous = this.doc;
@@ -88,10 +92,12 @@ export class InkRenderer {
       ctx.clearRect(0, 0, this.width, this.height); this.liveId = stroke?.id; this.liveCount = 0;
     }
     if (!stroke?.points.length) return;
+    if (stroke.points.length === 1 && this.liveCount === 1) return;
     const path = new Path2D();
-    stroke.points.slice(Math.max(0, this.liveCount - 1)).forEach((p, i) => i ? path.lineTo(p.x * this.width, p.y * this.height) : path.moveTo(p.x * this.width, p.y * this.height));
+    if (stroke.points.length === 1) {
+      const p = stroke.points[0];path.arc(p.x * this.width, p.y * this.height, stroke.width / 2, 0, Math.PI * 2);
+    } else stroke.points.slice(Math.max(0, this.liveCount - 1)).forEach((p, i) => i ? path.lineTo(p.x * this.width, p.y * this.height) : path.moveTo(p.x * this.width, p.y * this.height));
     this.liveCount = stroke.points.length;
-    if (stroke.points.length === 1) {const p = stroke.points[0];path.lineTo(p.x * this.width + .1, p.y * this.height);}
     this.paint(ctx, stroke, 1, path);
   }
   clearLive() { this.liveId = null; this.liveCount = 0; const ctx = this.context(this.live); ctx.clearRect(0, 0, this.width, this.height); }

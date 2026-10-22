@@ -23,6 +23,12 @@ const LEGACY_INSTRUMENTS=[
 ];
 const instrumentMap=new Map([...INSTRUMENTS,...LEGACY_INSTRUMENTS].map(i=>[i.id,i]));
 export const getInstrument = id => instrumentMap.get(id);
+// Display order: bright, crisp attacks first; soft and deep voices last.
+// Metadata, assigned colors and existing composition defaults stay stable.
+export const BRUSH_INSTRUMENTS = [
+  'cymbal', 'bell', 'pluck', 'lead', 'keys', 'air',
+  'strings', 'choir', 'pad', 'bass', 'kick', 'sub',
+].map(getInstrument);
 export function instrumentPitch(midi,id){const i=getInstrument(id);return i?.percussion ?? midi+(i?.transpose||0);}
 export const SCALES = {
   pentatonic: { name: "五声音阶", steps: [0, 2, 4, 7, 9] },
@@ -88,7 +94,9 @@ export function notesAt(doc, step) {
     .flatMap((s) => {
       const t = doc.tracks.find((t) => t.id === s.track);
       if (!t || t.muted || (solo && !t.solo)) return [];
-      const ys = intersections(s.points, x);
+      const ys = s.points.length === 1
+        ? (step === Math.min(count-1,Math.floor(s.points[0].x*count)) ? [s.points[0].y] : [])
+        : intersections(s.points, x);
       const seen = new Set();
       return ys.flatMap((y) => {
         const midi = getInstrument(s.instrument || t.instrument).percussion ?? pitchAt(y, doc);

@@ -25,6 +25,14 @@ export const pathData = (points) =>
         .join(" ");
 export const pigmentFilterMarkup = (id) =>
   `<filter id="${id}" filterUnits="userSpaceOnUse" x="-15" y="-15" width="1030" height="590" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".72 .94" numOctaves="3" seed="18" result="grain"/><feColorMatrix in="grain" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.4 0 0 0 -.1" result="grit"/><feComponentTransfer in="grit" result="dry"><feFuncA type="discrete" tableValues="0 .18 .5 .82 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="dry" operator="in" result="pigment"/><feDisplacementMap in="pigment" in2="grain" scale="1.25" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+function StrokeMark({stroke, opacity=1, nonScaling=false}) {
+  if (stroke.points.length === 1) {
+    const p=stroke.points[0];
+    return <circle cx={p.x*1000} cy={p.y*560} r={stroke.width/2} fill={stroke.color} opacity={opacity} />;
+  }
+  return <path d={pathData(stroke.points)} fill="none" stroke={stroke.color} strokeWidth={stroke.width}
+    opacity={opacity} strokeLinecap="round" strokeLinejoin="round" vectorEffect={nonScaling ? "non-scaling-stroke" : undefined} />;
+}
 export const Marks = memo(function Marks({ doc, draft = null }) {
   const solo = doc.tracks.some((t) => t.solo),
     id = "pigment-" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -34,19 +42,7 @@ export const Marks = memo(function Marks({ doc, draft = null }) {
       <g filter={"url(#" + id + ")"} data-material="dry-pigment">
         {[...doc.strokes, ...(draft ? [draft] : [])].map((s) => {
           const track = doc.tracks.find((t) => t.id === s.track);
-          return (
-            <path
-              key={s.id}
-              d={pathData(s.points)}
-              fill="none"
-              stroke={s.color}
-              strokeWidth={s.width}
-              opacity={track?.muted || (solo && !track?.solo) ? 0.18 : 1}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          );
+          return <StrokeMark key={s.id} stroke={s} nonScaling opacity={track?.muted || (solo && !track?.solo) ? .18 : 1} />;
         })}
       </g>
     </>
@@ -64,9 +60,7 @@ export const Thumbnail = memo(function Thumbnail({doc}) {
   return <svg ref={ref} viewBox="0 0 1000 560" aria-hidden="true">
     {visible && doc.strokes.map(s => {
       const t = doc.tracks.find(t => t.id === s.track);
-      return <path key={s.id} d={pathData(s.points)} fill="none" stroke={s.color}
-        opacity={t?.muted || (solo && !t?.solo) ? .18 : 1}
-        strokeWidth={s.width} strokeLinecap="round" strokeLinejoin="round" />;
+      return <StrokeMark key={s.id} stroke={s} opacity={t?.muted || (solo && !t?.solo) ? .18 : 1} />;
     })}
   </svg>;
 });
@@ -312,7 +306,9 @@ export function ScoreCanvas({doc, track, instrument, color, width, tool, onStrok
     base.current.setPointerCapture(e.pointerId);
     const p = point(e);
     if (tool === "erase") {draftRef.current = {erase: true};onErase(p, gesture.current.rect);return;}
-    const stroke = {id: uid(), track: track.id, instrument, color, width, points: [p]};
+    gesture.current.start = p;gesture.current.threshold = e.pointerType === "touch" ? 6 : 3;
+    gesture.current.line = false;
+    const stroke = {id: uid(), track: track.id, instrument, color, width: 9, points: [p]};
     draftRef.current = stroke;player.liveStroke = stroke;setDrawing(true);
     renderer.current?.drawLive(stroke);preview(p);
   }
@@ -321,23 +317,28 @@ export function ScoreCanvas({doc, track, instrument, color, width, tool, onStrok
     if (draftRef.current.erase) {onErase(point(e), gesture.current.rect);return;}
     const stroke = draftRef.current;
     const coalesced = e.nativeEvent.getCoalescedEvents?.();
+    let changed = false;
     for (const event of coalesced?.length ? coalesced : [e]) {
-      const p = point(event), a = stroke.points.at(-1);
-      if (Math.hypot(p.x - a.x, p.y - a.y) < .0015) continue;
+      const p = point(event), a = stroke.points.at(-1), g = gesture.current;
+      let startedLine = false;
+      if (!g.line) {
+        if (Math.hypot((p.x-g.start.x)*g.rect.width,(p.y-g.start.y)*g.rect.height) < g.threshold) continue;
+        g.line = true;startedLine = true;stroke.width = width;
+        renderer.current?.clearLive();
+      }
+      if (!startedLine && Math.hypot(p.x - a.x, p.y - a.y) < .0015) continue;
       if (stroke.points.length >= Math.min(2500, 100000 - pointCount)) break;
-      stroke.points.push(p);
+      stroke.points.push(p);changed = true;
     }
-    if (!inputFrame.current) inputFrame.current = requestAnimationFrame(flushInput);
+    if (changed && !inputFrame.current) inputFrame.current = requestAnimationFrame(flushInput);
   }
+
   function end(e) {
     if (e.pointerId !== gesture.current?.id) return;
+    if (e.type === "pointerup" && draftRef.current && !draftRef.current.erase) move(e);
     cancelAnimationFrame(inputFrame.current);inputFrame.current = 0;
-    let stroke = draftRef.current;
+    const stroke = draftRef.current;
     if (stroke && !stroke.erase) {
-      if (stroke.points.length === 1) {
-        const p = stroke.points[0], span = .6 / (doc.bars * 4 * doc.division);
-        stroke = {...stroke, points: [{x: Math.max(0, p.x - span), y: p.y}, {x: Math.min(.99999, p.x + span), y: p.y}]};
-      }
       onStroke(stroke);
     }
     draftRef.current = null;player.liveStroke = null;gesture.current = null;
@@ -347,11 +348,11 @@ export function ScoreCanvas({doc, track, instrument, color, width, tool, onStrok
   return <section className={"canvas-stage " + (tool === "erase" ? "erasing" : "")} aria-label="沉浸画布">
     <canvas ref={base} className="music-canvas" role="application"
       data-stroke-count={doc.strokes.length + (drawing ? 1 : 0)}
-      aria-label="音乐画布，用鼠标或手指画线，高处音高低处音低"
+      aria-label="音乐画布，点按画圆点，拖动画线，高处音高低处音低"
       onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={end} />
     <canvas ref={live} className="live-ink" aria-hidden="true" />
     <canvas ref={highlight} className="playback-ink" aria-hidden="true" />
     <div ref={head} className="playhead" aria-hidden="true" hidden={!playing && player.position() === 0} />
-    {!doc.strokes.length && !drawing && <div className="canvas-empty"><PencilSimple size={26} weight="light" /><p>画一笔，听见它。</p><span>越高的线，越高的音。</span></div>}
+    {!doc.strokes.length && !drawing && <div className="canvas-empty"><PencilSimple size={26} weight="light" /><p>点一下，或画一笔。</p><span>点出单音，画出旋律。</span></div>}
   </section>;
 }

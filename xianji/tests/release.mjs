@@ -28,6 +28,8 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
   await button('画布菜单').click();await button('暗色').click();await page.keyboard.press('Escape');
   await button('画笔与音色').click();await page.locator('.instrument-grid').waitFor();
   assert.equal(await page.locator('.instrument-grid button').count(),12);assert.equal(await page.locator('.color-swatch').count(),0);
+  assert.deepEqual(await page.locator('.instrument-grid img').evaluateAll(imgs=>imgs.map(i=>i.getAttribute('src').split('/').at(-1).replace('.svg',''))),
+    ['cymbal','bell','pluck','lead','keys','air','strings','choir','pad','bass','kick','sub'],'brushes run from bright attacks to deep bass');
   await page.locator('.instrument-grid img').evaluateAll(imgs=>Promise.all(imgs.map(i=>i.decode())));
   await button('低沉底鼓 厚实低频，短促有力').click();await button('金属镲片 轻亮的金属敲击，细碎余响').click();
   await button('关闭').click();await page.getByRole('dialog').waitFor({state:'detached'});

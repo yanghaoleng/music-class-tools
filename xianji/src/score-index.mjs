@@ -20,8 +20,7 @@ export function sampleStroke(stroke, doc) {
   };
   const points = stroke.points;
   if (points.length === 1) {
-    for (let step = 0; step < count; step++)
-      if (Math.abs(points[0].x - (step + .5) / count) < .009) add(step, points[0].y);
+    add(Math.min(count-1,Math.floor(points[0].x*count)), points[0].y);
   }
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1], b = points[i];
