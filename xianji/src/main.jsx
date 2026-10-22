@@ -58,6 +58,7 @@ import {
   TempoInput,
   Thumbnail,
   pathData,
+  pigmentFilterMarkup,
 } from "./components.jsx";
 import "./style.css";
 const STORAGE = "xianji.workspace.v1";
@@ -97,7 +98,7 @@ function App() {
     [library, setLibrary] = useState(initial.library || []),
     [activeTrack, setActiveTrack] = useState(null),
     [color, setColor] = useState(COLORS[0]),
-    [width, setWidth] = useState(4),
+    [width, setWidth] = useState(7),
     [tool, setTool] = useState("draw"),
     [playing, setPlaying] = useState(true),
     [loop, setLoop] = useState(true),
@@ -372,7 +373,7 @@ function App() {
         download(
           new Blob(
             [
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560"><rect width="1000" height="560" fill="#fcf8ff"/>${lines}</svg>`,
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560"><defs>${pigmentFilterMarkup("crayon")}</defs><rect width="1000" height="560" fill="#faf9f6"/><g filter="url(#crayon)">${lines}</g></svg>`,
             ],
             { type: "image/svg+xml" },
           ),
@@ -750,7 +751,7 @@ function App() {
                     <span>{width} px</span>
                   </div>
                   <div className="width-options">
-                    {[2, 4, 7].map((w) => (
+                    {[3, 7, 12].map((w) => (
                       <button
                         key={w}
                         aria-label={w + " px 画笔"}

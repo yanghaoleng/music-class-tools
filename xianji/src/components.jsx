@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState, memo } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useId,
+  memo,
+} from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { X, PencilSimple } from "@phosphor-icons/react";
 import { duration, notesAt, pitches, pitchAt, uid } from "./model.mjs";
@@ -12,26 +19,32 @@ export const pathData = (points) =>
             `${i ? "L" : "M"}${(p.x * 1000).toFixed(2)},${(p.y * 560).toFixed(2)}`,
         )
         .join(" ");
+export const pigmentFilterMarkup = (id) =>
+  `<filter id="${id}" filterUnits="userSpaceOnUse" x="-15" y="-15" width="1030" height="590" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".72 .94" numOctaves="3" seed="18" result="grain"/><feColorMatrix in="grain" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.4 0 0 0 -.1" result="grit"/><feComponentTransfer in="grit" result="dry"><feFuncA type="discrete" tableValues="0 .18 .5 .82 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="dry" operator="in" result="pigment"/><feDisplacementMap in="pigment" in2="grain" scale="1.25" xChannelSelector="R" yChannelSelector="G"/></filter>`;
 export const Marks = memo(function Marks({ doc, draft = null }) {
-  const solo = doc.tracks.some((t) => t.solo);
+  const solo = doc.tracks.some((t) => t.solo),
+    id = "pigment-" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
   return (
     <>
-      {[...doc.strokes, ...(draft ? [draft] : [])].map((s) => {
-        const track = doc.tracks.find((t) => t.id === s.track);
-        return (
-          <path
-            key={s.id}
-            d={pathData(s.points)}
-            fill="none"
-            stroke={s.color}
-            strokeWidth={s.width}
-            opacity={track?.muted || (solo && !track?.solo) ? 0.18 : 1}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        );
-      })}
+      <defs dangerouslySetInnerHTML={{ __html: pigmentFilterMarkup(id) }} />
+      <g filter={"url(#" + id + ")"} data-material="dry-pigment">
+        {[...doc.strokes, ...(draft ? [draft] : [])].map((s) => {
+          const track = doc.tracks.find((t) => t.id === s.track);
+          return (
+            <path
+              key={s.id}
+              d={pathData(s.points)}
+              fill="none"
+              stroke={s.color}
+              strokeWidth={s.width}
+              opacity={track?.muted || (solo && !track?.solo) ? 0.18 : 1}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          );
+        })}
+      </g>
     </>
   );
 });
@@ -338,7 +351,7 @@ export function ScoreCanvas({
               y="0"
               width="18"
               height="560"
-              fill="#b05cce"
+              fill="#888888"
               opacity=".035"
             />
             <line
@@ -346,7 +359,7 @@ export function ScoreCanvas({
               x2={phase * 1000}
               y1="0"
               y2="560"
-              stroke="#b770cf"
+              stroke="#8b8985"
               strokeOpacity=".38"
               strokeWidth="1"
               vectorEffect="non-scaling-stroke"

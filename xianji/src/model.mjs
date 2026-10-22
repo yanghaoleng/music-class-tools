@@ -180,7 +180,7 @@ export function makeDemo(index = 0) {
     id: uid(),
     track: d.tracks[track].id,
     color,
-    width: 4,
+    width: 7,
     points: Array.from({ length: 160 }, (_, i) => {
       const x = start + ((end - start) * i) / 159;
       return { x, y: fn(x) };
