@@ -89,11 +89,13 @@ const initial = readWorkspace(),
   player = new Player(),
   demos = [0, 1, 2].map(makeDemo);
 const ICONS = [
-  { id: "a", name: "回声涂鸦", description: "一笔涂鸦，绕出声波" },
-  { id: "b", name: "交叠波", description: "让两束声音彼此干涉" },
-  { id: "c", name: "共振漩涡", description: "涂鸦在声场里慢慢展开" },
-  { id: "d", name: "声纹笔触", description: "自由的线，穿过规则的声纹" },
+  { id: "a", name: "折线冲刺", description: "一笔折线，果断向前" },
+  { id: "b", name: "双波交织", description: "两道笔触，交汇成声" },
+  { id: "c", name: "声波环", description: "一束声波，穿过共振的环" },
+  { id: "d", name: "节奏签名", description: "坚定的起伏，扫出自由的节奏" },
 ];
+const iconSource = (id, size = 128) => `/xianji/icons/study-${id}-${size}.webp`;
+
 const DOCK_QUERY = "(min-width: 1280px) and (min-height: 680px)";
 function App() {
   const [wideScreen, setWideScreen] = useState(() => window.matchMedia(DOCK_QUERY).matches);
@@ -481,17 +483,16 @@ function App() {
 
   const [icon, setIcon] = useState(() => {
     try {
-      const id = localStorage.getItem("xianji.icon.v1");
-      return ICONS.some((i) => i.id === id) ? id : "a";
+      const id = localStorage.getItem("xianji.icon.v2");
+      return ICONS.some((i) => i.id === id) ? id : "d";
     } catch {
-      return "a";
+      return "d";
     }
   });
   useEffect(() => {
-    document.querySelector('link[rel="icon"]').href =
-      "/xianji/icons/option-" + icon + ".svg";
+    document.querySelector('link[rel="icon"]').href = iconSource(icon);
     try {
-      localStorage.setItem("xianji.icon.v1", icon);
+      localStorage.setItem("xianji.icon.v2", icon);
     } catch {}
   }, [icon]);
   useEffect(() => {
@@ -568,7 +569,7 @@ function App() {
             title="画布与文件"
             onClick={() => setModal("project")}
           >
-            <img src={"/xianji/icons/option-" + icon + ".svg"} alt="" />
+            <img src={iconSource(icon)} alt="" />
             <CaretDown size={12} />
           </button>
           <div className="top-right glass">
@@ -1269,12 +1270,12 @@ function App() {
                     >
                       <div className="icon-preview">
                         <img
-                          src={"/xianji/icons/option-" + item.id + ".svg"}
+                          src={iconSource(item.id, 256)}
                           alt={item.name}
                         />
                         <span className="small-icon">
                           <img
-                            src={"/xianji/icons/option-" + item.id + ".svg"}
+                            src={iconSource(item.id)}
                             alt=""
                           />
                         </span>
@@ -1296,8 +1297,8 @@ function App() {
                     className="text-button"
                     onClick={() => {
                       const a = document.createElement("a");
-                      a.href = "/xianji/icons/option-" + icon + ".svg";
-                      a.download = "icon-" + icon + ".svg";
+                      a.href = iconSource(icon, 256);
+                      a.download = "icon-" + icon + ".webp";
                       a.click();
                     }}
                   >

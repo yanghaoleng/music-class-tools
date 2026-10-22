@@ -1,13 +1,13 @@
 # App Icon · 果断笔触探索
 
-2026-10-22，使用内置 image_gen 生成，供用户选择。尚未替换线上图标。
+2026-10-22，使用内置 image_gen 生成，供用户选择。用户已选 D「节奏签名」为正式默认图标；四张 WebP 预览同时保留在应用的图标方案面板中。
 
-- A.png：折线冲刺
-- B.png：双波交织（推荐）
-- C.png：声波环
-- D.png：节奏签名
+- A.webp：折线冲刺
+- B.webp：双波交织（推荐）
+- C.webp：声波环
+- D.webp：节奏签名
 
-四张均保留原始生成图片；生成任务完成的顺序为 D、C、B、A，文件字母为准。
+四张保留 256 px WebP 预览；生成任务完成的顺序为 D、C、B、A，文件字母为准。
 
 ## Final prompt set
 
@@ -28,3 +28,7 @@ C:
 
 D:
 > Three powerful slanted plum sound-wave strokes of different heights joined by a sweeping raspberry graffiti underline curling upward. Bold rhythmic silhouette, energetic like a signature but absolutely no letters.
+
+## 发布尺寸
+
+128 × 128 用于菜单、favicon 和小尺寸预览；256 × 256 用于 120 CSS px 的方案预览与下载。均为 quality 88 WebP，无放大尺寸或大 PNG 发布副本。原始生成文件保留在生成工具的默认存储目录，不参与构建。

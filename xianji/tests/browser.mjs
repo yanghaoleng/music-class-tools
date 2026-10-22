@@ -294,16 +294,16 @@ try {
   await click("画布菜单");
   await page.getByRole("button", { name: "图标方案", exact: false }).click();
   assert.equal(await page.locator(".icon-choice").count(), 4);
-  await click("方案 D 声纹笔触");
+  await click("方案 D 节奏签名");
   await close();
   assert.match(
     await page.locator(".canvas-menu img").getAttribute("src"),
-    /option-d/,
+    /study-d/,
   );
   await page.reload();
   assert.match(
     await page.locator(".canvas-menu img").getAttribute("src"),
-    /option-d/,
+    /study-d/,
   );
   // All panel opening and closing paths have real motion and restore the canvas.
   for (const name of ["画笔与音色", "旋律规则", "声部混音", "我的作品"]) {
