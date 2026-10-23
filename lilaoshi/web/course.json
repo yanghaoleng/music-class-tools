@@ -1,0 +1,3436 @@
+{
+  "version": 1,
+  "title": "从听懂一个音，到弹好一首曲子",
+  "tracks": [
+    {
+      "id": 0,
+      "title": "先和音乐成为朋友",
+      "goal": "从声音、节奏到读谱，建立基础乐理。"
+    },
+    {
+      "id": 1,
+      "title": "把音乐放到琴键上",
+      "goal": "从和声到双手练习，走近钢琴。"
+    }
+  ],
+  "chapters": [
+    {
+      "id": 0,
+      "title": "听见音乐的轮廓",
+      "subtitle": "先听高低、长短与强弱，认识七个基本音名。",
+      "objective": "能区分音高、时值、力度与音色。",
+      "track": 0,
+      "minutes": "15—20 分钟"
+    },
+    {
+      "id": 1,
+      "title": "把节奏放进身体",
+      "subtitle": "跟着稳定的拍点，读懂音符、休止与拍号。",
+      "objective": "能在四分音符为一拍的情境下读出简单节奏。",
+      "track": 0,
+      "minutes": "15—20 分钟"
+    },
+    {
+      "id": 2,
+      "title": "读懂第一张乐谱",
+      "subtitle": "认识五线谱与谱号，让看见的音变成听见的音。",
+      "objective": "能辨认高低音谱表的基本音位与常用记号。",
+      "track": 0,
+      "minutes": "15—20 分钟"
+    },
+    {
+      "id": 3,
+      "title": "音阶与音程的小秘密",
+      "subtitle": "从全音、半音开始，听见旋律里音与音的距离。",
+      "objective": "能构成 C 大调音阶，辨认基础音程。",
+      "track": 0,
+      "minutes": "15—20 分钟"
+    },
+    {
+      "id": 4,
+      "title": "让旋律有个和声伙伴",
+      "subtitle": "把单音叠成和弦，感受稳定、张力与回家的方向。",
+      "objective": "能辨认大小三和弦，理解 C 大调 I、IV、V。",
+      "track": 1,
+      "minutes": "15—20 分钟"
+    },
+    {
+      "id": 5,
+      "title": "第一次坐到钢琴前",
+      "subtitle": "找到中央 C，认识指法，用放松的动作连接音符。",
+      "objective": "能定位键盘、解释常用指法与基本触键。",
+      "track": 1,
+      "minutes": "15—20 分钟"
+    },
+    {
+      "id": 6,
+      "title": "弹出你的第一段音乐",
+      "subtitle": "慢练、分手、连句，把音符变成有呼吸的表达。",
+      "objective": "能制定练习步骤，理解简单双手配合与乐句。",
+      "track": 1,
+      "minutes": "15—20 分钟"
+    }
+  ],
+  "questions": [
+    {
+      "id": 0,
+      "chapter": 0,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "哪个声音站得更高？",
+      "principle": "音高",
+      "brief": "先分别试听两个声音。哪个声音的音高更高？这里比较的是高低，不是音量。",
+      "labels": [
+        "声音二",
+        "声音一"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "声音二",
+          "lines": [
+            "仔细听声音的高低"
+          ],
+          "notes": [
+            72
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "声音一",
+          "lines": [
+            "仔细听声音的高低"
+          ],
+          "notes": [
+            60
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "在同样音量下，较高的 C5 比较低的 C4 高一个八度。音高与振动频率有关；把音量调大，并不会把同一个音变高。",
+      "rule": "音高：在同样音量下，较高的 C5 比较低的 C4 高一个八度。音高与振动频率有关；把音量调大，并不会把同一个音变高。",
+      "tip": "你能哼出较低的那个音，再向上寻找较高的音吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "在同样音量下，较高的 C5 比较低的 C4 高一个八度。音高与振动频率有关；把音量调大，并不会把同一个音变高。",
+        "你能哼出较低的那个音，再向上寻找较高的音吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "先分别试听两个声音。比较后，哪个声音的音高更高？这里比较的是高低，不是音量。"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "chapter": 0,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "让一个音多停一会儿",
+      "principle": "时值",
+      "brief": "两个声音的音高相同。哪个声音持续得更久？",
+      "labels": [
+        "声音一",
+        "声音二"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "声音一",
+          "lines": [
+            "只比较持续的时间"
+          ],
+          "notes": [
+            64
+          ],
+          "durations": [
+            0.5
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "声音二",
+          "lines": [
+            "只比较持续的时间"
+          ],
+          "notes": [
+            64
+          ],
+          "durations": [
+            2
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "持续更久的是长音。时值说的是声音占用的时间，与音高、音量分别是不同的事情。这里的两个声音都是同一个 E。",
+      "rule": "时值：持续更久的是长音。时值说的是声音占用的时间，与音高、音量分别是不同的事情。这里的两个声音都是同一个 E。",
+      "tip": "如果把速度加快，同一个二分音符占用的秒数会改变吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "持续更久的是长音。时值说的是声音占用的时间，与音高、音量分别是不同的事情。这里的两个声音都是同一个 E。",
+        "如果把速度加快，同一个二分音符占用的秒数会改变吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "两个声音的音高相同。比较后，哪个声音持续得更久？"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "chapter": 0,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "同一个音，可以轻一点",
+      "principle": "力度",
+      "brief": "音高和时值都不变。想把同一个音弹得更轻，应该改变什么？",
+      "labels": [
+        "换成更低的音",
+        "保持音高，减小力度"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "换成更低的音",
+          "lines": [
+            "C5 → C4"
+          ],
+          "notes": [
+            72,
+            60
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "保持音高，减小力度",
+          "lines": [
+            "同一个 C4 · 更轻地弹"
+          ],
+          "notes": [
+            60,
+            60
+          ],
+          "velocity": 0.45
+        }
+      ],
+      "correct": 1,
+      "why": "更轻说的是力度。保持同一个琴键并减轻触键，可以使声音变轻；换成更低的音则改变了音高。",
+      "rule": "力度：更轻说的是力度。保持同一个琴键并减轻触键，可以使声音变轻；换成更低的音则改变了音高。",
+      "tip": "试着用同一个音，表达一次提问、一次轻声回答。",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "更轻说的是力度。保持同一个琴键并减轻触键，可以使声音变轻；换成更低的音则改变了音高。",
+        "试着用同一个音，表达一次提问、一次轻声回答。"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "音高和时值都不变。想把同一个音弹得更轻，应该改变什么？"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "chapter": 0,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "为什么认得出不同乐器？",
+      "principle": "音色",
+      "brief": "钢琴和笛子演奏相同音高、相近音量的长音。主要是什么帮助我们分辨它们？",
+      "labels": [
+        "声音的质感与变化不同",
+        "一定是它们的音名不同"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "声音的质感与变化不同",
+          "lines": [
+            "起音 · 泛音 · 衰减"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一定是它们的音名不同",
+          "lines": [
+            "同音高就不可能听出区别"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "即使音高与音量接近，声音的起音、泛音和衰减仍可能不同，这些共同影响音色。不是每种乐器都必须演奏不同音名才能被认出。",
+      "rule": "音色：即使音高与音量接近，声音的起音、泛音和衰减仍可能不同，这些共同影响音色。不是每种乐器都必须演奏不同音名才能被认出。",
+      "tip": "你会用哪些日常词语描述钢琴与笛子的声音？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "即使音高与音量接近，声音的起音、泛音和衰减仍可能不同，这些共同影响音色。不是每种乐器都必须演奏不同音名才能被认出。",
+        "你会用哪些日常词语描述钢琴与笛子的声音？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "钢琴和笛子演奏相同音高、相近音量的长音。主要是什么帮助我们分辨它们？"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "chapter": 0,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "七个音名排排队",
+      "principle": "音名",
+      "brief": "从 C 开始，沿白键依次向右弹七个不同音名。哪一组顺序正确？",
+      "labels": [
+        "C D E G F A B",
+        "C D E F G A B"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "scale",
+          "title": "C D E G F A B",
+          "lines": [
+            "检查中间是否有交换"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            67,
+            65,
+            69,
+            71
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "scale",
+          "title": "C D E F G A B",
+          "lines": [
+            "七个基本音名"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67,
+            69,
+            71
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "从 C 开始向上，七个基本音名依次是 C、D、E、F、G、A、B，然后回到更高的 C。音名循环，音高仍在上升。",
+      "rule": "音名：从 C 开始向上，七个基本音名依次是 C、D、E、F、G、A、B，然后回到更高的 C。音名循环，音高仍在上升。",
+      "tip": "如果从 A 出发，往上到下一个 A，会经过哪些音名？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "从 C 开始向上，七个基本音名依次是 C、D、E、F、G、A、B，然后回到更高的 C。音名循环，音高仍在上升。",
+        "如果从 A 出发，往上到下一个 A，会经过哪些音名？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "从 C 开始，沿白键依次向右弹七个不同音名。哪一组顺序正确？"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "chapter": 0,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "这条旋律往哪儿走？",
+      "principle": "旋律方向",
+      "brief": "目标是让旋律一步步向上。哪一段符合这个方向？可以先试听。",
+      "labels": [
+        "片段一",
+        "片段二"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "片段一",
+          "lines": [
+            "观察或试听走向"
+          ],
+          "notes": [
+            67,
+            65,
+            64,
+            62,
+            60
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "片段二",
+          "lines": [
+            "观察或试听走向"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "从 C 到 D、E、F、G，音高逐步上升。五线谱上的音符也会逐渐向上；另一段则是相反方向。",
+      "rule": "旋律方向：从 C 到 D、E、F、G，音高逐步上升。五线谱上的音符也会逐渐向上；另一段则是相反方向。",
+      "tip": "上行一定代表开心吗？你还能想到什么情绪？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "从 C 到 D、E、F、G，音高逐步上升。五线谱上的音符也会逐渐向上；另一段则是相反方向。",
+        "上行一定代表开心吗？你还能想到什么情绪？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "目标是让旋律一步步向上。哪一段符合这个方向？可以先试听。"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "chapter": 0,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "小声不等于低音",
+      "principle": "区分声音属性",
+      "brief": "一位同学说：“这个音太高了，调小音量就会低下来。”",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "同一个 A4",
+          "lines": [
+            "音量可以变，琴键和音高保持不变"
+          ],
+          "notes": [
+            69
+          ]
+        }
+      ],
+      "prompt": "用自己的话区分“高低”和“强弱”，再设计一个能验证的简单实验。",
+      "reference": "音高和振动频率有关；强弱和声音的力度有关。固定同一个琴键，先轻弹再较强地弹：主要改变强弱，音高基本不变。也可在音量相近时比较两个不同琴键。",
+      "rubric": [
+        "区分音高与力度",
+        "固定一个变量，改变另一个变量",
+        "说明预期听到的变化"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "用自己的话区分“高低”和“强弱”，再设计一个能验证的简单实验。"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "chapter": 0,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "给旋律画一条线",
+      "principle": "听觉观察",
+      "brief": "试听这段原创的五音旋律，暂时不用记每个音的名字。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "听见起伏",
+          "lines": [
+            "听一遍，再用手势描出走向"
+          ],
+          "notes": [
+            60,
+            64,
+            67,
+            65,
+            60
+          ]
+        }
+      ],
+      "prompt": "描述它先怎样变化、后来怎样变化，并说一个你能听到的具体依据。",
+      "reference": "旋律先从 C 上行经过 E 到 G，再经过 F 回落至 C。允许用“先爬上去，再走下来”等日常语言；不要求说出确切音名。",
+      "rubric": [
+        "说明先上行后下行",
+        "提供可听见的具体依据"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "描述它先怎样变化、后来怎样变化，并说一个你能听到的具体依据。"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "chapter": 1,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "让脚步保持一样的距离",
+      "principle": "稳定拍点",
+      "brief": "目标是建立稳定的拍点，不加速也不减速。哪一种练法更合适？",
+      "labels": [
+        "越来越快地数",
+        "等间隔地数"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "越来越快地数",
+          "lines": [
+            "1　 2　3 4"
+          ],
+          "notes": [
+            60,
+            60,
+            60,
+            60
+          ],
+          "durations": [
+            1,
+            0.8,
+            0.6,
+            0.4
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "等间隔地数",
+          "lines": [
+            "1　2　3　4"
+          ],
+          "notes": [
+            60,
+            60,
+            60,
+            60
+          ],
+          "durations": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "稳定拍点的间隔一致。先以舒适速度均匀数拍、走步或拍手，再把不同长短的节奏放进这些拍点。",
+      "rule": "稳定拍点：稳定拍点的间隔一致。先以舒适速度均匀数拍、走步或拍手，再把不同长短的节奏放进这些拍点。",
+      "tip": "一个长音持续两拍时，你的脚步还需要继续走吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "稳定拍点的间隔一致。先以舒适速度均匀数拍、走步或拍手，再把不同长短的节奏放进这些拍点。",
+        "一个长音持续两拍时，你的脚步还需要继续走吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "目标是建立稳定的拍点，不加速也不减速。比较两种表达，哪一种练法更合适？"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "chapter": 1,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "一个音，走过两拍",
+      "principle": "四分与二分音符",
+      "brief": "本题规定四分音符为一拍。哪个音符持续两拍？",
+      "labels": [
+        "二分音符",
+        "四分音符"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "二分音符",
+          "lines": [
+            "2 拍"
+          ],
+          "notes": [
+            60
+          ],
+          "durations": [
+            2
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "四分音符",
+          "lines": [
+            "1 拍"
+          ],
+          "notes": [
+            60
+          ],
+          "durations": [
+            1
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "四分音符为一拍时，二分音符持续两拍，全音符持续四拍。时值是比例关系，实际秒数还取决于速度。",
+      "rule": "四分与二分音符：四分音符为一拍时，二分音符持续两拍，全音符持续四拍。时值是比例关系，实际秒数还取决于速度。",
+      "tip": "在每分钟 60 拍时，一个二分音符大约持续几秒？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "四分音符为一拍时，二分音符持续两拍，全音符持续四拍。时值是比例关系，实际秒数还取决于速度。",
+        "在每分钟 60 拍时，一个二分音符大约持续几秒？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "本题规定四分音符为一拍。比较后，哪个音符持续两拍？"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "chapter": 1,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "把一拍分成两份",
+      "principle": "八分音符",
+      "brief": "四分音符为一拍时，哪一种节奏正好占满一拍？",
+      "labels": [
+        "两个四分音符",
+        "两个八分音符"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "两个四分音符",
+          "lines": [
+            "两次发声，共 2 拍"
+          ],
+          "notes": [
+            60,
+            60
+          ],
+          "durations": [
+            1,
+            1
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "两个八分音符",
+          "lines": [
+            "两次发声，共 1 拍"
+          ],
+          "notes": [
+            60,
+            60
+          ],
+          "durations": [
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "一个八分音符是半拍，两个等长八分音符合起来是一拍。每拍可以数“1 和”，帮助把一拍均匀分成两份。",
+      "rule": "八分音符：一个八分音符是半拍，两个等长八分音符合起来是一拍。每拍可以数“1 和”，帮助把一拍均匀分成两份。",
+      "tip": "四个八分音符一共占几拍？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "一个八分音符是半拍，两个等长八分音符合起来是一拍。每拍可以数“1 和”，帮助把一拍均匀分成两份。",
+        "四个八分音符一共占几拍？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "四分音符为一拍时，比较两种表达，哪一种节奏正好占满一拍？"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "chapter": 1,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "这一小节装得下吗？",
+      "principle": "四四拍",
+      "brief": "在 4/4 拍中，每小节有四个四分音符拍。哪一组正好装满一小节？",
+      "labels": [
+        "二分 + 四分 + 四分",
+        "二分 + 二分 + 四分"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "二分 + 四分 + 四分",
+          "lines": [
+            "2 + 1 + 1"
+          ],
+          "notes": [
+            60,
+            62,
+            64
+          ],
+          "durations": [
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "二分 + 二分 + 四分",
+          "lines": [
+            "2 + 2 + 1"
+          ],
+          "notes": [
+            60,
+            62,
+            64
+          ],
+          "durations": [
+            2,
+            2,
+            1
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "二分音符两拍，加两个一拍的四分音符，合计四拍，正好填满一个 4/4 小节。另一组共五拍。",
+      "rule": "四四拍：二分音符两拍，加两个一拍的四分音符，合计四拍，正好填满一个 4/4 小节。另一组共五拍。",
+      "tip": "如果把其中一个四分音符换成四分休止符，总拍数会变吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "二分音符两拍，加两个一拍的四分音符，合计四拍，正好填满一个 4/4 小节。另一组共五拍。",
+        "如果把其中一个四分音符换成四分休止符，总拍数会变吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "在 4/4 拍中，每小节有四个四分音符拍。哪一组正好装满一小节？"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "chapter": 1,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "不发声，也要继续数",
+      "principle": "休止符",
+      "brief": "四分音符为一拍。遇到一个四分休止符，哪一种处理正确？",
+      "labels": [
+        "静默一拍，拍点继续",
+        "跳过它，立刻弹下个音"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "静默一拍，拍点继续",
+          "lines": [
+            "音 · 停 · 音 · 音"
+          ],
+          "notes": [
+            60,
+            null,
+            64,
+            67
+          ],
+          "durations": [
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "跳过它，立刻弹下个音",
+          "lines": [
+            "把静默的时间删掉"
+          ],
+          "notes": [
+            60,
+            64
+          ],
+          "durations": [
+            1,
+            1
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "休止符表示有长度的静默。四分休止符占用一拍；这段时间不发声，内心的拍点仍然继续。",
+      "rule": "休止符：休止符表示有长度的静默。四分休止符占用一拍；这段时间不发声，内心的拍点仍然继续。",
+      "tip": "你能不出声地数完休止，再准确接回下一个音吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "休止符表示有长度的静默。四分休止符占用一拍；这段时间不发声，内心的拍点仍然继续。",
+        "你能不出声地数完休止，再准确接回下一个音吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "四分音符为一拍。遇到一个四分休止符，比较两种表达，哪一种处理正确？"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "chapter": 1,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "小圆点多给了多少时间？",
+      "principle": "附点",
+      "brief": "仍以四分音符为一拍。附点四分音符加一个八分音符，一共几拍？",
+      "labels": [
+        "一共 3 拍",
+        "一共 2 拍"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一共 3 拍",
+          "lines": [
+            "把附点误当作多一整拍"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "一共 2 拍",
+          "lines": [
+            "1.5 + 0.5 = 2"
+          ],
+          "notes": [
+            60,
+            64
+          ],
+          "durations": [
+            1.5,
+            0.5
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "附点增加原时值的一半。四分音符一拍，加半拍变成一拍半，再加一个半拍的八分音符，一共两拍。",
+      "rule": "附点：附点增加原时值的一半。四分音符一拍，加半拍变成一拍半，再加一个半拍的八分音符，一共两拍。",
+      "tip": "附点二分音符在这里会持续几拍？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "附点增加原时值的一半。四分音符一拍，加半拍变成一拍半，再加一个半拍的八分音符，一共两拍。",
+        "附点二分音符在这里会持续几拍？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "仍以四分音符为一拍。附点四分音符加一个八分音符，一共几拍？"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "chapter": 1,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "为什么越拍越快？",
+      "principle": "节拍与节奏",
+      "brief": "一位同学拍均匀的四拍时很稳定，一加入八分音符就越拍越快。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "拍点不变，节奏细分",
+          "lines": [
+            "每拍下面都还能数出两个半拍"
+          ],
+          "notes": [
+            60,
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "durations": [
+            1,
+            0.5,
+            0.5,
+            1,
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "prompt": "给他一个具体练法，说明怎样保留稳定拍点，同时容纳更密的音。",
+      "reference": "可慢速踏稳定四分拍，口数“1 和 2 和 3 和 4 和”，手拍八分节奏。先确认脚步或节拍器不变，再渐进加入节奏；不是音多就加快拍点。",
+      "rubric": [
+        "区分稳定拍点与节奏细分",
+        "给出慢速和可观察的练习步骤"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "给他一个具体练法，说明怎样保留稳定拍点，同时容纳更密的音。"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "chapter": 1,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "留一拍给安静",
+      "principle": "节奏补全",
+      "brief": "请为一个 4/4 小节设计节奏，四分音符为一拍，至少包含一个休止符。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "beats",
+          "title": "一个小节，四个拍位",
+          "lines": [
+            "1　·　2　·　3　·　4"
+          ],
+          "notes": []
+        }
+      ],
+      "prompt": "用“音符名称 + 拍数”的方式写出顺序，并核对总拍数。",
+      "reference": "例如四分音符1拍、四分休止符1拍、二分音符2拍，合计4拍。其他包含休止、总长恰为4拍的可行组合也成立。",
+      "rubric": [
+        "休止有明确时值",
+        "总拍数恰为四拍",
+        "顺序可执行"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "用“音符名称 + 拍数”的方式写出顺序，并核对总拍数。"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "chapter": 2,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "线和间都能住音符",
+      "principle": "五线谱位置",
+      "brief": "五线谱的音符从低到高相邻移动时，哪一种理解正确？",
+      "labels": [
+        "只数五条线，跳过所有间",
+        "线、间交替向上"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "只数五条线，跳过所有间",
+          "lines": [
+            "间里不能放音符"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "线、间交替向上",
+          "lines": [
+            "每移动到相邻线或间，走到相邻基本音级"
+          ],
+          "notes": [
+            64,
+            65,
+            67,
+            69,
+            71
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "五线谱由五条线与四个间构成，音符都可以放。相邻的线和间对应相邻的基本音级；具体音名还要结合谱号。",
+      "rule": "五线谱位置：五线谱由五条线与四个间构成，音符都可以放。相邻的线和间对应相邻的基本音级；具体音名还要结合谱号。",
+      "tip": "音符跑到五线谱外面以后，可以怎样写？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "五线谱由五条线与四个间构成，音符都可以放。相邻的线和间对应相邻的基本音级；具体音名还要结合谱号。",
+        "音符跑到五线谱外面以后，可以怎样写？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "五线谱的音符从低到高相邻移动时，比较两种表达，哪一种理解正确？"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "chapter": 2,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "高音谱表的第二线",
+      "principle": "高音谱号",
+      "brief": "从下向上数，在高音谱表中，第二条线上的音是什么？",
+      "labels": [
+        "E4",
+        "G4"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "E4",
+          "lines": [
+            "从下往上辨认"
+          ],
+          "notes": [
+            64
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "G4",
+          "lines": [
+            "从下往上辨认"
+          ],
+          "notes": [
+            67
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "高音谱号标记 G 的位置：从下往上第二条线是 G4。第一条线是 E4，中间的第一间是 F4。",
+      "rule": "高音谱号：高音谱号标记 G 的位置：从下往上第二条线是 G4。第一条线是 E4，中间的第一间是 F4。",
+      "tip": "如果再往上一间，会到哪个音？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "高音谱号标记 G 的位置：从下往上第二条线是 G4。第一条线是 E4，中间的第一间是 F4。",
+        "如果再往上一间，会到哪个音？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "从下向上数，在高音谱表中，第二条线上的音是什么？"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "chapter": 2,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "给中央 C 一个小座位",
+      "principle": "中央 C",
+      "brief": "本课程采用科学音高记法，中央 C 记作 C4。它在高音谱表的哪个位置？",
+      "labels": [
+        "第三线",
+        "下加一线"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "第三线",
+          "lines": [
+            "五线谱正中间"
+          ],
+          "notes": [
+            71
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "下加一线",
+          "lines": [
+            "高音谱表下方的小短线"
+          ],
+          "notes": [
+            60
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "中央 C 在高音谱表的下加一线上。它也是低音谱表的上加一线。不同设备可能使用不同八度编号，本课程统一写作 C4。",
+      "rule": "中央 C：中央 C 在高音谱表的下加一线上。它也是低音谱表的上加一线。不同设备可能使用不同八度编号，本课程统一写作 C4。",
+      "tip": "为什么同一个中央 C 可以用两个谱表表示？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "中央 C 在高音谱表的下加一线上。它也是低音谱表的上加一线。不同设备可能使用不同八度编号，本课程统一写作 C4。",
+        "为什么同一个中央 C 可以用两个谱表表示？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "本课程采用科学音高记法，中央 C 记作 C4。它在高音谱表的比较后，哪个位置？"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "chapter": 2,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "左手常见的音位",
+      "principle": "低音谱号",
+      "brief": "低音谱号的两个点夹住从下往上第四条线。这条线上的音是什么？",
+      "labels": [
+        "F3",
+        "C4"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "F3",
+          "lines": [
+            "低音谱号标记 F"
+          ],
+          "notes": [
+            53
+          ],
+          "clef": "bass"
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "C4",
+          "lines": [
+            "中央 C"
+          ],
+          "notes": [
+            60
+          ],
+          "clef": "bass"
+        }
+      ],
+      "correct": 0,
+      "why": "低音谱号也叫 F 谱号，两个点夹住第四条线 F3。中央 C 则在这个谱表的上加一线上。",
+      "rule": "低音谱号：低音谱号也叫 F 谱号，两个点夹住第四条线 F3。中央 C 则在这个谱表的上加一线上。",
+      "tip": "你能从 F3 向上逐个数到中央 C 吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "低音谱号也叫 F 谱号，两个点夹住第四条线 F3。中央 C 则在这个谱表的上加一线上。",
+        "你能从 F3 向上逐个数到中央 C 吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "低音谱号的两个点夹住从下往上第四条线。这条线上的音是什么？"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "chapter": 2,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "C 旁边出现了 ♯",
+      "principle": "临时升号",
+      "brief": "在没有其他变化的情境下，C 前出现升号 ♯，应该怎样弹？",
+      "labels": [
+        "弹相邻右侧的 C♯",
+        "把 C 弹得更响"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "keyboard",
+          "title": "弹相邻右侧的 C♯",
+          "lines": [
+            "向上半音"
+          ],
+          "notes": [
+            60,
+            61
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "把 C 弹得更响",
+          "lines": [
+            "改变力度，仍是 C"
+          ],
+          "notes": [
+            60
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "升号使原音升高半音。C 升高半音是紧挨着右边的黑键 C♯；它改变音高，和弹得更响不同。",
+      "rule": "临时升号：升号使原音升高半音。C 升高半音是紧挨着右边的黑键 C♯；它改变音高，和弹得更响不同。",
+      "tip": "E 升高半音会到黑键吗？试着看相邻键。",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "升号使原音升高半音。C 升高半音是紧挨着右边的黑键 C♯；它改变音高，和弹得更响不同。",
+        "E 升高半音会到黑键吗？试着看相邻键。"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "在没有其他变化的情境下，C 前出现升号 ♯，应该怎样弹？"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "chapter": 2,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "p 要轻声一点",
+      "principle": "力度记号",
+      "brief": "同一段乐谱上写着 p，哪一种处理更符合常用的音乐记号？",
+      "labels": [
+        "一定要演奏得很慢",
+        "演奏得较轻"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一定要演奏得很慢",
+          "lines": [
+            "把力度当成速度"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "演奏得较轻",
+          "lines": [
+            "p = piano，弱"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 1,
+      "why": "p 表示较弱的力度，f 表示较强。它们本身不规定速度，速度要结合速度术语或节拍器标记理解。",
+      "rule": "力度记号：p 表示较弱的力度，f 表示较强。它们本身不规定速度，速度要结合速度术语或节拍器标记理解。",
+      "tip": "如果同时写着较快的速度和 p，可以怎样演奏？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "p 表示较弱的力度，f 表示较强。它们本身不规定速度，速度要结合速度术语或节拍器标记理解。",
+        "如果同时写着较快的速度和 p，可以怎样演奏？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "同一段乐谱上写着 p，比较两种表达，哪一种处理更符合常用的音乐记号？"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "chapter": 2,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "不靠死记一张图",
+      "principle": "读谱步骤",
+      "brief": "你在高音谱表看见一个音符，位于从下往上第三个间。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "高音谱表 · 第三间",
+          "lines": [
+            "以第二线 G4 作为参照"
+          ],
+          "notes": [
+            72
+          ],
+          "hideNames": true
+        }
+      ],
+      "prompt": "写出你怎样从已知音位数到这个音，并给出音名。",
+      "reference": "从第二线 G4 向上是第二间 A4、第三线 B4、第三间 C5。也可以从第一线 E4 依次向上数，结果应为 C。",
+      "rubric": [
+        "区分线与间",
+        "给出可检查的推导",
+        "得到 C（或 C5）"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "写出你怎样从已知音位数到这个音，并给出音名。"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "chapter": 2,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "同一个音，两种写法",
+      "principle": "谱表与键盘",
+      "brief": "在大谱表中，高音谱表下加一线与低音谱表上加一线都出现一个音。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "grand",
+          "title": "中央 C · 两只手的共同参照",
+          "lines": [
+            "上方高音谱表，下方低音谱表"
+          ],
+          "notes": [
+            60
+          ]
+        }
+      ],
+      "prompt": "它们是不是不同的两个音？说出它们和钢琴键盘的关系。",
+      "reference": "它们都是同一个中央 C，对应同一个实际琴键（本课程 C4）。谱号和谱表位置不同，但实际音高相同；不必左右手各找一个不同 C。",
+      "rubric": [
+        "识别同一个中央 C",
+        "关联同一个实际琴键"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "它们是不是不同的两个音？说出它们和钢琴键盘的关系。"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "chapter": 3,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "相邻琴键的最短一步",
+      "principle": "半音",
+      "brief": "这里按十二平均律理解钢琴键盘。E 与 F 之间没有黑键，它们相距多少？",
+      "labels": [
+        "一个半音",
+        "一个全音"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "keyboard",
+          "title": "一个半音",
+          "lines": [
+            "相邻琴键"
+          ],
+          "notes": [
+            64,
+            65
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一个全音",
+          "lines": [
+            "跨过两个半音"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "E 和 F 是相邻琴键，相距一个半音。B 与 C 也是半音；相邻白键不一定都相距全音。",
+      "rule": "半音：E 和 F 是相邻琴键，相距一个半音。B 与 C 也是半音；相邻白键不一定都相距全音。",
+      "tip": "C 与 D 之间还有黑键，它们相距几个半音？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "E 和 F 是相邻琴键，相距一个半音。B 与 C 也是半音；相邻白键不一定都相距全音。",
+        "C 与 D 之间还有黑键，它们相距几个半音？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "这里按十二平均律理解钢琴键盘。E 与 F 之间没有黑键，它们相距多少？"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "chapter": 3,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "C 到 D 走了几步？",
+      "principle": "全音",
+      "brief": "从 C 向右经过 C♯ 再到 D。一共两个半音，叫什么？",
+      "labels": [
+        "一个全音",
+        "一个半音"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "keyboard",
+          "title": "一个全音",
+          "lines": [
+            "C → C♯ → D"
+          ],
+          "notes": [
+            60,
+            61,
+            62
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一个半音",
+          "lines": [
+            "忽略了中间的黑键"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "两个半音合成一个全音。C 到 C♯ 是半音，C♯ 到 D 又是半音，所以 C 到 D 是全音。",
+      "rule": "全音：两个半音合成一个全音。C 到 C♯ 是半音，C♯ 到 D 又是半音，所以 C 到 D 是全音。",
+      "tip": "F 到 G 的琴键关系相同吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "两个半音合成一个全音。C 到 C♯ 是半音，C♯ 到 D 又是半音，所以 C 到 D 是全音。",
+        "F 到 G 的琴键关系相同吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "从 C 向右经过 C♯ 再到 D。一共两个半音，叫什么？"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "chapter": 3,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "C 大调怎样排？",
+      "principle": "大调音阶",
+      "brief": "从 C 到高八度的 C，哪一组符合大调音阶的全半音结构？",
+      "labels": [
+        "C D E F G A B C",
+        "C D E F♯ G A B C"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "scale",
+          "title": "C D E F G A B C",
+          "lines": [
+            "全 全 半 全 全 全 半"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67,
+            69,
+            71,
+            72
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "scale",
+          "title": "C D E F♯ G A B C",
+          "lines": [
+            "检查 E→F♯ 与 F♯→G"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            66,
+            67,
+            69,
+            71,
+            72
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "大调结构是全、全、半、全、全、全、半。C 大调中 E—F 与 B—C 是半音，其余相邻音是全音。",
+      "rule": "大调音阶：大调结构是全、全、半、全、全、全、半。C 大调中 E—F 与 B—C 是半音，其余相邻音是全音。",
+      "tip": "换一个起点构造大调时，为什么可能需要黑键？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "大调结构是全、全、半、全、全、全、半。C 大调中 E—F 与 B—C 是半音，其余相邻音是全音。",
+        "换一个起点构造大调时，为什么可能需要黑键？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "从 C 到高八度的 C，哪一组符合大调音阶的全半音结构？"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "chapter": 3,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "C 到 E，数音名",
+      "principle": "音程度数",
+      "brief": "从 C 上行到 E，连起点终点一起数基本音级。是几度音程？",
+      "labels": [
+        "三度",
+        "二度"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "三度",
+          "lines": [
+            "C、D、E，共三个音级"
+          ],
+          "notes": [
+            60,
+            64
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "二度",
+          "lines": [
+            "只数了两次移动"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "音程度数要把起点和终点都数进去。C、D、E 共三个基本音级，所以是三度；C 到 E 具体是大三度。",
+      "rule": "音程度数：音程度数要把起点和终点都数进去。C、D、E 共三个基本音级，所以是三度；C 到 E 具体是大三度。",
+      "tip": "C 到 G 是几度？它们之间还需要几个半音才能确定音程性质？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "音程度数要把起点和终点都数进去。C、D、E 共三个基本音级，所以是三度；C 到 E 具体是大三度。",
+        "C 到 G 是几度？它们之间还需要几个半音才能确定音程性质？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "从 C 上行到 E，连起点终点一起数基本音级。是几度音程？"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "chapter": 3,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "同名，音高不同",
+      "principle": "八度",
+      "brief": "从 C4 到 C5，基本音名相同，但音高不同。它们的关系是什么？",
+      "labels": [
+        "完全相同的音高",
+        "纯八度"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "完全相同的音高",
+          "lines": [
+            "名字相同就没有距离"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "纯八度",
+          "lines": [
+            "十二个半音"
+          ],
+          "notes": [
+            60,
+            72
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "C4 与 C5 相距十二个半音，是纯八度。它们共享音名 C，但不是同一个音高。",
+      "rule": "八度：C4 与 C5 相距十二个半音，是纯八度。它们共享音名 C，但不是同一个音高。",
+      "tip": "两个不同八度的 C 一起响，会有什么相似感与差异？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "C4 与 C5 相距十二个半音，是纯八度。它们共享音名 C，但不是同一个音高。",
+        "两个不同八度的 C 一起响，会有什么相似感与差异？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "从 C4 到 C5，基本音名相同，但音高不同。它们的关系是什么？"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "chapter": 3,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "听一听，哪个跨得更远？",
+      "principle": "音程听辨",
+      "brief": "两组都从 C4 出发。分别试听，哪个片段的两个音之间距离更大？",
+      "labels": [
+        "片段一",
+        "片段二"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "片段一",
+          "lines": [
+            "先听低音，再听高音"
+          ],
+          "notes": [
+            60,
+            62
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "sound",
+          "title": "片段二",
+          "lines": [
+            "先听低音，再听高音"
+          ],
+          "notes": [
+            60,
+            67
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "C 到 G 的纯五度比 C 到 D 的大二度更宽。听辨时可保留共同起点，比较第二个音离起点的距离。",
+      "rule": "音程听辨：C 到 G 的纯五度比 C 到 D 的大二度更宽。听辨时可保留共同起点，比较第二个音离起点的距离。",
+      "tip": "你能在键盘上验证这两个距离吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "C 到 G 的纯五度比 C 到 D 的大二度更宽。听辨时可保留共同起点，比较第二个音离起点的距离。",
+        "你能在键盘上验证这两个距离吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "两组都从 C4 出发。分别试听，比较后，哪个片段的两个音之间距离更大？"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "chapter": 3,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "G 大调为什么需要 F♯？",
+      "principle": "构造大调",
+      "brief": "从 G 出发只弹白键，会得到 G A B C D E F G。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "scale",
+          "title": "从 G 出发",
+          "lines": [
+            "目标：全 全 半 全 全 全 半"
+          ],
+          "notes": [
+            67,
+            69,
+            71,
+            72,
+            74,
+            76,
+            77,
+            79
+          ]
+        }
+      ],
+      "prompt": "检查最后三步，说明为什么把 F 改成 F♯ 才符合大调结构。",
+      "reference": "原来 D—E 是全音、E—F 是半音、F—G 是全音；大调最后三步需要全、全、半。把 F 升为 F♯ 后，E—F♯ 成为全音、F♯—G 成为半音。",
+      "rubric": [
+        "指出 E—F 与 F—G 的原关系",
+        "改为 F♯ 后满足全、全、半"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "检查最后三步，说明为什么把 F 改成 F♯ 才符合大调结构。"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "chapter": 3,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "把耳朵和琴键连起来",
+      "principle": "音程与听觉",
+      "brief": "你听到从 C4 上行到 E4 的两个音，想同时核对音程度数和半音数。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "keyboard",
+          "title": "C4 → E4",
+          "lines": [
+            "度数与半音数是不同的计数方式"
+          ],
+          "notes": [
+            60,
+            64
+          ]
+        }
+      ],
+      "prompt": "分别说明怎样数，并写出这个音程的名称。",
+      "reference": "度数数 C、D、E，得到三度；半音数 C→C♯→D→D♯→E，得到4个半音，因此为大三度。不能把4个半音误写为四度。",
+      "rubric": [
+        "度数为三度",
+        "距离为四个半音",
+        "名称为大三度"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "分别说明怎样数，并写出这个音程的名称。"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "chapter": 4,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "让三个音一起说话",
+      "principle": "三和弦",
+      "brief": "哪一组音构成 C 大三和弦的原位？可试听同时发声的效果。",
+      "labels": [
+        "C D E",
+        "C E G"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "C D E",
+          "lines": [
+            "三个连续的基本音级"
+          ],
+          "notes": [
+            60,
+            62,
+            64
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "C E G",
+          "lines": [
+            "根音 · 三音 · 五音"
+          ],
+          "notes": [
+            60,
+            64,
+            67
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "C 大三和弦由 C、E、G 构成。原位时 C 在最下方，根音到三音是大三度，三音到五音是小三度。",
+      "rule": "三和弦：C 大三和弦由 C、E、G 构成。原位时 C 在最下方，根音到三音是大三度，三音到五音是小三度。",
+      "tip": "如果把 E 放到最下面，和弦名称一定要改变吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "C 大三和弦由 C、E、G 构成。原位时 C 在最下方，根音到三音是大三度，三音到五音是小三度。",
+        "如果把 E 放到最下面，和弦名称一定要改变吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "哪一组音构成 C 大三和弦的原位？可试听同时发声的效果。"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "chapter": 4,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "只动一个音，颜色就变了",
+      "principle": "大三和弦与小三和弦",
+      "brief": "把 C 大三和弦变成 C 小三和弦，应怎样改？",
+      "labels": [
+        "C E G♯",
+        "C E♭ G"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "C E G♯",
+          "lines": [
+            "把 G 升半音"
+          ],
+          "notes": [
+            60,
+            64,
+            68
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "C E♭ G",
+          "lines": [
+            "中间音 E 降半音"
+          ],
+          "notes": [
+            60,
+            63,
+            67
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "C 小三和弦是 C、E♭、G。根音到三音变为小三度，三音到五音为大三度。C、E、G♯ 则不是 C 小三和弦。",
+      "rule": "大三和弦与小三和弦：C 小三和弦是 C、E♭、G。根音到三音变为小三度，三音到五音为大三度。C、E、G♯ 则不是 C 小三和弦。",
+      "tip": "大小三和弦的听感会受速度、节奏与音区影响吗？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "C 小三和弦是 C、E♭、G。根音到三音变为小三度，三音到五音为大三度。C、E、G♯ 则不是 C 小三和弦。",
+        "大小三和弦的听感会受速度、节奏与音区影响吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "把 C 大三和弦变成 C 小三和弦，应怎样改？"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "chapter": 4,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "C 大调的家",
+      "principle": "主和弦",
+      "brief": "在本题的 C 大调情境中，哪一个是 I 级主和弦？",
+      "labels": [
+        "G B D",
+        "C E G"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "G B D",
+          "lines": [
+            "G 大三和弦"
+          ],
+          "notes": [
+            55,
+            59,
+            62
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "C E G",
+          "lines": [
+            "C 大三和弦"
+          ],
+          "notes": [
+            60,
+            64,
+            67
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "C 大调以 C 为主音，其 I 级和弦是 C、E、G。它经常带来稳定感，但实际终止与稳定性还要结合上下文。",
+      "rule": "主和弦：C 大调以 C 为主音，其 I 级和弦是 C、E、G。它经常带来稳定感，但实际终止与稳定性还要结合上下文。",
+      "tip": "如果换成 G 大调，家的音和主和弦会怎样变化？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "C 大调以 C 为主音，其 I 级和弦是 C、E、G。它经常带来稳定感，但实际终止与稳定性还要结合上下文。",
+        "如果换成 G 大调，家的音和主和弦会怎样变化？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "在本题的 C 大调情境中，哪一个是 I 级主和弦？"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "chapter": 4,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "一句话怎样落下？",
+      "principle": "属到主",
+      "brief": "在明确的 C 大调语境里，想体验常见的“张力回到稳定”，哪种进行更直接？",
+      "labels": [
+        "C → G，停在 G",
+        "G → C，停在 C"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "progression",
+          "title": "C → G，停在 G",
+          "lines": [
+            "I → V"
+          ],
+          "notes": [
+            60,
+            64,
+            67,
+            55,
+            59,
+            62
+          ],
+          "groups": [
+            [
+              60,
+              64,
+              67
+            ],
+            [
+              55,
+              59,
+              62
+            ]
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "progression",
+          "title": "G → C，停在 C",
+          "lines": [
+            "V → I"
+          ],
+          "notes": [
+            55,
+            59,
+            62,
+            60,
+            64,
+            67
+          ],
+          "groups": [
+            [
+              55,
+              59,
+              62
+            ],
+            [
+              60,
+              64,
+              67
+            ]
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "在 C 大调中，G 和弦到 C 和弦是常见的属到主进行，常有回到稳定处的感觉。停在 G 也可能有意保留未完感。",
+      "rule": "属到主：在 C 大调中，G 和弦到 C 和弦是常见的属到主进行，常有回到稳定处的感觉。停在 G 也可能有意保留未完感。",
+      "tip": "不想让一句音乐立即结束时，保留一点张力会有什么作用？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "在 C 大调中，G 和弦到 C 和弦是常见的属到主进行，常有回到稳定处的感觉。停在 G 也可能有意保留未完感。",
+        "不想让一句音乐立即结束时，保留一点张力会有什么作用？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "在明确的 C 大调语境里，想体验常见的“张力回到稳定”，哪种进行更直接？"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "chapter": 4,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "换个低音，还是老朋友",
+      "principle": "和弦转位",
+      "brief": "C、E、G 这三个音不变，只改成 E 在最下面。哪一种说法正确？",
+      "labels": [
+        "一定变成 E 大三和弦",
+        "仍是 C 大三和弦的转位"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一定变成 E 大三和弦",
+          "lines": [
+            "只看最低音就起名"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "仍是 C 大三和弦的转位",
+          "lines": [
+            "E G C"
+          ],
+          "notes": [
+            64,
+            67,
+            72
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "和弦的根音不总是最低音。E、G、C 是 C 大三和弦的第一转位；E 大三和弦需要 E、G♯、B。",
+      "rule": "和弦转位：和弦的根音不总是最低音。E、G、C 是 C 大三和弦的第一转位；E 大三和弦需要 E、G♯、B。",
+      "tip": "最低音换成 G 时，又是哪一种转位？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "和弦的根音不总是最低音。E、G、C 是 C 大三和弦的第一转位；E 大三和弦需要 E、G♯、B。",
+        "最低音换成 G 时，又是哪一种转位？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "C、E、G 这三个音不变，只改成 E 在最下面。比较两种表达，哪一种说法正确？"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "chapter": 4,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "把和弦拆开弹",
+      "principle": "分解和弦",
+      "brief": "用 C、E、G 三个音做分解和弦，哪一种符合这个要求？",
+      "labels": [
+        "先后弹 C、E、G",
+        "改弹 C、F、A"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "先后弹 C、E、G",
+          "lines": [
+            "同一和弦的音依次发声"
+          ],
+          "notes": [
+            60,
+            64,
+            67
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "改弹 C、F、A",
+          "lines": [
+            "换成另一组和弦音"
+          ],
+          "notes": [
+            60,
+            65,
+            69
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "把和弦音依次弹出，就是分解和弦的一种方式。C、E、G 可以同时响，也可以按不同顺序分开响；换成 C、F、A 则改变了和弦。",
+      "rule": "分解和弦：把和弦音依次弹出，就是分解和弦的一种方式。C、E、G 可以同时响，也可以按不同顺序分开响；换成 C、F、A 则改变了和弦。",
+      "tip": "同一组和弦音用不同音区和节奏分解，会产生哪些变化？",
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [
+        "把和弦音依次弹出，就是分解和弦的一种方式。C、E、G 可以同时响，也可以按不同顺序分开响；换成 C、F、A 则改变了和弦。",
+        "同一组和弦音用不同音区和节奏分解，会产生哪些变化？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "用 C、E、G 三个音做分解和弦，比较两种表达，哪一种符合这个要求？"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "chapter": 4,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "没有一种和弦永远快乐",
+      "principle": "和声选择",
+      "brief": "同学说：“大三和弦一定快乐，小三和弦一定悲伤。”",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "chord",
+          "title": "同一个和弦，也能有不同语气",
+          "lines": [
+            "速度 · 力度 · 音区 · 节奏"
+          ],
+          "notes": [
+            60,
+            64,
+            67
+          ]
+        }
+      ],
+      "prompt": "说出这个判断哪里过于绝对，并提出至少一种可以亲自比较的演奏变化。",
+      "reference": "大小三和弦确实常有不同色彩，但情绪受上下文、速度、力度、音区、节奏等共同影响。可用同一 C 大三和弦比较慢而轻与快而有力的表达，不必承诺每个人都听出同一情绪。",
+      "rubric": [
+        "避免把和弦性质直接等同唯一情绪",
+        "提出具体可比较的演奏变化"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "说出这个判断哪里过于绝对，并提出至少一种可以亲自比较的演奏变化。"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "chapter": 4,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "给三个和弦找音",
+      "principle": "和弦构成",
+      "brief": "在 C 大调中，I、IV、V 是三个常用和弦。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "C 大调 · I / IV / V",
+          "lines": [
+            "每个和弦都由三个音构成"
+          ],
+          "notes": []
+        }
+      ],
+      "prompt": "分别写出它们的音名，再描述你会怎样试听 V 到 I 的感觉。",
+      "reference": "I：C E G；IV：F A C；V：G B D。可先弹 G B D 再弹 C E G，在音量和时值相近时比较张力与回归，听感描述允许差异。",
+      "rubric": [
+        "三个和弦构成正确",
+        "V 到 I 的顺序可执行"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "musictheory.net · 基础乐理课程",
+          "url": "https://www.musictheory.net/lessons"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "分别写出它们的音名，再描述你会怎样试听 V 到 I 的感觉。"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "chapter": 5,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "两颗黑键左边是谁？",
+      "principle": "键盘定位",
+      "brief": "先找到一组两颗相邻黑键。紧挨这组黑键左边的白键叫什么？",
+      "labels": [
+        "F",
+        "C"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "keygroup",
+          "title": "F",
+          "lines": [
+            "注意区分两黑键组和三黑键组"
+          ],
+          "notes": [],
+          "target": "F"
+        },
+        {
+          "kind": "music",
+          "mode": "keygroup",
+          "title": "C",
+          "lines": [
+            "两黑键组的左边"
+          ],
+          "notes": [],
+          "target": "C"
+        }
+      ],
+      "correct": 1,
+      "why": "每组两颗黑键左侧紧邻的白键是 C；每组三颗黑键左侧紧邻的白键是 F。黑键的分组帮助你在不同音区定位。",
+      "rule": "键盘定位：每组两颗黑键左侧紧邻的白键是 C；每组三颗黑键左侧紧邻的白键是 F。黑键的分组帮助你在不同音区定位。",
+      "tip": "找到一个 C 后，向右的白键音名怎样循环？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "每组两颗黑键左侧紧邻的白键是 C；每组三颗黑键左侧紧邻的白键是 F。黑键的分组帮助你在不同音区定位。",
+        "找到一个 C 后，向右的白键音名怎样循环？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "先找到一组两颗相邻黑键。紧挨这组黑键左边的白键叫什么？"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "chapter": 5,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "两只手，大拇指都叫 1",
+      "principle": "手指编号",
+      "brief": "钢琴常用手指编号里，左右手的大拇指分别是几号？",
+      "labels": [
+        "左手 5，右手 1",
+        "左右手都是 1"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "左手 5，右手 1",
+          "lines": [
+            "误把两只手按同一空间方向编号"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "hands",
+          "title": "左右手都是 1",
+          "lines": [
+            "拇指1 · 食指2 · 中指3 · 无名指4 · 小指5"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 1,
+      "why": "左右手都从大拇指开始编号：拇指1、食指2、中指3、无名指4、小指5。编号随手指身份，不随左右空间方向改变。",
+      "rule": "手指编号：左右手都从大拇指开始编号：拇指1、食指2、中指3、无名指4、小指5。编号随手指身份，不随左右空间方向改变。",
+      "tip": "把双手放在桌面，食指与小指各是几号？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "左右手都从大拇指开始编号：拇指1、食指2、中指3、无名指4、小指5。编号随手指身份，不随左右空间方向改变。",
+        "把双手放在桌面，食指与小指各是几号？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "钢琴常用手指编号里，左右手的大拇指分别是几号？"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "chapter": 5,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "让五个音各有一个手指",
+      "principle": "右手五指位置",
+      "brief": "右手在 C4、D4、E4、F4、G4 五个相邻白键上做固定五指练习，常用哪组指法？",
+      "labels": [
+        "5 4 3 2 1",
+        "1 2 3 4 5"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "fingering",
+          "title": "5 4 3 2 1",
+          "lines": [
+            "C D E F G"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67
+          ],
+          "fingers": [
+            5,
+            4,
+            3,
+            2,
+            1
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "fingering",
+          "title": "1 2 3 4 5",
+          "lines": [
+            "C D E F G"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67
+          ],
+          "fingers": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "右手固定五指位置从 C4 到 G4，通常用1、2、3、4、5：大拇指在 C，小指在 G。左手同方向上行的常用编号相反。",
+      "rule": "右手五指位置：右手固定五指位置从 C4 到 G4，通常用1、2、3、4、5：大拇指在 C，小指在 G。左手同方向上行的常用编号相反。",
+      "tip": "如果左手小指放 C3，从 C3 到 G3 会怎样安排指法？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "右手固定五指位置从 C4 到 G4，通常用1、2、3、4、5：大拇指在 C，小指在 G。左手同方向上行的常用编号相反。",
+        "如果左手小指放 C3，从 C3 到 G3 会怎样安排指法？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "右手在 C4、D4、E4、F4、G4 五个相邻白键上做固定五指练习，常用哪组指法？"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "chapter": 5,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "五根手指，怎么走过八个音？",
+      "principle": "右手 C 大调指法",
+      "brief": "弹右手 C 大调一个八度上行，下面哪组是常用基础指法？",
+      "labels": [
+        "1 2 3 1 2 3 4 5",
+        "1 2 3 4 5 1 2 3"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "fingering",
+          "title": "1 2 3 1 2 3 4 5",
+          "lines": [
+            "在 E 后衔接到 F"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67,
+            69,
+            71,
+            72
+          ],
+          "fingers": [
+            1,
+            2,
+            3,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "fingering",
+          "title": "1 2 3 4 5 1 2 3",
+          "lines": [
+            "到 A 才重新找位置"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65,
+            67,
+            69,
+            71,
+            72
+          ],
+          "fingers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "correct": 0,
+      "why": "右手 C 大调一个八度上行的常用指法是12312345。E 用3指后，拇指衔接 F；移动要轻松平顺，不能硬拧手腕。具体曲目可有其他合理指法。",
+      "rule": "右手 C 大调指法：右手 C 大调一个八度上行的常用指法是12312345。E 用3指后，拇指衔接 F；移动要轻松平顺，不能硬拧手腕。具体曲目可有其他合理指法。",
+      "tip": "先只练 E 到 F 的衔接，可以怎样减小紧张？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "右手 C 大调一个八度上行的常用指法是12312345。E 用3指后，拇指衔接 F；移动要轻松平顺，不能硬拧手腕。具体曲目可有其他合理指法。",
+        "先只练 E 到 F 的衔接，可以怎样减小紧张？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "弹右手 C 大调一个八度上行，下面哪组是常用基础指法？"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "chapter": 5,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "先让身体舒服下来",
+      "principle": "坐姿与放松",
+      "brief": "初学时哪一种坐姿与动作更适合建立自然、可持续的触键？",
+      "labels": [
+        "耸肩，手腕持续压低",
+        "肩臂放松，坐高适当"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "耸肩，手腕持续压低",
+          "lines": [
+            "用僵硬的手臂把键按到底"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "posture",
+          "title": "肩臂放松，坐高适当",
+          "lines": [
+            "肘部大致接近键盘高度 · 手指自然弯曲"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 1,
+      "why": "合适的座位高度、自然的手形与放松的肩臂，有助于自由移动。避免持续耸肩、塌腕或过度绷紧；感到疼痛时应停下，由老师检查动作。",
+      "rule": "坐姿与放松：合适的座位高度、自然的手形与放松的肩臂，有助于自由移动。避免持续耸肩、塌腕或过度绷紧；感到疼痛时应停下，由老师检查动作。",
+      "tip": "弹几个慢音后，你能检查一下肩膀和手腕有没有不必要的紧张吗？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "合适的座位高度、自然的手形与放松的肩臂，有助于自由移动。避免持续耸肩、塌腕或过度绷紧；感到疼痛时应停下，由老师检查动作。",
+        "弹几个慢音后，你能检查一下肩膀和手腕有没有不必要的紧张吗？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "初学时比较两种表达，哪一种坐姿与动作更适合建立自然、可持续的触键？"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "chapter": 5,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "两个音之间留多少空隙？",
+      "principle": "连奏",
+      "brief": "右手慢速弹相邻的 C、D，想获得基本的连奏效果，哪一种动作更合适？",
+      "labels": [
+        "声音自然衔接，避免明显空隙",
+        "先完全松开 C，停一会再弹 D"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "staff",
+          "title": "声音自然衔接，避免明显空隙",
+          "lines": [
+            "D 发声时，C 自然离键"
+          ],
+          "notes": [
+            60,
+            62
+          ],
+          "articulation": "legato"
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "先完全松开 C，停一会再弹 D",
+          "lines": [
+            "两个音之间留下明显空隙"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "基本连奏强调声音自然连接，相邻音之间没有明显空隙，也不无意长时间叠响。可先慢速听两个音的衔接，再检查手指动作。",
+      "rule": "连奏：基本连奏强调声音自然连接，相邻音之间没有明显空隙，也不无意长时间叠响。可先慢速听两个音的衔接，再检查手指动作。",
+      "tip": "连奏和每个音都踩住踏板，有什么不同？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "基本连奏强调声音自然连接，相邻音之间没有明显空隙，也不无意长时间叠响。可先慢速听两个音的衔接，再检查手指动作。",
+        "连奏和每个音都踩住踏板，有什么不同？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "右手慢速弹相邻的 C、D，想获得基本的连奏效果，比较两种表达，哪一种动作更合适？"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "chapter": 5,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "陌生的琴，也能找到起点",
+      "principle": "定位中央 C",
+      "brief": "你来到一架不熟悉的 88 键钢琴前，没有任何字母贴纸。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "keyboard",
+          "title": "先找分组，再找位置",
+          "lines": [
+            "两黑键 · 三黑键 · 循环"
+          ],
+          "notes": [
+            60
+          ],
+          "hideNames": true
+        }
+      ],
+      "prompt": "描述你怎样找到 C，再定位到键盘中央附近的中央 C。",
+      "reference": "先识别两黑键组，紧邻其左侧的白键是 C。多个音区都有 C，再选择键盘中央附近的那个作为中央 C；88键钢琴上它略偏几何中心左侧。本课程标为 C4。",
+      "rubric": [
+        "使用两黑键组定位 C",
+        "区分多个 C 和中央 C"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "描述你怎样找到 C，再定位到键盘中央附近的中央 C。"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "chapter": 5,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "拇指经过时，音乐断了",
+      "principle": "衔接与慢练",
+      "brief": "弹右手 C 大调上行时，每到 E 接 F 就停顿、手腕拧得很紧。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "fingering",
+          "title": "把最难的两步拆小",
+          "lines": [
+            "D（2）→ E（3）→ F（1）→ G（2）"
+          ],
+          "notes": [
+            62,
+            64,
+            65,
+            67
+          ],
+          "fingers": [
+            2,
+            3,
+            1,
+            2
+          ]
+        }
+      ],
+      "prompt": "提出一个短小、可执行的练习步骤，并说明你会听什么、观察什么。",
+      "reference": "放慢速度，先练 E3指到 F1指的衔接，或 D-E-F-G 小片段，轻松移动手臂和拇指，避免硬拧。观察肩腕是否放松，听两音之间是否有停顿、力度是否突变，稳定后再接完整音阶。",
+      "rubric": [
+        "分小片段慢练",
+        "避免硬拧和紧张",
+        "有声音连续性与动作的检查点"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "提出一个短小、可执行的练习步骤，并说明你会听什么、观察什么。"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "chapter": 6,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "两只手总撞车",
+      "principle": "分手练习",
+      "brief": "右手旋律与左手伴奏都还不熟，合手时频繁停顿。接下来哪种练习更合适？",
+      "labels": [
+        "分手稳定，再慢速合手短片段",
+        "从头到尾反复快速合手"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "分手稳定，再慢速合手短片段",
+          "lines": [
+            "先熟悉各自，再找到共同拍点"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "从头到尾反复快速合手",
+          "lines": [
+            "每次都在同一处停下"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "先让左右手各自熟悉，再在稳定慢速拍点中合手一两小节，通常更容易找到协调。每次从头快速重来，可能反复巩固同一处停顿。",
+      "rule": "分手练习：先让左右手各自熟悉，再在稳定慢速拍点中合手一两小节，通常更容易找到协调。每次从头快速重来，可能反复巩固同一处停顿。",
+      "tip": "怎样判断一只手已经准备好与另一只手合起来？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "先让左右手各自熟悉，再在稳定慢速拍点中合手一两小节，通常更容易找到协调。每次从头快速重来，可能反复巩固同一处停顿。",
+        "怎样判断一只手已经准备好与另一只手合起来？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "右手旋律与左手伴奏都还不熟，合手时频繁停顿。接下来哪种练习更合适？"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "chapter": 6,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "长音底下，短音继续走",
+      "principle": "对齐拍点",
+      "brief": "4/4 拍中，左手在第一拍弹一个全音符并保持四拍，右手弹四个四分音符。哪种配合正确？",
+      "labels": [
+        "第一拍同时起，左手保持",
+        "右手每弹一个音，左手也重弹"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "coordination",
+          "title": "第一拍同时起，左手保持",
+          "lines": [
+            "左手：1———　右手：1 2 3 4"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            65
+          ]
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "右手每弹一个音，左手也重弹",
+          "lines": [
+            "把一个全音符改成四个四分音符"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "第一拍两手同时开始，左手保持全音符，右手在四个拍点各弹一次。保持不代表停止数拍，也不等于每拍重弹。",
+      "rule": "对齐拍点：第一拍两手同时开始，左手保持全音符，右手在四个拍点各弹一次。保持不代表停止数拍，也不等于每拍重弹。",
+      "tip": "第二小节换和弦时，两只手应提前准备什么？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "第一拍两手同时开始，左手保持全音符，右手在四个拍点各弹一次。保持不代表停止数拍，也不等于每拍重弹。",
+        "第二小节换和弦时，两只手应提前准备什么？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "4/4 拍中，左手在第一拍弹一个全音符并保持四拍，右手弹四个四分音符。哪种配合正确？"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "chapter": 6,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "为什么慢下来反而更快学会？",
+      "principle": "慢练",
+      "brief": "一段四小节总在第三小节卡住，哪一种做法更容易解决具体困难？",
+      "labels": [
+        "单练连接处，再接回上下文",
+        "只重复已经熟悉的第一小节"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "单练连接处，再接回上下文",
+          "lines": [
+            "第2小节末 → 第3小节初"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "只重复已经熟悉的第一小节",
+          "lines": [
+            "困难位置始终没有练到"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 0,
+      "why": "把问题缩到具体连接处，慢速解决，再扩展到前后片段，可以有针对性地练习。只练熟悉的开头，不能直接解决第三小节的困难。",
+      "rule": "慢练：把问题缩到具体连接处，慢速解决，再扩展到前后片段，可以有针对性地练习。只练熟悉的开头，不能直接解决第三小节的困难。",
+      "tip": "解决连接处后，为什么还要放回前后乐句里试一次？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "把问题缩到具体连接处，慢速解决，再扩展到前后片段，可以有针对性地练习。只练熟悉的开头，不能直接解决第三小节的困难。",
+        "解决连接处后，为什么还要放回前后乐句里试一次？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "一段四小节总在第三小节卡住，比较两种表达，哪一种做法更容易解决具体困难？"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "chapter": 6,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "每分钟 60 拍是什么感觉？",
+      "principle": "速度标记",
+      "brief": "节拍器标记为四分音符 = 60。一个四分音符拍大约多长？",
+      "labels": [
+        "约半秒",
+        "约 1 秒"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "约半秒",
+          "lines": [
+            "这更接近每分钟 120 拍"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "rhythm",
+          "title": "约 1 秒",
+          "lines": [
+            "60 秒 ÷ 60 拍"
+          ],
+          "notes": [
+            60,
+            60,
+            60,
+            60
+          ],
+          "bpm": 60,
+          "durations": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "每分钟60个四分拍，每个拍约1秒。标记120时每拍约半秒；BPM 是单位时间的拍数，并不是整首曲子的音符总数。",
+      "rule": "速度标记：每分钟60个四分拍，每个拍约1秒。标记120时每拍约半秒；BPM 是单位时间的拍数，并不是整首曲子的音符总数。",
+      "tip": "在同样每分钟60拍时，两个八分音符合起来持续几秒？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "每分钟60个四分拍，每个拍约1秒。标记120时每拍约半秒；BPM 是单位时间的拍数，并不是整首曲子的音符总数。",
+        "在同样每分钟60拍时，两个八分音符合起来持续几秒？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "节拍器标记为四分音符 = 60。一个四分音符拍大约多长？"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "chapter": 6,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "音乐也需要逗号",
+      "principle": "乐句呼吸",
+      "brief": "一段旋律用连线标出一个乐句。哪一种理解更适合基本的乐句表达？",
+      "labels": [
+        "每个音之间都突然停一下",
+        "保持句内连贯，句尾适当收束"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "每个音之间都突然停一下",
+          "lines": [
+            "一个音，一个停顿"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "phrase",
+          "title": "保持句内连贯，句尾适当收束",
+          "lines": [
+            "有方向地走到句尾"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            67,
+            65,
+            64,
+            62,
+            60
+          ],
+          "durations": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            2
+          ]
+        }
+      ],
+      "correct": 1,
+      "why": "乐句可以像一句话：句内有方向、连接，句尾适当收束。并非见到连线就任意拖慢或每音停顿，呼吸要与节拍、风格和乐谱结合。",
+      "rule": "乐句呼吸：乐句可以像一句话：句内有方向、连接，句尾适当收束。并非见到连线就任意拖慢或每音停顿，呼吸要与节拍、风格和乐谱结合。",
+      "tip": "同一句音乐，句尾轻一点与句尾突然加重，会带来什么不同？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "乐句可以像一句话：句内有方向、连接，句尾适当收束。并非见到连线就任意拖慢或每音停顿，呼吸要与节拍、风格和乐谱结合。",
+        "同一句音乐，句尾轻一点与句尾突然加重，会带来什么不同？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "一段旋律用连线标出一个乐句。比较两种表达，哪一种理解更适合基本的乐句表达？"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "chapter": 6,
+      "kind": "choice",
+      "format": "听辨与判断",
+      "title": "把错音糊过去，行吗？",
+      "principle": "延音踏板",
+      "brief": "刚开始练两小节、换和弦时声音混浊。哪一种处理更有助于听清楚问题？",
+      "labels": [
+        "一直踩住踏板，盖过所有停顿",
+        "先不用踏板，听清触键与换和弦"
+      ],
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "一直踩住踏板，盖过所有停顿",
+          "lines": [
+            "把不同和声长时间混在一起"
+          ],
+          "notes": []
+        },
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "先不用踏板，听清触键与换和弦",
+          "lines": [
+            "再按乐曲需要学习换踏板"
+          ],
+          "notes": []
+        }
+      ],
+      "correct": 1,
+      "why": "延音踏板会延长声音，也可能把不同和声混在一起。先不踩踏板确认音、节奏与连接，再学习随和声和声音需要换踏板，通常更容易听清问题。",
+      "rule": "延音踏板：延音踏板会延长声音，也可能把不同和声混在一起。先不踩踏板确认音、节奏与连接，再学习随和声和声音需要换踏板，通常更容易听清问题。",
+      "tip": "练踏板时，可以通过什么声音判断上一个和弦没有清理干净？",
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [
+        "延音踏板会延长声音，也可能把不同和声混在一起。先不踩踏板确认音、节奏与连接，再学习随和声和声音需要换踏板，通常更容易听清问题。",
+        "练踏板时，可以通过什么声音判断上一个和弦没有清理干净？"
+      ],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "brief": "刚开始练两小节、换和弦时声音混浊。比较两种表达，哪一种处理更有助于听清楚问题？"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "chapter": 6,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "给自己十分钟",
+      "principle": "练习计划",
+      "brief": "你要练一段四小节的原创小曲：右手旋律已基本认识，左手换和弦和第三小节合手仍不稳定。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "phrase",
+          "title": "今天的十分钟",
+          "lines": [
+            "目标：少一次停顿，而不是弹得更快"
+          ],
+          "notes": [
+            60,
+            62,
+            64,
+            67,
+            65,
+            64,
+            62,
+            60
+          ]
+        }
+      ],
+      "prompt": "安排一个十分钟左右的练习顺序，包含重点位置、慢速合手和至少一个检查标准。",
+      "reference": "可先读谱确认难点，约3分钟练左手换和弦，3分钟慢练第2至3小节合手连接，2分钟连接整段，最后录一遍或检查拍点与放松。时间分配不要求固定；重点是针对难点、小段到整体、标准可观察。",
+      "rubric": [
+        "针对左手与第三小节",
+        "分手到慢速短片段合手",
+        "有稳定拍点或不中断等检查标准"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "安排一个十分钟左右的练习顺序，包含重点位置、慢速合手和至少一个检查标准。"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "chapter": 6,
+      "kind": "open",
+      "format": "和李老师聊聊",
+      "title": "弹完以后，听见了什么？",
+      "principle": "自我复盘",
+      "brief": "你录下第一段完整演奏。音大体正确，但一到难处就突然慢下来，句尾又急着抢拍。",
+      "visuals": [
+        {
+          "kind": "music",
+          "mode": "plan",
+          "title": "下一遍，只改一个重点",
+          "lines": [
+            "先观察，再选择，再验证"
+          ],
+          "notes": []
+        }
+      ],
+      "prompt": "先选一个最值得改的点，提出具体练法，并说明下一次录音怎样判断有没有改善。",
+      "reference": "可以优先保持稳定拍点：圈出难处和句尾，降低整体速度，分段跟拍，再连接并录音比较停顿和抢拍是否减少。也可先聚焦一个连接点，只要练法与观察到的问题一致、验证具体即可。",
+      "rubric": [
+        "选择题目中的具体问题",
+        "练法能直接针对问题",
+        "复听有明确比较依据"
+      ],
+      "correct": null,
+      "sources": [
+        {
+          "title": "Yamaha · 钢琴姿势与基本技术",
+          "url": "https://www.yamaha.com/en/musical_instrument_guide/piano/play/play002.html"
+        },
+        {
+          "title": "Yamaha · 钢琴指法基础",
+          "url": "https://hub.yamaha.com/keyboards/k-how-to/the-basics-of-piano-keyboard-fingering/"
+        }
+      ],
+      "coachOpening": [],
+      "coachOpeningVersion": 1,
+      "variants": [
+        {
+          "id": "alternate",
+          "prompt": "先选一个最值得改的点，提出具体练法，并说明下一次录音怎样判断有没有改善。"
+        }
+      ]
+    }
+  ]
+}

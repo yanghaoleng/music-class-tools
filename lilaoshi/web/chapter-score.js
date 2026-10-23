@@ -1,0 +1,2 @@
+/* Both comparison answers and model-assessed short answers count toward passing. */
+(()=>{function calculate(questions,answers){const correct=questions.filter(q=>answers[q.id]===1).length,complete=questions.every(q=>Object.hasOwn(answers,q.id)&&[0,1].includes(answers[q.id]));return {correct,total:questions.length,percent:questions.length?Math.round(correct/questions.length*1000)/10:0,complete,passed:complete&&questions.length>0&&correct===questions.length}}window.RefineScores={calculate}})();

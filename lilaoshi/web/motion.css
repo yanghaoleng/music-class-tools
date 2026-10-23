@@ -1,0 +1,31 @@
+/* Choreography uses opacity and transforms only. Static content remains readable without JS. */
+:root{--motion-ease:cubic-bezier(.16,1,.3,1)}
+.hero-copy,.hero-art,.feedback{animation:none!important}
+button,a,select,textarea,summary{transition:transform .36s var(--motion-ease),background-color .24s,color .24s,border-color .24s,opacity .24s}
+button:not(:disabled):active,a:active{transform:scale(.965)}
+.primary:hover,.nav-start:hover{transform:translateY(-4px) scale(1.025)}
+.primary .icon,.nav-start .icon,.text-link .icon,.lesson-meta .icon{transition:transform .4s var(--motion-ease)}
+.primary:hover .icon,.nav-start:hover .icon{transform:translateX(3px)}
+.text-link:hover .icon,.lesson:hover .lesson-meta .icon{transform:translate(3px,-3px)}
+.lesson:hover{transform:translateY(-9px) rotate(-.45deg)}
+.lesson .type-art>span,.lesson .banner-art,.lesson .path-art>div,.case-poster .poster-orbit{transition:transform .7s var(--motion-ease)}
+.lesson:hover .type-art>span:first-child{transform:translateY(-5px) rotate(-4deg)}
+.lesson:hover .type-art>span:nth-child(2){transform:translateY(3px) rotate(4deg)}
+.lesson:hover .banner-art{transform:rotate(-2deg) scale(1.035)}
+.lesson:hover .path-art>div:nth-of-type(2){transform:rotate(0deg) translateY(-7px)}
+.case-poster:hover .poster-orbit{transform:rotate(-15deg) scale(1.06)}
+.option.hover-ready:hover:not(:disabled){transform:translateY(-5px) scale(1.012)}
+.option{transition:transform .45s var(--motion-ease),opacity .35s,border-color .25s}
+.options.answered .option:not(.correct):not(.selected){opacity:.65;transform:scale(.985)}
+.secondary:hover{transform:translateY(-3px)}
+nav a:hover,.text-link:hover,footer a:hover{transform:translateY(-2px)}
+textarea:focus,select:focus{border-color:var(--focus);transform:translateY(-2px)}
+.brand-icon{transition:transform .55s var(--motion-ease)}.brand:hover .brand-icon{transform:rotate(-8deg) scale(1.08)}
+.pin-dots i{transition:transform .3s var(--motion-ease),background-color .2s,border-color .2s}.pin-dots i.filled{transform:scale(1.25)}
+.tabs button{transition:transform .3s var(--motion-ease),background-color .25s}.tabs button:hover{transform:translateY(-2px)}
+.details-body{transform-origin:top center}.keypad button:hover{transform:translateY(-3px)}
+dialog{transform-origin:50% 35%}dialog[open]::backdrop{animation:backdrop-in .4s both}dialog.is-leaving::backdrop{animation:backdrop-out .24s both}
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}@keyframes backdrop-out{from{opacity:1}to{opacity:0}}
+@media(hover:none){.lesson:hover,.option.hover-ready:hover:not(:disabled),.primary:hover,.nav-start:hover,.secondary:hover,.keypad button:hover,.tabs button:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.primary:hover,.nav-start:hover,.lesson:hover,.option.hover-ready:hover:not(:disabled),.secondary:hover,.brand:hover .brand-icon,textarea:focus,select:focus,button:active,a:active{transform:none!important}}
+dialog.is-leaving{pointer-events:none}

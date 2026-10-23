@@ -27,3 +27,8 @@
 .research/
 .DS_Store
 *.log
+
+# Music classroom: static teaching assets are source files
+!lilaoshi/web/data/
+!lilaoshi/web/data/**
+**/.runtime/

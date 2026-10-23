@@ -1,0 +1,48 @@
+/* One restrained, wordless composition at a time; the copy remains the focus. */
+.hero-only .hero{grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);align-items:start;gap:36px;min-height:0;max-width:1440px;margin:auto;padding:64px clamp(24px,5vw,64px) 48px}
+.hero-only .hero-copy{align-self:start}.hero-only .intro{font-size:17px;line-height:1.85;margin:28px 0 30px}
+.hero-only .hero-art.hero-carousel{position:relative;width:100%;height:auto;min-height:0;aspect-ratio:1.22;max-width:480px;justify-self:end;transform:none;margin:36px 0 0;align-self:start;isolation:isolate;contain:layout}
+.hero-scene{position:absolute;inset:0}.hero-scene[hidden]{display:none}
+.hero-piece{position:absolute;box-sizing:border-box;transform:var(--piece-rest,none);transform-origin:center;backface-visibility:hidden}
+.card-sheet{--piece-rest:rotate(-13deg);left:4%;top:5%;width:77%;height:64%;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 32px #0000000a;overflow:hidden}
+.sheet-grid{position:absolute;inset:25px;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:24px 24px;opacity:.55}
+.card-align{left:13%;top:24%;width:79%;height:65%;color:var(--muted);opacity:.35}
+.card-align i{position:absolute;display:block;background:currentColor}.card-align i:nth-child(1){left:0;top:-25%;width:1px;height:140%}.card-align i:nth-child(2){left:-10%;top:0;width:120%;height:1px}.card-align i:nth-child(3){right:0;top:-10%;width:1px;height:120%}.card-align i:nth-child(4){left:-10%;bottom:0;width:125%;height:1px}
+.jojo-card{--piece-rest:rotate(5deg);left:11%;top:25%;width:84%;height:66%;padding:clamp(18px,2.2vw,28px);border:1px solid #c8c1ae;border-radius:16px;background:#eee8d8;color:#292e2b;box-shadow:0 18px 34px #00000014;display:flex;flex-direction:column;justify-content:space-between;text-align:left}
+.jojo-company{font-size:clamp(11px,1.25vw,15px);line-height:1.35;font-weight:600;letter-spacing:-.2px}
+.jojo-card-person strong{display:block;font-size:clamp(34px,4.8vw,58px);line-height:1;font-weight:750;letter-spacing:-.055em}.jojo-card-person span{display:block;margin-top:10px;font-size:clamp(11px,1.2vw,14px);letter-spacing:0}
+.jojo-card-mark{position:absolute;right:8%;top:13%;width:12%;height:auto;color:#ad8728}
+.type-disc{--piece-rest:rotate(-10deg);width:17%;aspect-ratio:1;left:-3%;top:76%;border-radius:50%;background:var(--accent);box-shadow:0 7px 22px #00000013;display:grid;place-items:center}
+.type-disc i{display:block;width:35%;height:35%;border:2px solid #353826;transform:rotate(45deg)}
+.journey-line,.generation-path{inset:0;width:100%;height:100%;color:var(--muted);opacity:.55}
+.journey-entry{--piece-rest:rotate(-12deg);left:0;top:14%;width:21%;aspect-ratio:1;background:#f3e6bb;border:1px solid #d7bd72;border-radius:18px;display:grid;place-items:center;box-shadow:0 10px 20px #0000000c}
+.journey-entry svg{width:64%;fill:none;stroke:#9a7723;stroke-width:2;stroke-linecap:round}
+.journey-screen{--piece-rest:rotate(5deg);left:24%;top:8%;width:57%;height:84%;padding:5%;border:1px solid #c8c7ba;border-radius:22px;background:#fff8e5;box-shadow:0 18px 40px #00000012;display:flex;flex-direction:column;gap:8%}
+.screen-head{display:flex;align-items:center;gap:7px;height:8%}.screen-head i{width:15%;height:100%;aspect-ratio:1;border-radius:50%;background:#e9ca6e}.screen-head b{height:5px;width:39%;border-radius:5px;background:#bba05a}.screen-head span{margin-left:auto;width:12%;height:4px;background:#dfd0a0;border-radius:5px}
+.screen-picture{height:33%;border-radius:10px;background:#f7e7ae;overflow:hidden}.screen-picture svg{width:100%;height:100%;fill:#d9b955;stroke:#fff6d5;stroke-width:1.5}
+.screen-lines{display:grid;gap:8px}.screen-lines i{height:5px;width:80%;border-radius:5px;background:#c7ad65}.screen-lines i:last-child{width:55%;background:#e7d8aa}
+.screen-selection{display:flex;align-items:center;gap:10%;height:16%;padding:5%;border:1px solid #d9ba5a;border-radius:10px;background:#fbefc9}.screen-selection i{width:18%;aspect-ratio:1;border-radius:50%;background:#ecd070}.screen-selection span{height:4px;width:38%;background:#c9a743;border-radius:5px}.screen-selection .icon{width:16px;height:16px;margin-left:auto;color:#9b7620}
+.screen-action{margin-top:auto;display:flex;justify-content:space-between;align-items:center;background:#b58b20;border-radius:10px;padding:8% 10%;color:#fff}.screen-action span{height:4px;width:42%;border-radius:4px;background:#fff8df}.screen-action .icon{width:16px;height:16px}
+.journey-cursor{--piece-rest:rotate(-7deg);left:64%;top:69%;width:14%;aspect-ratio:1;filter:drop-shadow(0 3px 2px #0002)}.journey-cursor svg{width:100%;height:100%;fill:var(--accent);stroke:#484c3e;stroke-width:1.5;stroke-linejoin:round}
+.journey-done{--piece-rest:rotate(9deg);right:0;top:63%;width:25%;aspect-ratio:1;border-radius:20px;background:#fff0bc;border:1px solid #e1c566;display:grid;place-items:center;box-shadow:0 10px 24px #0000000f}.journey-done svg{width:85%;fill:#efd36c;stroke:#9e761c;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.journey-done svg path{fill:none}
+.generation-seed{--piece-rest:rotate(-13deg);left:1%;top:10%;width:22%;aspect-ratio:1;padding:7%;box-sizing:content-box;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 24px #0000000a}
+.generation-seed i{border-radius:50%;background:var(--muted);opacity:.23}.generation-seed i:nth-child(3n){opacity:.55}.generation-seed i:nth-child(4n){transform:scale(.6)}
+.generation-picture{--piece-rest:rotate(6deg);left:22%;top:18%;width:73%;height:65%;padding:3%;background:#eae5d8;border:1px solid #c5c5b6;border-radius:18px;box-shadow:0 18px 35px #00000015}.generation-picture svg{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block}
+.generation-spark{--piece-rest:rotate(-8deg);right:0;top:1%;width:21%;aspect-ratio:1;color:var(--accent)}.generation-spark svg{width:100%;height:100%;fill:currentColor}
+.generation-strip{--piece-rest:rotate(-8deg);left:9%;top:70%;width:72%;height:28%;display:flex;gap:7px;padding:10px;background:#f2eee2;border:1px solid #d7bf78;border-radius:12px;box-shadow:0 10px 20px #00000012}.generation-strip i{display:block;flex:1;min-width:0;border-radius:5px;overflow:hidden;background:#f1df9e}.generation-strip svg{display:block;width:100%;height:100%;fill:#c29a36;stroke:#e5c96c;stroke-width:1}
+@media(max-width:900px) and (min-width:701px){.hero-only .hero{gap:24px;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}.hero-only h1{font-size:clamp(56px,8vw,74px)}.hero-only .hero-art.hero-carousel{margin-top:30px}.jojo-card{padding:20px}}
+@media(max-width:700px){.hero-only .hero{display:flex;flex-direction:column;gap:34px;padding:32px 24px 40px}.hero-only h1{font-size:clamp(58px,12vw,76px);margin-top:0}.hero-only .intro{font-size:15px;line-height:1.8;margin:23px 0 26px}.hero-only .hero-art.hero-carousel{width:min(100%,390px);max-width:none;align-self:center;margin:8px 0 12px;aspect-ratio:1.22;transform:none;height:auto;min-height:0}.jojo-company{font-size:13px}.jojo-card-person strong{font-size:46px}.jojo-card-person span{font-size:12px}.jojo-card{padding:22px}.hero-copy .primary{min-width:215px}}
+@media(prefers-reduced-motion:reduce){.hero-piece{animation:none;transition:none}}
+
+/* Fixed two-character slots prevent the headline and CTA from shifting. */
+#hero-headline [data-headline-subject],#hero-headline [data-headline-reason]{display:inline-flex;width:2em;height:1.17em;vertical-align:bottom;white-space:nowrap;letter-spacing:0}
+
+.hero-headline-trigger{all:unset;display:inline;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent}
+.hero-headline-trigger:hover,.hero-headline-trigger:active{transform:none;background:transparent;color:inherit}
+.hero-headline-trigger:focus-visible,.hero-carousel:focus-visible{outline:2px solid var(--accent);outline-offset:8px;border-radius:12px}
+.hero-carousel[role="button"]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* Each Chinese character rolls vertically inside a fixed cell. */
+.headline-slot{display:inline-block;position:relative;width:1em;height:1.17em;overflow:hidden;line-height:1.17;vertical-align:top}
+.headline-slot>span{display:block;width:100%;height:100%}
+.headline-slot>.headline-slot-outgoing{position:absolute;inset:0;transform:translateY(-105%)}

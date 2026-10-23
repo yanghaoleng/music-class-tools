@@ -1,0 +1,2 @@
+// Follow the OS preference before first paint. There is no user-facing theme override.
+(()=>{const system=matchMedia('(prefers-color-scheme: dark)');function apply(){const dark=system.matches;document.documentElement.dataset.theme=dark?'dark':'light';document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#000000':'#f8f6f0')}apply();system.addEventListener('change',apply)})();

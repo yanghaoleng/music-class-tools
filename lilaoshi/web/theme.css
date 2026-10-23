@@ -1,0 +1,9 @@
+/* System-only theme. User-requested pure black overrides the skill's near-black default. */
+html[data-theme="light"] body{color-scheme:light;--bg:#f8f6f0;--text:#302b25;--muted:#71614d;--line:#ddd4c4;--surface:#eee8dc;--panel:#fffaf0;--accent:#ffdc00;--button:#260f00;--button-text:#ffffff;--focus:#805400;--drawing:#a28b64}
+html[data-theme="dark"] body{color-scheme:dark;--bg:#000000;--text:#f7f5ef;--muted:#b8b5ae;--line:#303030;--surface:#151515;--panel:#0e0e0e;--accent:#ffdc00;--button:#ffdc00;--button-text:#000000;--focus:#ffdc00;--drawing:#646464}
+html[data-theme="dark"] body .lesson-one{background:#191919}html[data-theme="dark"] body .lesson-two{background:#141414}html[data-theme="dark"] body .lesson-three{background:#101010}
+html[data-theme="dark"] body .lesson{color:var(--text)}html[data-theme="dark"] body .type-art>span:nth-child(2){color:#c8bd84}html[data-theme="dark"] body .bad-card{background:#b7b3a8;border-color:#c8c4ba;color:#292721}
+html[data-theme="dark"] body .reason{color:var(--accent)}html[data-theme="dark"] body .reason i{background:var(--accent)}
+html[data-theme="dark"] body .keypad button{background:#181818;color:#ffffff;font-weight:700}html[data-theme="dark"] body .keypad button:active{background:var(--accent);color:#000000}
+html[data-theme="dark"] body .pin-dots i.filled{background:var(--accent);border-color:var(--accent)}
+html[data-theme="dark"] body .chart polyline,html[data-theme="dark"] body .chart circle{stroke:var(--accent)}

@@ -1,0 +1,12 @@
+*{box-sizing:border-box}.privacy-page{margin:0;background:var(--bg);color:var(--text);font:15px/1.95 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}.privacy-document{max-width:760px;padding:40px 24px 64px;margin:auto}.privacy-document a{color:inherit;text-underline-offset:3px}.privacy-document nav{margin-bottom:36px;font-size:13px;color:var(--muted)}.privacy-document h1{font-size:30px;line-height:1.4;margin:0 0 12px;letter-spacing:-.6px}.privacy-document .date{font-size:12px;color:var(--muted);margin-bottom:32px}.privacy-document h2{font-size:19px;line-height:1.5;margin:36px 0 12px}.privacy-document p,.privacy-document li{line-break:strict;overflow-wrap:break-word;text-wrap:pretty}.privacy-document p{margin:12px 0}.privacy-document ul{padding-left:1.3em}.privacy-document li{margin:8px 0}.privacy-document strong{font-weight:600}.privacy-document .summary{padding:18px 20px;background:var(--surface);border:1px solid var(--line);border-radius:14px}.privacy-document footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}@media(max-width:600px){.privacy-document{padding-top:24px}.privacy-document h1{font-size:26px}}
+
+.privacy-user{margin:0 0 28px;padding:16px 18px;border:1px solid var(--line);border-radius:12px}
+.privacy-user-label{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}
+#privacy-user-id{display:flex;align-items:center;gap:12px;width:100%;padding:0;background:none;border:0;color:var(--text);text-align:left;cursor:pointer}
+#privacy-id-value{font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;min-width:0}
+#privacy-user-id svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7}
+#privacy-user-id:disabled{cursor:default;color:var(--muted)}
+.privacy-copy-toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);padding:10px 18px;max-width:calc(100vw - 32px);border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:13px;box-shadow:0 6px 24px #0002}
+.privacy-copy-toast[hidden]{display:none}
+
+.privacy-document{font:15px/1.95 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--text)}

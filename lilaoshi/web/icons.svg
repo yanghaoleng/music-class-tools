@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg"><!--Iconoir 7.12.1, adapted to 2.5px stroke.
+MIT License
+
+Copyright (c) 2021 Luca Burgio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+--><symbol id="arrow-down" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 3L12 21M12 21L20.5 12.5M12 21L3.5 12.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="arrow-left" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M21 12L3 12M3 12L11.5 3.5M3 12L11.5 20.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="arrow-right" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M3 12L21 12M21 12L12.5 3.5M21 12L12.5 20.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="arrow-up-left" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M19 19L6 6M6 6L6 18.48M6 6L18.48 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="arrow-up-right" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6.00005 19L19 5.99996M19 5.99996V18.48M19 5.99996H6.52005" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="arrow-up" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 21L12 3M12 3L20.5 11.5M12 3L3.5 11.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="asterisk" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 22L12 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M20.5715 17.5498L3.42819 7.24904" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M3.42822 17.5498L20.5716 7.24904" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="bookmark" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 21V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V21L13.0815 17.1953C12.4227 16.7717 11.5773 16.7717 10.9185 17.1953L5 21Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="check" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 13L9 17L19 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="nav-arrow-down" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="nav-arrow-right" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="plus" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="sort" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M10 14H2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M8 10H2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M6 6H2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M12 18H2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M19 20V4M19 20L22 17M19 20L16 17M19 4L22 7M19 4L16 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol><symbol id="xmark" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+</symbol></svg>

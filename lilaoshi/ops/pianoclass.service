@@ -1,0 +1,22 @@
+[Unit]
+Description=Li teacher music classroom and private learning records
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=pianoclass
+WorkingDirectory=/opt/pianoclass/current
+EnvironmentFile=/etc/pianoclass.env
+ExecStart=/usr/bin/python3 /opt/pianoclass/current/server/app.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
