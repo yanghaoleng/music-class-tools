@@ -59,3 +59,7 @@ node --test tests/*.test.cjs
 浏览器验收脚本为`tests/browser.cjs`，覆盖桌面、手机、声音调度、键盘、整章结算与错题。模型模拟与真实模型检查在验收记录中分别列出。
 
 `node tests/widgets.cjs`单独验证13个电脑键映射、和弦与松键、输入框保护、居中布局、反馈UID复制以及随机头像与favicon同步。可设置`CLASSROOM_URL`对正式目录进行验证。
+
+## 其他领域学习入口（2026-10-24）
+
+首页底部以普通链接推荐 [JOJO 设计班](https://mikeywa.site/refinetaste/)、[JOJO 哲学班](https://mikeywa.site/philosophy/) 和 [JOJO 自媒体班](https://mikeywa.site/mediaclass/)。跳转使用真实站点地址，音乐学习、笔记、试听和后台记录继续独立。样式为 `web/other-fields.css`，由本应用静态路由提供。
