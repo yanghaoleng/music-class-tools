@@ -62,4 +62,4 @@ node --test tests/*.test.cjs
 
 ## 其他领域学习入口（2026-10-24）
 
-首页底部以普通链接推荐 [JOJO 设计班](https://mikeywa.site/refinetaste/)、[JOJO 哲学班](https://mikeywa.site/philosophy/) 和 [JOJO 自媒体班](https://mikeywa.site/mediaclass/)。跳转使用真实站点地址，音乐学习、笔记、试听和后台记录继续独立。样式为 `web/other-fields.css`，由本应用静态路由提供。
+首页在隐私协议左侧通过可悬停或点击的“更多课程”小面板推荐 [JOJO 设计班](https://mikeywa.site/refinetaste/)、[JOJO 哲学班](https://mikeywa.site/philosophy/) 和 [JOJO 自媒体班](https://mikeywa.site/mediaclass/)。跳转使用真实站点地址，音乐学习、笔记、试听和后台记录继续独立。样式为 `web/other-fields.css`，由本应用静态路由提供。
