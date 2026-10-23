@@ -11,3 +11,35 @@
 @media(prefers-color-scheme:dark){.music-specimen{background:#211b11;color:#f4dea9}.music-score .empty{fill:#211b11}.hero-note-card,.hero-chord-tile{color:#260f00}.hero-score-card,.hero-piano-card{background:#302616;border-color:#f4dea923;color:#f4dea9}.music-tools{color:var(--text)}.music-hero-staff{color:#f4dea9}}
 @media(max-width:700px){.music-specimen{padding:23px 15px;min-height:200px}.music-specimen-title{font-size:19px}.music-listen-hint{width:100%;margin:0 0 0 5px}.music-score{max-height:160px}.hero-piano-card{width:245px;right:0;bottom:17px;height:150px}.hero-piano-card .piano-keyboard{height:113px}.hero-note-card{width:115px;height:138px;left:5px;top:23px}.hero-note-card svg{width:78px}.hero-tempo-disc{width:86px;height:86px;left:0;bottom:0;font-size:25px}.hero-score-card{width:225px;right:0;top:23px;height:180px}.hero-chord-tile{width:112px;height:122px;left:0}.hero-dots-card{width:240px;left:15px;bottom:0;padding:20px}.hero-dots-card .music-beats i{width:35px;height:35px;font-size:17px}.brand b{font-size:16px}.music-beats i{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){.listen-bars b{animation:none}}
+
+/* Keep the listening controls, their help and piano on the same central axis. */
+.music-tools{width:100%;max-width:680px;margin:16px auto 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.music-listen-row{justify-content:center;gap:8px 10px;width:100%}
+.music-listen-row:not(:has(.listen-button)){display:none}
+.music-listen-hint{flex-basis:100%;margin:0;font-size:12px;line-height:1.6}
+.music-listen-hint:empty{display:none}
+.piano-explore{width:100%;max-width:510px;margin:0 auto}
+.piano-explore summary{justify-content:center;gap:8px}
+.piano-explore .piano-keyboard{margin:12px auto 6px}
+.piano-note-status{margin:0;line-height:1.6}
+.music-audio-status{margin:0;max-width:100%;text-align:center}
+.music-specimen{text-align:center}
+.lesson-stream>.music-tools+.options,.lesson-stream>.music-tools+.open-case{margin-top:0}
+.lesson-stream>.open-case:not(.case-pair){max-width:680px;margin-inline:auto}
+
+.piano-widget{width:100%;max-width:510px;position:relative}
+.piano-widget .piano-explore summary{padding-inline:30px;min-height:28px}
+.keyboard-help-trigger{position:absolute;top:0;right:0;width:28px;height:28px;display:grid;place-items:center;background:none;color:var(--muted);border-radius:6px}
+.keyboard-help-trigger:hover,.keyboard-help-trigger[aria-expanded="true"]{color:var(--text);background:var(--surface)}
+.keyboard-help-trigger .icon{width:18px;height:18px;stroke-width:1.7}
+.keyboard-map{margin-top:14px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;text-align:left}
+.keyboard-map[hidden]{display:none}
+.keyboard-map-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;font-size:13px}
+.keyboard-map-close{width:26px;height:26px;background:none;color:var(--muted);font-size:20px;line-height:1}
+.keyboard-map-keys{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:6px 4px}
+.mapping-key{grid-row:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:9px 0 7px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);box-shadow:0 2px 0 var(--line);min-width:0}
+.mapping-key.mapping-black{grid-row:1;background:#30261e;color:#fff8e7;border-color:#514436;box-shadow:0 2px 0 #514436}
+.mapping-key kbd{font:600 14px ui-monospace,SFMono-Regular,monospace}.mapping-key small{font-size:10px;opacity:.65;white-space:nowrap}
+.mapping-key.is-down{background:#ffdc00;color:#260f00;border-color:#c6a900;box-shadow:0 1px 0 #c6a900}
+.keyboard-map>p{font-size:11px;color:var(--muted);line-height:1.7;margin:14px 0 0;text-align:center}
+@media(max-width:600px){.keyboard-map{padding:12px}.keyboard-map-keys{gap:5px 3px}.mapping-key{padding:8px 0 6px}.mapping-key kbd{font-size:13px}.mapping-key small{font-size:9px}.piano-widget .piano-explore summary{gap:6px}}

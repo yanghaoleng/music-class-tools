@@ -392,9 +392,9 @@ body.hero-only>.privacy-footer{opacity:1}
 .feedback-panel[hidden]{display:none}
 .feedback-contact{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:12px 16px}
 .feedback-contact>span:nth-of-type(1),.feedback-contact>span:nth-of-type(2){color:var(--muted);font-size:12px}
-#feedback-wechat{display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;padding:0;background:none;border:0;font:inherit;color:var(--text);text-align:left}
-#feedback-wechat .icon{width:14px;height:14px;stroke-width:1.7;color:var(--muted)}
-#feedback-wechat:hover .icon{color:var(--text)}
+#feedback-wechat,#feedback-uid{display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;padding:0;background:none;border:0;font:inherit;color:var(--text);text-align:left}
+#feedback-wechat .icon,#feedback-uid .icon{width:14px;height:14px;stroke-width:1.7;color:var(--muted)}
+#feedback-wechat:hover .icon,#feedback-uid:hover .icon{color:var(--text)}
 .feedback-panel p{font-size:11px;line-height:1.7;color:var(--muted);margin:16px 0 0}
 
 html{scrollbar-gutter:stable}

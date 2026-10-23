@@ -4,12 +4,39 @@ const path=require('node:path');
 let sharp;try{sharp=require('sharp')}catch{sharp=require('/Users/jojo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/sharp')}
 const root=path.resolve(__dirname,'..'),out=path.join(root,'web/assets');
 const moods=['neutral','happy','thinking','curious','surprised','encouraging','empathetic','confused','playful','delighted','approving','inspired','relieved','grateful','amused','cool','confident','mischievous'];
+function cleanFrame(data,size,row){
+ // The generated sheet is not a strict grid: the previous row's shoulders cross
+ // its nominal boundary. Keep dark hair in that overlap, then isolate the main
+ // connected portrait so loose strips and neighboring pixels cannot become icons.
+ if(row>0)for(let y=0;y<28;y++)for(let x=0;x<size;x++){
+  const p=(y*size+x)*4,r=data[p],g=data[p+1],b=data[p+2];
+  if(Math.max(r,g,b)>=145||r-g>=28||g-b>=28||r-b>=42)data[p+3]=0;
+ }
+ const visited=new Uint8Array(size*size),stack=new Int32Array(size*size);let largest=[];
+ for(let start=0;start<visited.length;start++){
+  if(visited[start]||data[start*4+3]<32)continue;
+  const pixels=[];let count=1;stack[0]=start;visited[start]=1;
+  while(count){const p=stack[--count];pixels.push(p);const x=p%size,y=Math.floor(p/size);
+   for(const next of [x>0?p-1:-1,x<size-1?p+1:-1,y>0?p-size:-1,y<size-1?p+size:-1]){
+    if(next<0||visited[next]||data[next*4+3]<32)continue;visited[next]=1;stack[count++]=next;
+   }
+  }
+  if(pixels.length>largest.length)largest=pixels;
+ }
+ const keep=new Uint8Array(size*size);for(const p of largest)keep[p]=1;
+ for(let p=0;p<keep.length;p++)if(!keep[p])data[p*4+3]=0;
+ return data;
+}
 (async()=>{
  const source=path.join(root,'design/teacher-master.png'),meta=await sharp(source).metadata(),cell=meta.width/6;
  if(meta.width!==meta.height||!Number.isInteger(cell)||!meta.hasAlpha)throw Error('Expected square transparent 6×6 master atlas');
  await fs.mkdir(path.join(out,'icons'),{recursive:true});
  const cells=[];
- for(let i=0;i<36;i++)cells.push(await sharp(source).extract({left:(i%6)*cell,top:Math.floor(i/6)*cell,width:cell,height:cell}).resize(192,192).png().toBuffer());
+ for(let i=0;i<36;i++){
+  const row=Math.floor(i/6),raw=await sharp(source).extract({left:(i%6)*cell,top:row*cell,width:cell,height:cell}).ensureAlpha().raw().toBuffer();
+  const portrait=await sharp(cleanFrame(raw,cell,row),{raw:{width:cell,height:cell,channels:4}}).resize(184,184).png().toBuffer();
+  cells.push(await sharp({create:{width:192,height:192,channels:4,background:'#00000000'}}).composite([{input:portrait,left:4,top:4}]).png().toBuffer());
+ }
  async function atlas(file,indices,cols){const height=Math.ceil(indices.length/cols)*192;await sharp({create:{width:cols*192,height,channels:4,background:'#00000000'}}).composite(indices.map((index,i)=>({input:cells[index],left:i%cols*192,top:Math.floor(i/cols)*192}))).webp({quality:84}).toFile(path.join(out,file))}
  await atlas('teacher-emotions.webp',Array.from({length:18},(_,i)=>i),6);
  await atlas('teacher-positive-emotions.webp',Array.from({length:12},(_,i)=>i+18),6);
