@@ -429,3 +429,11 @@ body.privacy-open{overflow:hidden}
 .catalog-jump{flex:1;min-width:0;padding:11px 6px;border:0;border-radius:6px;background:transparent;color:inherit;text-align:left;font:inherit;font-weight:600;line-height:1.5;cursor:pointer}
 .catalog-jump:hover,.catalog-jump:focus-visible{background:var(--surface);outline:1px solid var(--line)}
 .catalog-jump[aria-current="step"]{color:var(--text);text-decoration:underline;text-underline-offset:4px}
+
+/* Grow around the centered composer, then wrap and grow vertically within the viewport. */
+.chat-composer{align-items:flex-end}
+.chat-composer textarea{box-sizing:border-box;display:block;width:0;min-width:0;flex:1;height:34px;min-height:34px;max-height:240px;resize:none;border:0;background:transparent;outline:none;color:var(--text);font:inherit;font-size:14px;line-height:22px;padding:6px 0;box-shadow:none;overflow-x:hidden;overflow-y:hidden;overflow-wrap:anywhere;white-space:pre-wrap}
+.chat-composer textarea::placeholder{color:var(--muted)}
+.chat-composer textarea:focus-visible{outline:none}
+.chat-composer>button{align-self:flex-end}
+@media(max-width:600px){.chat-composer textarea{font-size:16px}}
